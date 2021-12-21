@@ -5,20 +5,23 @@ import com.nerjal.json.JsonError;
 public abstract class JsonElement {
     public boolean isJsonObject() {
         return false;
-    };
+    }
     public boolean isJsonArray() {
         return false;
-    };
+    }
     public boolean isString() {
         return false;
-    };
+    }
     public boolean isNumber() {
         return false;
-    };
+    }
     public boolean isBoolean() {
         return false;
-    };
+    }
     public boolean isPrimitive() {
+        return false;
+    }
+    public boolean isComment() {
         return false;
     }
 

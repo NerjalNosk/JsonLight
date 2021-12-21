@@ -3,9 +3,6 @@ package com.nerjal.json.parser;
 import static com.nerjal.json.JsonError.*;
 import com.nerjal.json.elements.JsonElement;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class StringParser {
     private ParserState state;
     private String readStr;
@@ -13,7 +10,6 @@ public class StringParser {
     private int line = 1;
     private boolean isErrored = false;
     private String errMessage = null;
-    private Map<Integer,String> comments = new HashMap<>();
 
     public StringParser() {}
 
@@ -40,6 +36,9 @@ public class StringParser {
         return this.state;
     }
 
+    public int getIndex() {
+        return index;
+    }
 
     public void read() {}
 
@@ -48,14 +47,9 @@ public class StringParser {
         this.errMessage = s;
     }
 
-    public void addComment(String com) {
-        this.comments.put(this.index, com);
-    }
-
-    public boolean switchState(ParserState parserState) {
+    public void switchState(ParserState parserState) {
         boolean out = !parserState.getClass().isAssignableFrom(parserState.getClass());
         if (out) this.state = parserState;
-        return out;
     }
     public void forward(int i) {
         this.index += i;

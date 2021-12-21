@@ -1,16 +1,18 @@
 package com.nerjal.json.parser;
 
+import com.nerjal.json.elements.JsonComment;
+import com.nerjal.json.elements.JsonElement;
+
 public class CommentState extends AbstractState {
     private boolean isBlock;
     private final StringBuilder val = new StringBuilder();
 
-    public CommentState(StringParser stringParser, ParserState olderState) {
+    public CommentState(StringParser stringParser, ParserState olderState, boolean block) {
         super(stringParser, olderState);
     }
 
     @Override
     public void closeComment() {
-        this.parser.addComment(this.val.toString());
         this.parser.switchState(this.olderState);
     }
 
@@ -22,5 +24,10 @@ public class CommentState extends AbstractState {
             this.closeComment();
         }
         else this.val.append(c);
+    }
+
+    @Override
+    public JsonElement getElem() {
+        return new JsonComment(val.toString());
     }
 }
