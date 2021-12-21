@@ -7,9 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.ConcurrentModificationException;
 
 public class JsonObject extends JsonElement {
-    private Map<String,JsonElement> map;
+    private final Map<String,JsonElement> map;
 
     public JsonObject() {
         this.map = new HashMap<>();
@@ -40,7 +41,33 @@ public class JsonObject extends JsonElement {
     public int size() {
         return this.map.size();
     }
+
+    /**
+     * Performs the given action for each non-comment element in this
+     * JsonObject until all element have been processed or the action
+     * throws an exception, which then is relayed to the caller.
+     * @param action The action to be performed for each element
+     * @throws NullPointerException if the specified action is null
+     * @throws ConcurrentModificationException if an element is found to be
+     * removed during iteration
+     */
     public void forEach(BiConsumer<String, JsonElement> action) {
+        Objects.requireNonNull(action);
+        this.map.forEach((key,elem) ->{
+            if (!elem.isComment()) action.accept(key,elem);
+        });
+    }
+
+    /**
+     * Performs the given action for each element in this JsonObject,
+     * comments included, until all element have been processed or the
+     * action throws an exception, which then is relayed to the caller.
+     * @param action The action to be performed for each element
+     * @throws NullPointerException if the specified action is null
+     * @throws ConcurrentModificationException if an element is found to be
+     * removed during iteration
+     */
+    public void forAll(BiConsumer<String, JsonElement> action) {
         Objects.requireNonNull(action);
         this.map.forEach(action);
     }
