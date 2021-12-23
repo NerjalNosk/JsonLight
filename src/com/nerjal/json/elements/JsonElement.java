@@ -31,6 +31,9 @@ public abstract class JsonElement {
     public JsonArray getAsJsonArray() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not an Array element",this.getClass().getName()));
     }
+    public JsonComment getAsJsonComment() throws JsonError.JsonElementTypeException {
+        throw new JsonError.JsonElementTypeException(String.format("%s is not a Comment element", this.getClass().getName()));
+    }
     public String getAsString() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not a String element",this.getClass().getName()));
     }

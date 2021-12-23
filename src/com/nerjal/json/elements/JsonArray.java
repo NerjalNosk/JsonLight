@@ -83,6 +83,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return new SimpleJArrayIterator();
     }
 
+    @Override
+    public void forEach(Consumer<? super JsonElement> action) {
+        Iterable.super.forEach(action);
+    }
+
     public class SimpleJArrayIterator implements Iterator<JsonElement> {
         /**
          * Index of element to be returned by subsequent call to next.

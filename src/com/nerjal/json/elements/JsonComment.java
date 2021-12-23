@@ -1,6 +1,8 @@
 package com.nerjal.json.elements;
 
 
+import java.util.Collection;
+
 /**
  * The {@code JsonComment} class represents a JSON comment.<br>
  * Those are structured the same way as Java or JS comments.
@@ -54,6 +56,15 @@ public class JsonComment extends JsonElement {
         return isBlock;
     }
 
+    public String[] getSplitValue() {
+        return this.value.split("\n");
+    }
+
+
+    @Override
+    public JsonComment getAsJsonComment() {
+        return this;
+    }
 
     @Override
     public boolean isComment() {
