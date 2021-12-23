@@ -1,18 +1,21 @@
 package com.nerjal.json;
 
 import com.nerjal.json.elements.JsonArray;
+import com.nerjal.json.elements.JsonComment;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.parser.StringParser;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.nerjal.json.JsonError.*;
 
 public abstract class JsonParser {
 
     /**
-     * Allows to get a String version of the giver JsonElement
+     * Allows to get a String version of the given JsonElement
      * (automatically calls for the value's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @return String: the string version of the JsonElement
@@ -23,7 +26,7 @@ public abstract class JsonParser {
     }
 
     /**
-     * Allows to get a String version of the giver JsonElement
+     * Allows to get a String version of the given JsonElement
      * (automatically calls for the value's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @param space the indentation level (for recursive parsing, uses 0 by default)
@@ -35,7 +38,7 @@ public abstract class JsonParser {
     }
 
     /**
-     * Allows to get a String version of the giver JsonElement
+     * Allows to get a String version of the given JsonElement
      * (automatically calls for the given object's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @param space the indentation level (for recursive parsing, uses 0 by default)
@@ -45,32 +48,66 @@ public abstract class JsonParser {
      */
     public static String parseJson(JsonElement json, int space, int tabulation) throws JsonElementTypeException {
         if (json.isPrimitive()) {
-            return  json.isString() ? String.format("\"%s\"",json.getAsString()) : json.toString();
+            return json.isString() ? String.format("\"%s\"",json.getAsString()) : json.toString();
         }
         StringBuilder out = new StringBuilder();
-        int spacing = space + 1;
         String tab = " ".repeat(tabulation);
+        if (json.isComment()) {
+            JsonComment comment = json.getAsJsonComment();
+            if (comment.isBlock()) {
+                String[] lines = comment.getSplitValue();
+                out.append("/*\n");
+                for (String s : lines) out.append(tab.repeat(space)).append("* ").append(s).append("\n");
+                out.append(tab.repeat(space)).append("*/\n");
+            } else out.append("//").append(comment);
+            return out.toString();
+        }
+        int spacing = space + 1;
         if (json.isJsonArray()) {
             JsonArray array = json.getAsJsonArray();
             out.append("[\n");
-            for (int i = 0; i < array.size(); i++) {
-                out.append("  ".repeat(spacing)).append(parseJson(array.get(i), spacing, tabulation));
-                if (i + 1 < array.size()) out.append(",");
-                out.append("\n");
-            }
+            AtomicInteger i = new AtomicInteger();
+            AtomicBoolean eraseLastComma = new AtomicBoolean(false);
+            AtomicInteger index = new AtomicInteger();
+            array.forAll(elem -> {
+                try {
+                    out.append("  ".repeat(spacing)).append(parseJson(elem, spacing, tabulation));
+                    if (elem.isComment()) eraseLastComma.set(false);
+                    else {
+                        if (index.get() + 1 < array.size()) {
+                            out.append(",");
+                            i.set(out.length() - 1);
+                        }
+                        eraseLastComma.set(true);
+                        out.append("\n");
+                    }
+                } catch (JsonElementTypeException e) {
+                    e.printStackTrace();
+                }
+                index.getAndIncrement();
+            });
+            if (eraseLastComma.get() && out.charAt(i.get())==',') out.deleteCharAt(i.get());
             out.append("  ".repeat(space)).append("]");
             return out.toString();
         }
         if (json.isJsonObject()) {
             JsonObject object = json.getAsJsonObject();
             out.append("{\n");
-            for (Map.Entry<String,JsonElement> entry : object.entrySet()) {
+            int i = 0;
+            // i is used to remove last iteration comma without caring about comments
+            for (Map.Entry<String,JsonElement> entry : object.allEntriesSet()) {
                 JsonElement elem = entry.getValue();
-                out.append(tab.repeat(spacing)).append(String.format("\"%s\"",entry.getKey())).append(" : ");
-                out.append(parseJson(elem, spacing, tabulation)).append(",\n");
+                out.append(tab.repeat(spacing));
+                if (!elem.isComment()) {
+                    out.append(String.format("\"%s\"", entry.getKey())).append(" : ");
+                    out.append(parseJson(elem, spacing, tabulation)).append(",\n");
+                    i = out.length()-2;
+                } else {
+                    out.append(parseJson(elem, spacing, tabulation));
+                }
             }
-            out.deleteCharAt(out.lastIndexOf(","));
-            out.append("  ".repeat(space)).append("]");
+            if (out.charAt(i) == ',') out.deleteCharAt(i);
+            out.append("  ".repeat(space)).append("}\n");
             return out.toString();
         }
         throw new JsonElementTypeException(String.format("Unknown Json type element %s",json.getClass().getName()));
