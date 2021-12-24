@@ -106,4 +106,7 @@ public abstract class AbstractState implements ParserState {
     public JsonElement getElem() {
         return null;
     }
+
+    @Override
+    public void addSubElement(JsonElement element) {}
 }
