@@ -5,7 +5,7 @@ import com.nerjal.json.elements.JsonString;
 
 public class StringState extends AbstractState {
     private boolean precIsBackslash = false;
-    private StringBuilder val = new StringBuilder();
+    private final StringBuilder val = new StringBuilder();
 
     public StringState(StringParser stringParser, ParserState olderState) {
         super(stringParser, olderState);
@@ -19,8 +19,11 @@ public class StringState extends AbstractState {
     @Override
     public void read(char c) {
         if (c == '\n') this.parser.error("unexpected newline");
-        if (c == '\\') this.precIsBackslash = !this.precIsBackslash;
-        if (c == '"' && !this.precIsBackslash) this.closeString();
+        if (c == '\\') {
+            if (this.precIsBackslash) this.val.append('\\');
+            this.precIsBackslash = !this.precIsBackslash;
+        }
+        else if (c == '"' && !this.precIsBackslash) this.closeString();
         else if (this.precIsBackslash) {
             switch (c) {
                 case 'b': this.val.append('\b');
