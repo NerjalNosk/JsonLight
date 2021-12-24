@@ -8,6 +8,7 @@ public class StringParser {
     private String readStr;
     private int index = 0;
     private int line = 1;
+    private int lineIndex = 0;
     private boolean isErrored = false;
     private String errMessage = null;
 
@@ -40,7 +41,14 @@ public class StringParser {
         return index;
     }
 
-    public void read() {}
+    public void read() throws JsonParseException {
+        while (this.index < this.readStr.length()) {
+            if (this.isErrored) throw this.buildError();
+            this.state.read(this.getNext());
+            this.index++;
+            this.lineIndex++;
+        }
+    }
 
     public void error(String s) {
         this.isErrored = true;
@@ -59,5 +67,21 @@ public class StringParser {
     }
     public char[] getNext(int length) {
         return this.readStr.substring(this.index+1, this.index+1+length).toCharArray();
+    }
+    public char getPrecedent() {
+        return this.index == 0 ? null : this.readStr.charAt(this.index-1);
+    }
+    public char getOlder(int i) {
+        return this.index - i < 0 ? null : this.readStr.charAt(this.index-i);
+    }
+    public void increaseLine() {
+        this.line++;
+        this.lineIndex = 0;
+    }
+
+    protected JsonParseException buildError() {
+        return new JsonParseException(String.format(
+                "Error parsing string to json element: %s at index %d of line %d",
+                this.errMessage, this.lineIndex, this.line));
     }
 }
