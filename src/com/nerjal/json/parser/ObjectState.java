@@ -51,11 +51,6 @@ public class ObjectState extends AbstractState {
     }
 
     @Override
-    public boolean isObject() {
-        return true;
-    }
-
-    @Override
     public void read(char c) {
         if (c == '\n') this.parser.increaseLine();
 

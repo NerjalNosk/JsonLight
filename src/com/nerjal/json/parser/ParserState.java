@@ -14,14 +14,7 @@ public interface ParserState {
     void openComment();
     void closeComment();
     void readBool(char c);
-    void readEmpty();
-    void readKeyAttribution(); // read ":" char in object
     void error(String s);
-
-    boolean isObject();
-    boolean isArray();
-    boolean isString();
-    boolean isEnd();
 
     void read(char c);
     JsonElement getElem();

@@ -81,12 +81,6 @@ public abstract class AbstractState implements ParserState {
         }
     }
 
-    @Override
-    public void readEmpty() {
-
-    }
-
-    @Override
     public void readKeyAttribution() {
 
     }
@@ -94,24 +88,6 @@ public abstract class AbstractState implements ParserState {
     @Override
     public final void error(String s) {
         this.parser.error(s);
-    }
-
-
-    @Override
-    public boolean isObject() {
-        return false;
-    }
-    @Override
-    public boolean isArray() {
-        return false;
-    }
-    @Override
-    public boolean isString() {
-        return false;
-    }
-    @Override
-    public boolean isEnd() {
-        return this.olderState == null;
     }
 
 

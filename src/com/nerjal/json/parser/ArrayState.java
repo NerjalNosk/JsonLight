@@ -46,11 +46,6 @@ public class ArrayState extends AbstractState {
     }
 
     @Override
-    public boolean isArray() {
-        return true;
-    }
-
-    @Override
     public void read(char c) {
         if (c == '\n') this.parser.increaseLine();
 
