@@ -1,5 +1,6 @@
 package com.nerjal.json.parser;
 
+import com.nerjal.json.elements.JsonBoolean;
 import com.nerjal.json.elements.JsonElement;
 
 public abstract class AbstractState implements ParserState {
@@ -60,8 +61,19 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
-    public void readBool() {
-
+    public final void readBool(char c) {
+        switch (c) {
+            case 't', 'T':
+                if (String.valueOf(this.parser.getNext(3)).equalsIgnoreCase("rue")) {
+                    this.parser.forward(3);
+                    this.addSubElement(new JsonBoolean(true));
+                } else this.error(String.format("unexpected character '%c'",c));
+            case 'f', 'F':
+                if (String.valueOf(this.parser.getNext(4)).equalsIgnoreCase("alse")) {
+                    this.parser.forward(4);
+                    this.addSubElement(new JsonBoolean(false));
+                } else this.error(String.format("unexpected character '%c'", c));
+        }
     }
 
     @Override
