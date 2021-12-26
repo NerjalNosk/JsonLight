@@ -75,7 +75,7 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
-    public void error(String s) {
+    public final void error(String s) {
         this.parser.error(s);
     }
 
