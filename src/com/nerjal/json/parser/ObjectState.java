@@ -20,7 +20,8 @@ public class ObjectState extends AbstractState {
     @Override
     public void openObject() {
         if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
-        else this.error("unexpected object key type");
+        else if (this.lookForKey) this.error("unexpected object key type");
+        else this.error("unexpected '{' character");
     }
 
     @Override
@@ -44,6 +45,12 @@ public class ObjectState extends AbstractState {
     }
 
     @Override
+    public void openInt() {
+        if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
+        else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
+    }
+
+    @Override
     public boolean isObject() {
         return true;
     }
@@ -53,14 +60,18 @@ public class ObjectState extends AbstractState {
         if (c == '\n') this.parser.increaseLine();
 
         switch (c) {
-            case ' ','\t','\n':
+            case ' ', '\t', '\n', '\r', '\f':
                 return;
             case ',':
-                if (this.requiresIterator) this.requiresIterator = false;
-                else this.error("unexpected iterator ','");
+                if (this.requiresIterator) {
+                    this.requiresIterator = false;
+                    this.lookForKey = true;
+                } else this.error("unexpected iterator ','");
             case ':':
-                if (this.lookForAttributive) this.lookForAttributive = false;
-                else this.error("unexpected key-value attributive ':'");
+                if (this.lookForAttributive) {
+                    this.lookForAttributive = false;
+                    this.lookForValue = true;
+                } else this.error("unexpected key-value attributive ':'");
             case '"':
                 this.openString();
             case '{':
