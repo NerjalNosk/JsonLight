@@ -14,7 +14,7 @@ public class NumberState extends AbstractState {
     }
 
     @Override
-    public void closeInt() {
+    public void closeNum() {
         this.parser.forward(-1);
         this.parser.switchState(this.olderState);
         this.olderState.addSubElement(this.getElem());
@@ -34,7 +34,7 @@ public class NumberState extends AbstractState {
                 if (this.foundDecimal) this.error("unexpected decimal character '.'");
                 else this.foundDecimal = true;
             default:
-                this.closeInt();
+                this.closeNum();
         }
     }
 

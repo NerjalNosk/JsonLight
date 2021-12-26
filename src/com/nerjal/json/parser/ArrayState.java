@@ -40,7 +40,7 @@ public class ArrayState extends AbstractState {
     }
 
     @Override
-    public void openInt() {
+    public void openNum() {
         if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
         else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
     }
@@ -76,7 +76,7 @@ public class ArrayState extends AbstractState {
             case '/':
                 this.openComment();
             case '0','1','2','3','4','5','6','7','8','9':
-                this.openInt();
+                this.openNum();
             case 't', 'T', 'f', 'F':
                 this.readBool(c);
             case ']':

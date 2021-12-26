@@ -41,12 +41,12 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
-    public void openInt() {
+    public void openNum() {
 
     }
 
     @Override
-    public void closeInt() {
+    public void closeNum() {
 
     }
 

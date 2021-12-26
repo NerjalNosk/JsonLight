@@ -9,8 +9,8 @@ public interface ParserState {
     void closeArray();
     void openString();
     void closeString();
-    void openInt();
-    void closeInt();
+    void openNum();
+    void closeNum();
     void openComment();
     void closeComment();
     void readBool(char c);
