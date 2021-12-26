@@ -9,10 +9,12 @@ import static com.nerjal.json.JsonError.*;
 public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;
     private final Set<JsonNode> nodeSet;
+    private final Set<JsonComment> commentSet;
 
     public JsonObject() {
         this.map = new HashMap<>();
         this.nodeSet = new HashSet<>();
+        this.commentSet = new HashSet<>();
     }
 
     /**
@@ -32,6 +34,10 @@ public class JsonObject extends JsonElement {
         }
     }
     public boolean add(String key, JsonElement element) {
+        if (key == null && element.isComment()) {
+            this.map.put(UUID.randomUUID().toString(),element);
+            this.commentSet.add((JsonComment) element);
+        }
         if (this.map.containsKey(key)) {
             return false;
         }
@@ -42,6 +48,43 @@ public class JsonObject extends JsonElement {
     public void put(String key, JsonElement element) {
         this.map.put(key, element);
         this.nodeSet.add(new JsonNode(key, element));
+    }
+
+    public boolean hasNode(String key) {
+        return this.map.containsKey(key);
+    }
+
+    public JsonElement remove(String key) throws JsonObjectChildNotFoundException {
+        try {
+            JsonElement j = this.map.remove(key);
+            if (j.isComment()) this.commentSet.removeIf(e -> {
+                try {
+                    return e.getAsString().equals(j.getAsJsonComment().getAsString());
+                } catch (JsonElementTypeException ex) {
+                    ex.printStackTrace();
+                    return false;
+                }
+            });
+            else this.nodeSet.remove(new JsonNode(key,j));
+            return j;
+        } catch (NullPointerException e) {
+            throw new JsonObjectChildNotFoundException("");
+        }
+    }
+    public boolean remove(String key, JsonElement j) {
+        boolean b = this.map.remove(key, j);
+        if (b) {
+            if (j.isComment()) this.commentSet.removeIf(e -> {
+                try {
+                    return e.getAsString().equals(j.getAsJsonComment().getAsString());
+                } catch (JsonElementTypeException ex) {
+                    ex.printStackTrace();
+                    return false;
+                }
+            });
+            else this.nodeSet.remove(new JsonNode(key, j));
+        }
+        return b;
     }
 
     public boolean isEmpty() {
@@ -78,6 +121,21 @@ public class JsonObject extends JsonElement {
         Objects.requireNonNull(action);
         this.map.forEach(action);
     }
+
+    /**
+     * Performs the given action for each comment element in this JsonObject
+     * until all elements have been processed or the action throws an
+     * exception, which then is relayed to the caller.
+     * @param action The action to be performed for each comment element
+     * @throws NullPointerException if the specified action is null
+     * @throws ConcurrentModificationException if an element is found to be
+     * added or removed during iteration
+     */
+    public void forAllComments(Consumer<JsonElement> action) {
+        Objects.requireNonNull(action);
+        this.commentSet.forEach(action);
+    }
+
     public Set<JsonNode> entrySet() {
         return Set.copyOf(this.nodeSet);
     }
@@ -128,6 +186,19 @@ public class JsonObject extends JsonElement {
             JsonElement old = this.value;
             this.value = value;
             return old;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonNode jsonNode = (JsonNode) o;
+            return Objects.equals(key, jsonNode.key) && Objects.equals(value, jsonNode.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, value);
         }
     }
 }
