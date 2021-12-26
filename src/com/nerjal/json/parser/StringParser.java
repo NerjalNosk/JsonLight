@@ -68,6 +68,9 @@ public class StringParser {
     public char[] getNext(int length) {
         return this.readStr.substring(this.index+1, this.index+1+length).toCharArray();
     }
+    public char getActual() {
+        return this.readStr.charAt(this.index);
+    }
     public char getPrecedent() {
         return this.index == 0 ? null : this.readStr.charAt(this.index-1);
     }
