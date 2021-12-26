@@ -13,7 +13,7 @@ public interface ParserState {
     void closeInt();
     void openComment();
     void closeComment();
-    void readBool();
+    void readBool(char c);
     void readEmpty();
     void readKeyAttribution(); // read ":" char in object
     void error(String s);
