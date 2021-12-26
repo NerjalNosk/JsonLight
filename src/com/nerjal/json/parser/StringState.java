@@ -22,15 +22,14 @@ public class StringState extends AbstractState {
         if (c == '\\') {
             if (this.precIsBackslash) this.val.append('\\');
             this.precIsBackslash = !this.precIsBackslash;
-        }
-        else if (c == '"' && !this.precIsBackslash) this.closeString();
+        } else if (c == '"' && !this.precIsBackslash) this.closeString();
         else if (this.precIsBackslash) {
             switch (c) {
-                case 'b': this.val.append('\b');
-                case 'f': this.val.append('\f');
-                case 'n': this.val.append('\f');
-                case 'r': this.val.append('\r');
-                case 't': this.val.append('\t');
+                case 'b': this.val.append('\b'); // backspace
+                case 'f': this.val.append('\f'); // from-feed
+                case 'n': this.val.append('\f'); // newline
+                case 'r': this.val.append('\r'); // return
+                case 't': this.val.append('\t'); // tab
                 default: this.val.append('\\').append(c);
             }
             this.precIsBackslash = false;
