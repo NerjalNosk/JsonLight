@@ -1,9 +1,10 @@
 package com.nerjal.json.elements;
 
-import com.nerjal.json.JsonError;
-
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import static com.nerjal.json.JsonError.*;
 
 public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;
@@ -19,14 +20,14 @@ public class JsonObject extends JsonElement {
      * no associated child can be found.
      * @param key the key whose associated child is to be returned
      * @return the child mapped for the specified key.
-     * @throws JsonError.JsonObjectChildNotFoundException when there is
+     * @throws JsonObjectChildNotFoundException when there is
      * no such child in the object
      */
-    public JsonElement get(String key) throws JsonError.JsonObjectChildNotFoundException {
+    public JsonElement get(String key) throws JsonObjectChildNotFoundException {
         try {
             return Objects.requireNonNull(this.map.get(key));
         } catch (NullPointerException e) {
-            throw new JsonError.JsonObjectChildNotFoundException(
+            throw new JsonObjectChildNotFoundException(
                     String.format("JsonObject has no such child '%s'",key));
         }
     }
@@ -52,35 +53,33 @@ public class JsonObject extends JsonElement {
 
     /**
      * Performs the given action for each non-comment element in this
-     * JsonObject until all element have been processed or the action
+     * JsonObject until all elements have been processed or the action
      * throws an exception, which then is relayed to the caller.
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null
      * @throws ConcurrentModificationException if an element is found to be
-     * removed during iteration
+     * added or removed during iteration
      */
     public void forEach(BiConsumer<String, JsonElement> action) {
         Objects.requireNonNull(action);
-        this.map.forEach((key,elem) -> {
-            if (!elem.isComment()) action.accept(key,elem);
-        });
+        this.nodeSet.forEach(node -> action.accept(node.key, node.value));
     }
 
     /**
      * Performs the given action for each element in this JsonObject,
-     * comments included, until all element have been processed or the
+     * comments included, until all elements have been processed or the
      * action throws an exception, which then is relayed to the caller.
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null
      * @throws ConcurrentModificationException if an element is found to be
-     * removed during iteration
+     * added or removed during iteration
      */
     public void forAll(BiConsumer<String, JsonElement> action) {
         Objects.requireNonNull(action);
         this.map.forEach(action);
     }
     public Set<JsonNode> entrySet() {
-        return this.nodeSet;
+        return Set.copyOf(this.nodeSet);
     }
     public Set<Map.Entry<String,JsonElement>> allEntriesSet() {
         return this.map.entrySet();
