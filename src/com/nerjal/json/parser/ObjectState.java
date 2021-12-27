@@ -40,7 +40,9 @@ public class ObjectState extends AbstractState {
     @Override
     public void openString() {
         this.started = true;
-        if (this.lookForKey || this.lookForValue) this.parser.switchState(new StringState(this.parser, this));
+        boolean singleQuote = this.parser.getActual() == '\'';
+        if (this.lookForKey || this.lookForValue)
+            this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.error("unexpected string initializer '\"'");
     }
 
@@ -67,7 +69,7 @@ public class ObjectState extends AbstractState {
                     this.lookForAttributive = false;
                     this.lookForValue = true;
                 } else this.error("unexpected key-value attributive ':'");
-            case '"':
+            case '"', '\'':
                 this.openString();
             case '{':
                 this.openObject();

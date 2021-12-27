@@ -35,7 +35,8 @@ public class ArrayState extends AbstractState {
 
     @Override
     public void openString() {
-        if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this));
+        boolean singleQuote = this.parser.getActual() == '\'';
+        if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.error("unexpected '\"' character");
     }
 
@@ -62,7 +63,7 @@ public class ArrayState extends AbstractState {
                     this.requiresIterator = false;
                     this.lookForValue = true;
                 } else this.error("unexpected iterator ','");
-            case '"':
+            case '"', '\'':
                 this.openString();
             case '{':
                 this.openObject();

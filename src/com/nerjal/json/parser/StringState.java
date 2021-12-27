@@ -5,10 +5,12 @@ import com.nerjal.json.elements.JsonString;
 
 public class StringState extends AbstractState {
     private boolean precIsBackslash = false;
+    private final boolean isSingleQuoteString;
     private final StringBuilder val = new StringBuilder();
 
-    public StringState(StringParser stringParser, ParserState olderState) {
+    public StringState(StringParser stringParser, ParserState olderState, boolean isSingleQuote) {
         super(stringParser, olderState);
+        this.isSingleQuoteString = isSingleQuote;
     }
 
     @Override
@@ -22,7 +24,8 @@ public class StringState extends AbstractState {
         if (c == '\\') {
             if (this.precIsBackslash) this.val.append('\\');
             this.precIsBackslash = !this.precIsBackslash;
-        } else if (c == '"' && !this.precIsBackslash) this.closeString();
+        } else if (c == '"' && !this.precIsBackslash && !this.isSingleQuoteString) this.closeString();
+        else if (c == '\'' && !this.precIsBackslash && this.isSingleQuoteString) this.closeString();
         else if (this.precIsBackslash) {
             switch (c) {
                 case 'b': this.val.append('\b'); // backspace
