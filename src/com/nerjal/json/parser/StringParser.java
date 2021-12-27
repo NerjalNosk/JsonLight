@@ -3,12 +3,19 @@ package com.nerjal.json.parser;
 import static com.nerjal.json.JsonError.*;
 import com.nerjal.json.elements.JsonElement;
 
+/**
+ *
+ * @see com.nerjal.json.JsonParser
+ * @author Nerjal Nosk
+ */
+
 public class StringParser {
     private ParserState state;
     private String readStr;
     private int index = 0;
     private int line = 1;
     private int lineIndex = 0;
+    private boolean stop = false;
     private boolean isErrored = false;
     private String errMessage = null;
 
@@ -24,41 +31,50 @@ public class StringParser {
         this.state = new EmptyState(this, null);
         this.index = 0;
         this.line = 1;
+        this.stop = false;
     }
 
     public static JsonElement parse(String s) throws JsonParseException {
         StringParser parser = new StringParser();
         parser.setParseString(s);
         parser.read();
-        return parser.getState().getElem();
+        return parser.getElem();
     }
+
+    public JsonElement parse() throws JsonParseException {
+        if (this.readStr == null) throw new JsonParseException("Cannot parse null");
+        this.read();
+        return this.getElem();
+    }
+
+    public void read() throws JsonParseException {
+        while (!this.stop) {
+            if (this.isErrored) throw this.buildError();
+            this.state.read(this.getNext());
+            this.index++;
+            this.lineIndex++;
+            if (this.index >= this.readStr.length()) this.stop = true;
+        }
+    }
+
+    public JsonElement getElem() throws JsonParseException {
+        if (!this.stop) throw new JsonParseException("Parser haven't parsed the given string");
+        return this.state.getElem();
+    }
+
+    // state manipulation
 
     private ParserState getState() {
         return this.state;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void read() throws JsonParseException {
-        while (this.index < this.readStr.length()) {
-            if (this.isErrored) throw this.buildError();
-            this.state.read(this.getNext());
-            this.index++;
-            this.lineIndex++;
-        }
-    }
-
-    public void error(String s) {
-        this.isErrored = true;
-        this.errMessage = s;
-    }
-
     public void switchState(ParserState parserState) {
-        boolean out = !parserState.getClass().isAssignableFrom(parserState.getClass());
+        boolean out = !AbstractState.class.isAssignableFrom(parserState.getClass());
         if (out) this.state = parserState;
     }
+
+    // readStr chars and indexes manipulation
+
     public void forward(int i) {
         this.index += i;
     }
@@ -71,15 +87,19 @@ public class StringParser {
     public char getActual() {
         return this.readStr.charAt(this.index);
     }
-    public char getPrecedent() {
-        return this.index == 0 ? null : this.readStr.charAt(this.index-1);
-    }
     public char getOlder(int i) {
         return this.index - i < 0 ? null : this.readStr.charAt(this.index-i);
     }
     public void increaseLine() {
         this.line++;
         this.lineIndex = 0;
+    }
+
+    // errors
+
+    public void error(String s) {
+        this.isErrored = true;
+        this.errMessage = s;
     }
 
     protected JsonParseException buildError() {
