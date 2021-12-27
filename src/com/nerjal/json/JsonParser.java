@@ -12,6 +12,39 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.nerjal.json.JsonError.*;
 
+/**
+ * Default class for parsing JSON both way.<br>
+ * All comments contained in the root of a JSON string being
+ * parsed to a {@link JsonElement} will be put in the main
+ * element of the JSON string. Thus, the main element can only
+ * be a container element (so an Array or an Object). All other
+ * root element will result on a {@link JsonParseException}<br>
+ * However, all JsonElement can be parsed to a string, that
+ * being used for recursive parsing of container JsonElements
+ * <p><br>
+ * Use {@link JsonParser#parseJson(JsonElement)} and derivatives
+ * in order to parse a JSON structure to a String object.
+ * <blockquote><pre>
+ * using
+ *     String s = JsonParser.parseJson(jsonObject);
+ * gives
+ *     {
+ *       "key": [value],
+ *       ...
+ *     }
+ * </pre></blockquote>
+ * <p>
+ * Using {@link JsonParser#parseString(String)} allows to get
+ * the {@link JsonElement} of the given string.
+ * <blockquote><pre>
+ * using
+ *     JsonElement jElem = JsonParser.parseString("{"a":["a",1,true]}");
+ * gives
+ *     JsonObject< "a":JsonArray< JsonString< "a" >,JsonNumber< 1 >,JsonBoolean< true >>>
+ * </pre></blockquote>
+ * @author Nerjal Nosk
+ */
+
 public abstract class JsonParser {
 
     /**
@@ -121,6 +154,6 @@ public abstract class JsonParser {
      */
     public static JsonElement parseString(String s) throws JsonParseException {
         StringParser parser = new StringParser(s);
-        return null;
+        return parser.parse();
     }
 }
