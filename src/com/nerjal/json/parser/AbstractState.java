@@ -55,9 +55,9 @@ public abstract class AbstractState implements ParserState {
     public final void openComment() {
         this.parser.forward(1);
         switch (this.parser.getActual()) {
-            case '/': this.parser.switchState(new CommentState(this.parser, this, false));
-            case '*': this.parser.switchState(new CommentState(this.parser, this, true));
-            default: this.error("unexpected character '/'");
+            case '/' -> this.parser.switchState(new CommentState(this.parser, this, false));
+            case '*' -> this.parser.switchState(new CommentState(this.parser, this, true));
+            default -> this.error("unexpected character '/'");
         }
     }
 
