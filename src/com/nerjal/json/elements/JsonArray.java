@@ -112,7 +112,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         @Override
         public boolean hasNext() {
             if (cursor == size()) return false;
-            for (int i = cursor+1; i<size(); i++) {
+            for (int i = cursor; i<size(); i++) {
                 if (!list.get(i).isComment()) return true;
             }
             return false;
