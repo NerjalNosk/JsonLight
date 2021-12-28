@@ -24,6 +24,21 @@ public class ObjectState extends AbstractState {
         this.error("empty array iteration");
     }
 
+    private void readKey() {
+        if (!this.lookForKey) this.error(String.format("unexpected character %c",this.parser.getActual()));
+        StringBuilder s = new StringBuilder(String.valueOf(this.parser.getActual()));
+        while (true) {
+            char c = this.parser.getNext();
+            if ((c > 64 && c < 91) || (c > 96 && c < 123) || c == 95) s.append(c);
+            else break;
+            this.parser.forward();
+        }
+        this.key = s.toString();
+        this.lookForKey = false;
+        this.requiresIterator = false;
+        this.lookForAttributive = true;
+    }
+
     @Override
     public void openObject() {
         if (trailingIterator) this.trailingError();
@@ -48,7 +63,6 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void openString() {
-        this.started = true;
         boolean singleQuote = this.parser.getActual() == '\'';
         if (trailingIterator) this.trailingError();
         else if (this.lookForKey || this.lookForValue)
@@ -68,8 +82,13 @@ public class ObjectState extends AbstractState {
         if (c == '\n') this.parser.increaseLine();
 
         switch (c) {
-            case ' ', '\t', '\n', '\r', '\f':
+            case ' ', '\n', '\t', '\r', '\f':
                 return;
+            default:
+                this.started = true;
+        }
+
+        switch (c) {
             case ',':
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
@@ -94,7 +113,8 @@ public class ObjectState extends AbstractState {
             case '.','0','1','2','3','4','5','6','7','8','9','+','-':
                 this.openNum();
             case 't', 'T', 'f', 'F':
-                this.readBool(c);
+                if (this.lookForKey) this.readKey();
+                else this.readBool(c);
             case '}':
                 this.closeObject();
             default:

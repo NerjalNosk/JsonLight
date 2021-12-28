@@ -75,6 +75,9 @@ public class StringParser {
 
     // readStr chars and indexes manipulation
 
+    public void forward() {
+        this.index++;
+    }
     public void forward(int i) {
         this.index += i;
     }

@@ -24,7 +24,7 @@ public class CommentState extends AbstractState {
 
         if (c == '\n' && !this.isBlock) this.closeComment();
         else if (c == '*' && this.isBlock && this.parser.getNext() == '/') {
-            this.parser.forward(1);
+            this.parser.forward();
             this.closeComment();
         }
         else this.val.append(c);
