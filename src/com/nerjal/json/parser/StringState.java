@@ -20,7 +20,7 @@ public class StringState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n') this.parser.error("unexpected newline");
+        if (c == '\n' &! this.precIsBackslash) this.parser.error("unexpected newline");
         if (c == '\\') {
             if (this.precIsBackslash) this.val.append('\\');
             this.precIsBackslash = !this.precIsBackslash;
@@ -30,9 +30,12 @@ public class StringState extends AbstractState {
             switch (c) {
                 case 'b': this.val.append('\b'); // backspace
                 case 'f': this.val.append('\f'); // from-feed
-                case 'n': this.val.append('\f'); // newline
+                case 'n': this.val.append('\n'); // newline
                 case 'r': this.val.append('\r'); // return
                 case 't': this.val.append('\t'); // tab
+                case '\n':
+                    this.val.append('\n'); // escaped newline
+                    this.parser.increaseLine();
                 default: this.val.append('\\').append(c);
             }
             this.precIsBackslash = false;
