@@ -81,10 +81,6 @@ public abstract class AbstractState implements ParserState {
         }
     }
 
-    public void readKeyAttribution() {
-
-    }
-
     @Override
     public final void error(String s) {
         this.parser.error(s);
