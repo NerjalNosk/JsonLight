@@ -36,10 +36,8 @@ public class ArrayState extends AbstractState {
 
     @Override
     public void closeArray() {
-        if (!(this.lookForValue || this.started)) {
-            this.olderState.addSubElement(this.getElem());
-            this.parser.switchState(this.olderState);
-        }
+        this.olderState.addSubElement(this.getElem());
+        this.parser.switchState(this.olderState);
     }
 
     @Override
