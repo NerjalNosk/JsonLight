@@ -96,6 +96,7 @@ public class NumberState extends AbstractState {
         switch (c) {
             case 'i', 'I':
                 if (this.parser.getPrecedent() == '-') negative = true;
+                else if (this.parser.getPrecedent() == '+') break;
                 else {
                     this.error(String.format("unexpected character %c", c));
                     return;
