@@ -36,54 +36,43 @@ public class NumberState extends AbstractState {
     }
 
     private String hexString(String s) {
-        List<String> str = List.of(s);
+        List<String> str = List.of(s.split("\\."));
         StringBuilder sb = new StringBuilder();
-        if (this.foundDecimal) str = List.of(str.get(0).split("\\."));
-        boolean b = false;
-        for (String sp : str) {
-            if (this.foundDecimal && b) sb.append('.');
-            int i = 0;
-            for (char c : sp.toCharArray()) {
-                i *= 16;
-                switch (c) {
-                    case 'a', 'A':
-                        i += 10;
-                    case 'b', 'B':
-                        i += 11;
-                    case 'c', 'C':
-                        i += 12;
-                    case 'd', 'D':
-                        i += 13;
-                    case 'e', 'E':
-                        i += 14;
-                    case 'f', 'F':
-                        i += 15;
-                    default:
-                        i += Integer.parseInt(String.valueOf(c));
-                }
+        int i = 0;
+        for (char c : str.get(0).toCharArray()) {
+            i *= 16;
+            i += Integer.parseInt(String.valueOf(c),16);
+        }
+        sb.append(String.format("%d",i));
+        if (this.foundDecimal) {
+            double d = 1;
+            double r = 0;
+            for (char c : str.get(1).toCharArray()) {
+                d /= 16;
+                r += d * Integer.parseInt(String.valueOf(c),16);
             }
-            sb.append(String.format("%d",i));
-            if (b) break;
-            b = true;
+            sb.append(String.format("%f",r).substring(1));
         }
         return sb.toString();
     }
 
     private String byteString(String s) {
-        List<String> str = List.of(s);
+        List<String> str = List.of(s.split("\\."));
         StringBuilder sb = new StringBuilder();
-        if (this.foundDecimal) str = List.of(str.get(0).split("\\."));
-        boolean b = false;
-        for (String sp : str) {
-            if (this.foundDecimal && b) sb.append('.');
-            int i = 0;
-            for (char c : sp.toCharArray()) {
-                i *= 2;
-                i += Integer.parseInt(String.valueOf(c));
+        int i = 0;
+        for (char c : str.get(0).toCharArray()) {
+            i *= 2;
+            i += Integer.parseInt(String.valueOf(c),2);
+        }
+        sb.append(String.format("%d",i));
+        if (this.foundDecimal) {
+            double d = 1;
+            double r = 0;
+            for (char c : str.get(1).toCharArray()) {
+                d /= 2;
+                r += d * Integer.parseInt(String.valueOf(c), 2);
             }
-            sb.append(String.format("%d",i));
-            if (b) break;
-            b = true;
+            sb.append(String.format("%f",r).substring(1));
         }
         return sb.toString();
     }
