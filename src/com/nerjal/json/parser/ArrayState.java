@@ -112,5 +112,7 @@ public class ArrayState extends AbstractState {
     @Override
     public void addSubElement(JsonElement element) {
         this.array.add(element);
+        this.lookForValue = false;
+        this.requiresIterator = true;
     }
 }

@@ -78,9 +78,11 @@ public class StringParser {
 
     public void forward() {
         this.index++;
+        this.lineIndex++;
     }
     public void forward(int i) {
         this.index += i;
+        this.lineIndex += i;
     }
     public void increaseLine() {
         this.line++;
