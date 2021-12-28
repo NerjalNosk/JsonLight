@@ -174,11 +174,6 @@ public class NumberState extends AbstractState {
     @Override
     public JsonNumber getElem() {
         String s = String.valueOf(this.parser.getPrecedents(this.charCount))+this.parser.getActual();
-        if (this.foundDecimal && s.charAt(0) == '.') {
-            this.error("unexpected character '.'");
-            this.parser.forward(-(s.length()-s.lastIndexOf('.')));
-            return null;
-        } else if (s.charAt(0) == '.') this.foundDecimal = true;
         Number n;
         if (this.isByte) s = this.byteString(s);
         if (this.isHex) s = this.hexString(s);

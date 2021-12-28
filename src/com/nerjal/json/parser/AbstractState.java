@@ -8,6 +8,7 @@ public abstract class AbstractState implements ParserState {
     protected ParserState olderState;
     public AbstractState(StringParser stringParser, ParserState olderState) {
         this.parser = stringParser;
+        this.olderState = olderState;
     }
 
     @Override
