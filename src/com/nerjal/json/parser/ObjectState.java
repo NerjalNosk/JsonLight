@@ -79,6 +79,8 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void read(char c) {
+        System.out.printf("Object reading %c%n", c);
+
         if (c == '\n') this.parser.increaseLine();
 
         switch (c) {

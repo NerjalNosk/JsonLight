@@ -51,6 +51,7 @@ public class StringParser {
         while (!this.stop) {
             if (this.isErrored) throw this.buildError();
             System.out.printf("reading char %c at index %d%n", this.getActual(), this.index);
+            System.out.printf("reading with state %s%n",this.state.getClass().getName());
             this.state.read(this.getActual());
             this.index++;
             this.lineIndex++;
@@ -70,9 +71,7 @@ public class StringParser {
     }
 
     public void switchState(ParserState parserState) {
-        System.out.println(parserState.getClass().getName());
-        boolean out = !AbstractState.class.isAssignableFrom(parserState.getClass());
-        if (out) this.state = parserState;
+        this.state = parserState;
     }
 
     // readStr chars and indexes manipulation
