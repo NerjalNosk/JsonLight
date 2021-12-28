@@ -50,6 +50,7 @@ public class StringParser {
     public void read() throws JsonParseException {
         while (!this.stop) {
             if (this.isErrored) throw this.buildError();
+            System.out.printf("reading char %c at index %d%n", this.getActual(), this.index);
             this.state.read(this.getActual());
             this.index++;
             this.lineIndex++;

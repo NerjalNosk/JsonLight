@@ -39,10 +39,13 @@ public class EmptyState extends AbstractState {
                 return;
             case '{':
                 this.openObject();
+                break;
             case '[':
                 this.openArray();
+                break;
             case '/':
                 this.openComment();
+                break;
             default:
                 this.error(String.format("unexpected character '%c'", c));
         }
