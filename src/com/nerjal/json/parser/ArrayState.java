@@ -4,7 +4,6 @@ import com.nerjal.json.elements.JsonArray;
 import com.nerjal.json.elements.JsonElement;
 
 public class ArrayState extends AbstractState {
-    private boolean started = false;
     private boolean lookForValue = true;
     private boolean requiresIterator = false;
     private boolean trailingIterator = false;
@@ -62,11 +61,6 @@ public class ArrayState extends AbstractState {
         switch (c) {
             case ' ', '\n', '\t', '\r', '\f':
                 return;
-            default:
-                this.started = true;
-        }
-
-        switch (c) {
             case ',':
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
