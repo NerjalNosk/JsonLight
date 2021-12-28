@@ -10,6 +10,8 @@ public class ObjectState extends AbstractState {
     private boolean lookForAttributive = false;
     private boolean lookForValue = false;
     private boolean requiresIterator = false;
+    private boolean trailingIterator = false;
+    private int trailingIndex = 0;
     private String key = null;
     private final JsonObject object = new JsonObject();
 
@@ -17,9 +19,15 @@ public class ObjectState extends AbstractState {
         super(stringParser, olderState);
     }
 
+    private void trailingError() {
+        this.parser.forward(this.parser.getIndex()-this.trailingIndex);
+        this.error("empty array iteration");
+    }
+
     @Override
     public void openObject() {
-        if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
         else if (this.lookForKey) this.error("unexpected object key type");
         else this.error("unexpected '{' character");
     }
@@ -33,7 +41,8 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void openArray() {
-        if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
         else this.error("unexpected object key type");
     }
 
@@ -41,14 +50,16 @@ public class ObjectState extends AbstractState {
     public void openString() {
         this.started = true;
         boolean singleQuote = this.parser.getActual() == '\'';
-        if (this.lookForKey || this.lookForValue)
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForKey || this.lookForValue)
             this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.error("unexpected string initializer '\"'");
     }
 
     @Override
     public void openNum() {
-        if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
         else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
     }
 
@@ -63,6 +74,9 @@ public class ObjectState extends AbstractState {
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
                     this.lookForKey = true;
+                } else if (this.lookForKey) {
+                    this.trailingIterator = true;
+                    this.trailingIndex = this.parser.getIndex();
                 } else this.error("unexpected iterator ','");
             case ':':
                 if (this.lookForAttributive) {

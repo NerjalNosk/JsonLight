@@ -78,6 +78,15 @@ public class StringParser {
     public void forward(int i) {
         this.index += i;
     }
+    public void increaseLine() {
+        this.line++;
+        this.lineIndex = 0;
+    }
+    public int getIndex() {
+        return this.index;
+    }
+
+
     public char getNext() {
         return this.readStr.charAt(this.index+1);
     }
@@ -92,10 +101,6 @@ public class StringParser {
     }
     public char[] getPrecedents(int i) {
         return this.readStr.substring(this.index-i,this.index).toCharArray();
-    }
-    public void increaseLine() {
-        this.line++;
-        this.lineIndex = 0;
     }
 
     // errors

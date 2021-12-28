@@ -7,21 +7,30 @@ public class ArrayState extends AbstractState {
     private boolean started = false;
     private boolean lookForValue = true;
     private boolean requiresIterator = false;
+    private boolean trailingIterator = false;
+    private int trailingIndex = 0;
     private final JsonArray array = new JsonArray();
 
     public ArrayState(StringParser stringParser, ParserState olderState) {
         super(stringParser, olderState);
     }
 
+    private void trailingError() {
+        this.parser.forward(this.parser.getIndex()-this.trailingIndex);
+        this.error("empty array iteration");
+    }
+
     @Override
     public void openObject() {
-        if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser, this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser, this));
         else this.error("unexpected '{' character");
     }
 
     @Override
     public void openArray() {
-        if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
         else this.error("unexpected '[' character");
     }
 
@@ -36,13 +45,15 @@ public class ArrayState extends AbstractState {
     @Override
     public void openString() {
         boolean singleQuote = this.parser.getActual() == '\'';
-        if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this, singleQuote));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.error("unexpected '\"' character");
     }
 
     @Override
     public void openNum() {
-        if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
         else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
     }
 
@@ -62,6 +73,9 @@ public class ArrayState extends AbstractState {
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
                     this.lookForValue = true;
+                } else if (this.lookForValue) {
+                    this.trailingIterator = true;
+                    this.trailingIndex = this.parser.getIndex();
                 } else this.error("unexpected iterator ','");
             case '"', '\'':
                 this.openString();
