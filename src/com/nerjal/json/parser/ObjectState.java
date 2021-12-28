@@ -5,7 +5,6 @@ import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.elements.JsonString;
 
 public class ObjectState extends AbstractState {
-    private boolean started = false;
     private boolean lookForKey = true;
     private boolean lookForAttributive = false;
     private boolean lookForValue = false;
@@ -50,8 +49,8 @@ public class ObjectState extends AbstractState {
     @Override
     public void closeObject() {
         this.olderState.addSubElement(this.getElem());
-        if (this.requiresIterator || !this.started) this.parser.switchState(this.olderState);
-        else this.error("expected object node");
+        if (this.lookForAttributive || this.lookForValue) this.error("incomplete object node");
+        else this.parser.switchState(this.olderState);
     }
 
     @Override
@@ -84,11 +83,6 @@ public class ObjectState extends AbstractState {
         switch (c) {
             case ' ', '\n', '\t', '\r', '\f':
                 return;
-            default:
-                this.started = true;
-        }
-
-        switch (c) {
             case ',':
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
