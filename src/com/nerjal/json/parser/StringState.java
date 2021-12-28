@@ -16,6 +16,7 @@ public class StringState extends AbstractState {
     @Override
     public void closeString() {
         this.parser.switchState(this.olderState);
+        this.olderState.addSubElement(this.getElem());
     }
 
     @Override
