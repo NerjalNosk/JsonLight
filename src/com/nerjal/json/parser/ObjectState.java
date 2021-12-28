@@ -97,28 +97,42 @@ public class ObjectState extends AbstractState {
                     this.trailingIterator = true;
                     this.trailingIndex = this.parser.getIndex();
                 } else this.error("unexpected iterator ','");
+                break;
             case ':':
                 if (this.lookForAttributive) {
                     this.lookForAttributive = false;
                     this.lookForValue = true;
                 } else this.error("unexpected key-value attributive ':'");
+                break;
             case '"', '\'':
                 this.openString();
+                break;
             case '{':
                 this.openObject();
+                break;
             case '[':
                 this.openArray();
+                break;
             case '/':
                 this.openComment();
+                break;
             case '.','0','1','2','3','4','5','6','7','8','9','+','-':
                 this.openNum();
+                break;
+            case 'n', 'N', 'i', 'I':
+                if (this.lookForKey) this.readKey();
+                else this.openNum();
+                break;
             case 't', 'T', 'f', 'F':
                 if (this.lookForKey) this.readKey();
                 else this.readBool(c);
+                break;
             case '}':
                 this.closeObject();
+                break;
             default:
-                this.error(String.format("unexpected character %c",c));
+                if (this.lookForKey) this.readKey();
+                else this.error(String.format("unexpected character %c",c));
         }
     }
 

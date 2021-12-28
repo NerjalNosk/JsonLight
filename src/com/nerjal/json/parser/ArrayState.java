@@ -77,20 +77,28 @@ public class ArrayState extends AbstractState {
                     this.trailingIterator = true;
                     this.trailingIndex = this.parser.getIndex();
                 } else this.error("unexpected iterator ','");
+                break;
             case '"', '\'':
                 this.openString();
+                break;
             case '{':
                 this.openObject();
+                break;
             case '[':
                 this.openArray();
+                break;
             case '/':
                 this.openComment();
-            case '.','0','1','2','3','4','5','6','7','8','9','+','-':
+                break;
+            case '.','0','1','2','3','4','5','6','7','8','9','+','-', 'n', 'N', 'i', 'I':
                 this.openNum();
+                break;
             case 't', 'T', 'f', 'F':
                 this.readBool(c);
+                break;
             case ']':
                 this.closeArray();
+                break;
             default:
                 this.error(String.format("unexpected character '%c'", c));
         }

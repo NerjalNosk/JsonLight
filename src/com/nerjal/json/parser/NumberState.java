@@ -77,6 +77,50 @@ public class NumberState extends AbstractState {
         return sb.toString();
     }
 
+    private void readNaN() {
+        if (this.charCount == 0 && (this.parser.getPrecedent() == 'n' || this.parser.getPrecedent() == 'N') &&
+                (this.parser.getNext() == 'n' || this.parser.getNext() == 'N')) {
+            this.parser.forward();
+            this.olderState.addSubElement(new JsonNumber(Float.NaN));
+            this.parser.switchState(this.olderState);
+        } else this.error(String.format("unexpected character %c", this.parser.getActual()));
+    }
+
+    private void readInfinity() {
+        if (this.charCount != 0) {
+            this.parser.error(String.format("unexpected character %c", this.parser.getActual()));
+            return;
+        }
+        boolean negative = false;
+        char c = this.parser.getActual();
+        switch (c) {
+            case 'i', 'I':
+                if (this.parser.getPrecedent() == '-') negative = true;
+                else {
+                    this.error(String.format("unexpected character %c", c));
+                    return;
+                }
+                break;
+            case 'n', 'N':
+                if (this.parser.getPrecedent() != 'i' && this.parser.getPrecedent() != 'I') {
+                    this.error(String.format("unexpected character %c", c));
+                }
+                break;
+            default:
+                this.error(String.format("unexpected character %c", c));
+                return;
+        }
+        if (negative &! String.valueOf(this.parser.getNext(7)).equalsIgnoreCase("nfinity")) {
+            this.error(String.format("unexpected character %c", this.parser.getActual()));
+        } else if (!String.valueOf(this.parser.getNext(6)).equalsIgnoreCase("finity")) {
+            this.error(String.format("unexpected character %c", this.parser.getActual()));
+        } else {
+            this.parser.forward(negative ? 7 : 6);
+            this.olderState.addSubElement(new JsonNumber(negative ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY));
+            this.parser.switchState(this.olderState);
+        }
+    }
+
     @Override
     public void closeNum() {
         this.parser.forward(-1);
@@ -91,19 +135,34 @@ public class NumberState extends AbstractState {
                 break;
             case '2','3','4','5','6','7','8','9':
                 if (this.isByte) this.error(String.format("unexpected character %c",c));
+                break;
             case 'e','E':
                 if (this.isHex) break;
                 else if (this.foundE) this.error("scientific notation with double E");
                 else this.foundE = true;
+                break;
             case '.':
                 if (this.foundDecimal) this.error("unexpected decimal character '.'");
                 else this.foundDecimal = true;
+                break;
             case 'x', 'X':
                 this.foundX();
+                break;
             case 'b', 'B':
                 this.foundB();
-            case 'a', 'A', 'c', 'C', 'd', 'D', 'f', 'F':
+                break;
+            case 'a', 'A':
+                if (this.isHex) break;
+                else if (this.charCount == 0) this.readNaN();
+                else this.error(String.format("unexpected character %c", c));
+                break;
+            case 'c', 'C', 'd', 'D', 'f', 'F':
                 if (!this.isHex) this.error(String.format("unexpected character %c",c));
+                break;
+            case 'i','I','n','N':
+                if (this.charCount < 2) this.readInfinity();
+                else this.error(String.format("unexpected character %c", c));
+                break;
             default:
                 this.closeNum();
                 return;
@@ -114,6 +173,11 @@ public class NumberState extends AbstractState {
     @Override
     public JsonNumber getElem() {
         String s = String.valueOf(this.parser.getPrecedents(this.charCount))+this.parser.getActual();
+        if (this.foundDecimal && s.charAt(0) == '.') {
+            this.error("unexpected character '.'");
+            this.parser.forward(-(s.length()-s.lastIndexOf('.')));
+            return null;
+        } else if (s.charAt(0) == '.') this.foundDecimal = true;
         Number n;
         if (this.isByte) s = this.byteString(s);
         if (this.isHex) s = this.hexString(s);
