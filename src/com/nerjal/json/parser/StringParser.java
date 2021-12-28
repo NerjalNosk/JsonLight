@@ -50,7 +50,7 @@ public class StringParser {
     public void read() throws JsonParseException {
         while (!this.stop) {
             if (this.isErrored) throw this.buildError();
-            this.state.read(this.getNext());
+            this.state.read(this.getActual());
             this.index++;
             this.lineIndex++;
             if (this.index >= this.readStr.length()) this.stop = true;
@@ -69,6 +69,7 @@ public class StringParser {
     }
 
     public void switchState(ParserState parserState) {
+        System.out.println(parserState.getClass().getName());
         boolean out = !AbstractState.class.isAssignableFrom(parserState.getClass());
         if (out) this.state = parserState;
     }
