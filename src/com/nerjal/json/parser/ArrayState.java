@@ -71,7 +71,7 @@ public class ArrayState extends AbstractState {
                 this.openArray();
             case '/':
                 this.openComment();
-            case '0','1','2','3','4','5','6','7','8','9':
+            case '.','0','1','2','3','4','5','6','7','8','9':
                 this.openNum();
             case 't', 'T', 'f', 'F':
                 this.readBool(c);

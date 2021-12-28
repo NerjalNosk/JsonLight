@@ -87,8 +87,11 @@ public class StringParser {
     public char getActual() {
         return this.readStr.charAt(this.index);
     }
-    public char getOlder(int i) {
-        return this.index - i < 0 ? null : this.readStr.charAt(this.index-i);
+    public char getPrecedent() {
+        return this.index < 1 ? null : this.readStr.charAt(this.index-1);
+    }
+    public char[] getPrecedents(int i) {
+        return this.readStr.substring(this.index-i,this.index).toCharArray();
     }
     public void increaseLine() {
         this.line++;
