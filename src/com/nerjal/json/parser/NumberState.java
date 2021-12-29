@@ -20,12 +20,11 @@ public class NumberState extends AbstractState {
             this.error(String.format("unexpected character %c", this.parser.getActual()));
         else {
             this.isHex = true;
-            this.charCount++;
         }
     }
 
     private String hexString(String s) {
-        List<String> str = List.of(s.split("\\."));
+        List<String> str = List.of(s.substring(2).split("\\."));
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (char c : str.get(0).toCharArray()) {
