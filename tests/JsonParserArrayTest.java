@@ -1,28 +1,18 @@
 import com.nerjal.json.JsonError;
 import com.nerjal.json.JsonParser;
 import com.nerjal.json.elements.JsonElement;
-import com.nerjal.json.parser.StringParser;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-public class JsonParserTest {
+public class JsonParserArrayTest {
     @Test
     public void emptyArray() throws JsonError.JsonParseException, JsonError.JsonElementTypeException {
         JsonElement jsonElement = JsonParser.parseString("[]");
         assertTrue(jsonElement.isJsonArray());
         assertEquals(0, jsonElement.getAsJsonArray().size());
-    }
-
-    @Test
-    public void emptyObject() throws JsonError.JsonParseException, JsonError.JsonElementTypeException {
-        JsonElement jsonElement = JsonParser.parseString("{}");
-        assertTrue(jsonElement.isJsonObject());
-        assertTrue(jsonElement.getAsJsonObject().isEmpty());
     }
 
     @Test
