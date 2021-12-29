@@ -5,6 +5,7 @@ import com.nerjal.json.elements.JsonNumber;
 import com.nerjal.json.elements.JsonString;
 import com.nerjal.json.mapper.JsonCastingError;
 import com.nerjal.json.mapper.JsonMapper;
+import com.nerjal.json.mapper.annotations.JsonIgnore;
 import com.nerjal.json.mapper.annotations.JsonNode;
 import com.nerjal.json.mapper.annotations.JsonRequired;
 import org.junit.Test;
@@ -193,14 +194,19 @@ public class JsonMapperTest {
     public static class TestClass3 {
         @JsonNode("numbers")
         HashMap<String, Double> map;
+
         @JsonNode(value = "some float", required = true)
         float number;
+
+        @JsonIgnore
+        int constant = 7;
     }
     @Test
     public void class3() throws Exception {
-        JsonElement element = JsonParser.parseString("{'some float': 1e-4, numbers: {a: 1.9, b: +7}}");
+        JsonElement element = JsonParser.parseString("{'some float': 1e-4, numbers: {a: 1.9, b: +7}, constant: -5}");
         var res = JsonMapper.map(element, TestClass3.class);
         assertEquals(1e-4, res.number, .1);
+        assertEquals(7, res.constant);
         assertTrue(res.map.containsKey("a"));
         assertEquals(1.9, res.map.get("a"), .1);
         assertTrue(res.map.containsKey("b"));
