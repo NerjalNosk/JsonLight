@@ -81,6 +81,7 @@ public class EmptyState extends AbstractState {
     @Override
     public void addSubElement(JsonElement element) {
         if (element.isComment()) this.comments.add((JsonComment) element);
-        else if (element.isJsonObject() || element.isJsonArray()) this.element = element;
+        else if (this.element == null) this.element = element;
+        else this.error("multiple root elements found in Json");
     }
 }
