@@ -126,6 +126,9 @@ public class NumberState extends AbstractState {
                 if (this.charCount < 2) this.readInfinity();
                 else this.error(String.format("unexpected character %c", c));
                 break;
+            case '-', '+':
+                if (this.charCount != 0 && (this.parser.getPrecedent() == 'e' || this.parser.getPrecedent() == 'E'))
+                    break;
             default:
                 this.closeNum();
                 return;
