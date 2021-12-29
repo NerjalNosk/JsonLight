@@ -43,8 +43,14 @@ public abstract class JsonElement {
     public int getAsInt() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
     }
+    public long getAsLong() throws JsonError.JsonElementTypeException {
+        throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
+    }
     public float getAsFloat() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not a Float element",this.getClass().getName()));
+    }
+    public double getAsDouble() throws JsonError.JsonElementTypeException {
+        throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
     }
     public boolean getAsBoolean() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not a Boolean element",this.getClass().getName()));
