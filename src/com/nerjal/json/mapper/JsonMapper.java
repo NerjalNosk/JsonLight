@@ -3,6 +3,7 @@ package com.nerjal.json.mapper;
 import com.nerjal.json.JsonError;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
+import com.nerjal.json.mapper.annotations.JsonIgnore;
 import com.nerjal.json.mapper.annotations.JsonNode;
 import com.nerjal.json.mapper.annotations.JsonRequired;
 import com.nerjal.json.mapper.annotations.JsonSkipSuperclass;
@@ -130,6 +131,8 @@ public class JsonMapper {
 
         T instance = target.getDeclaredConstructor().newInstance();
         for (Field field : getAllFields(new LinkedList<>(), target)) {
+            if (field.isAnnotationPresent(JsonIgnore.class)) continue;
+
             field.setAccessible(true);
             boolean required = field.isAnnotationPresent(JsonRequired.class);
             String name = field.getName();
