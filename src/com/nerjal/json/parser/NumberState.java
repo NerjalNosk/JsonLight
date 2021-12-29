@@ -149,15 +149,12 @@ public class NumberState extends AbstractState {
             case 'x', 'X':
                 this.foundX();
                 break;
-            case 'b', 'B':
-                this.foundB();
-                break;
             case 'a', 'A':
                 if (this.isHex) break;
                 else if (this.charCount == 0) this.readNaN();
                 else this.error(String.format("unexpected character %c", c));
                 break;
-            case 'c', 'C', 'd', 'D', 'f', 'F':
+            case 'b', 'B', 'c', 'C', 'd', 'D', 'f', 'F':
                 if (!this.isHex) this.error(String.format("unexpected character %c",c));
                 break;
             case 'i','I','n','N':
