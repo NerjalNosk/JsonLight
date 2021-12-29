@@ -2,7 +2,34 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError;
 
+import java.util.Arrays;
+
 public abstract class JsonElement {
+    private JsonComment[] comments = new JsonComment[]{};
+
+    public final void addRootComment(JsonComment comment) {
+        int size = this.comments.length;
+        this.comments = Arrays.copyOf(this.comments,this.comments.length+1);
+        this.comments[size] = comment;
+    }
+
+    public final void addRootComments(JsonComment[] comments) {
+        int size = this.comments.length;
+        this.comments = Arrays.copyOf(this.comments, size+comments.length);
+        for (JsonComment comment : comments) {
+            this.comments[size] = comment;
+            size++;
+        }
+    }
+
+    public final JsonComment[] getRootComments() {
+        return this.comments;
+    }
+
+    public void clearRootComment() {
+        this.comments = new JsonComment[]{};
+    }
+
     public boolean isJsonObject() {
         return false;
     }
