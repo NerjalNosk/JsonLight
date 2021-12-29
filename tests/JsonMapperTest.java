@@ -198,9 +198,9 @@ public class JsonMapperTest {
     }
     @Test
     public void class3() throws Exception {
-        JsonElement element = JsonParser.parseString("{'some float': 1e4, numbers: {a: 1.9, b: +7}}");
+        JsonElement element = JsonParser.parseString("{'some float': 1e-4, numbers: {a: 1.9, b: +7}}");
         var res = JsonMapper.map(element, TestClass3.class);
-        assertEquals(1e4, res.number, 0);
+        assertEquals(1e-4, res.number, .1);
         assertTrue(res.map.containsKey("a"));
         assertEquals(1.9, res.map.get("a"), .1);
         assertTrue(res.map.containsKey("b"));

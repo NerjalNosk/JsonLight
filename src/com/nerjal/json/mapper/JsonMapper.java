@@ -10,7 +10,16 @@ import com.nerjal.json.mapper.annotations.JsonSkipSuperclass;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * Class for mapping a {@link JsonElement} onto any class
+ * @author CodedSakura
+ */
 public class JsonMapper {
+    /**
+     * Checks if a {@link Class} is a primitive (yes I know it's not full)
+     * @param clazz - input {@link Class}
+     * @return whether clazz is a primitive or not
+     */
     private static boolean isPrimitive(Class<?> clazz) {
         return clazz == int.class ||
                 clazz == long.class ||
@@ -19,6 +28,12 @@ public class JsonMapper {
                 clazz == boolean.class;
     }
 
+    /**
+     * Converts an {@link ArrayList} to an array
+     * @param arrayList - input {@link ArrayList}
+     * @param target - target type array, i.e. int[] for ArrayList<Integer>
+     * @return converted arrayList
+     */
     private static <E> E arrayListToArray(ArrayList<?> arrayList, Class<E> target) {
         if (!target.isArray()) return null;
         Class<?> subType = target.getComponentType();
@@ -30,9 +45,9 @@ public class JsonMapper {
     }
 
     /**
-     * Gets all class fields including superclass fields unless @JsonSkipSuperclass is present
-     * @param fields list of fields
-     * @param type class type
+     * Gets all class fields including superclass fields unless {@link JsonSkipSuperclass} is present
+     * @param fields - list of fields
+     * @param type - class type
      * @return expanded list of fields
      */
     private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
@@ -45,10 +60,22 @@ public class JsonMapper {
         return fields;
     }
 
+    /**
+     * Main method to map a JsonElement onto a class
+     * @param element - input JsonElement
+     * @param target - target Class
+     * @return an instance of target class with fields set appropriately to the input element
+     * @throws InvocationTargetException if fails to invoke target
+     * @throws InstantiationException if fails to instance target
+     * @throws NoSuchMethodException if target has no constructor
+     * @throws IllegalAccessException if can't access a field or the constructor
+     * @throws JsonError.JsonElementTypeException if can't get element's type
+     * @throws JsonCastingError if can't map element onto target
+     */
     @SuppressWarnings("unchecked")
     public static <T> T map(JsonElement element, Class<T> target)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException,
-            JsonError.JsonElementTypeException, JsonCastingError, JsonError.ChildNotFoundException {
+            JsonError.JsonElementTypeException, JsonError.ChildNotFoundException, JsonCastingError {
 
         if (target == Integer.class || target == int.class) {
             if (!element.isNumber())

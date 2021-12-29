@@ -22,13 +22,6 @@ public class JsonParserPrimitiveTest {
     }
 
     @Test
-    public void binaryInteger() throws JsonError.JsonParseException, JsonError.JsonElementTypeException {
-        JsonElement jsonElement = JsonParser.parseString("0b1010");
-        assertTrue(jsonElement.isNumber());
-        assertEquals(0b1010, jsonElement.getAsInt());
-    }
-
-    @Test
     public void invalidInteger() {
         assertThrows(JsonError.JsonParseException.class, () -> {
             JsonParser.parseString("1a2");
