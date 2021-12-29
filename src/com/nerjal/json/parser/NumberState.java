@@ -178,8 +178,7 @@ public class NumberState extends AbstractState {
         if (this.isByte) s = this.byteString(s);
         if (this.isHex) s = this.hexString(s);
         if (this.foundE) {
-            if (this.foundDecimal) n = Double.parseDouble(s);
-            else n = Long.parseLong(s);
+            n = Double.parseDouble(s);
         } else if (this.foundDecimal) n = Float.parseFloat(s);
         else n = Integer.parseInt(s);
         return new JsonNumber(n);
