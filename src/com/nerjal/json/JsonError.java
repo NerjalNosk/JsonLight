@@ -6,13 +6,18 @@ public abstract class JsonError {
             super(s);
         }
     }
-    public static class JsonObjectChildNotFoundException extends Exception {
-        public JsonObjectChildNotFoundException(String s) {
+    public static class ChildNotFoundException extends Exception {
+        public ChildNotFoundException(String s) {
             super(s);
         }
     }
     public static class JsonParseException extends Exception {
         public JsonParseException(String s) {
+            super(s);
+        }
+    }
+    public static class IllegalQuoteValue extends Exception {
+        public IllegalQuoteValue(String s) {
             super(s);
         }
     }

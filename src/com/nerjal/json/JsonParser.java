@@ -22,7 +22,7 @@ import static com.nerjal.json.JsonError.*;
  * However, all JsonElement can be parsed to a string, that
  * being used for recursive parsing of container JsonElements
  * <p><br>
- * Use {@link JsonParser#parseJson(JsonElement)} and derivatives
+ * Use {@link JsonParser#stringify(JsonElement)} and derivatives
  * in order to parse a JSON structure to a String object.
  * <blockquote><pre>
  * using
@@ -54,8 +54,8 @@ public abstract class JsonParser {
      * @return String: the string version of the JsonElement
      * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String parseJson(JsonElement json) throws JsonElementTypeException {
-        return parseJson(json, 0, 2);
+    public static String stringify(JsonElement json) throws JsonElementTypeException {
+        return stringify(json, 0, 2);
     }
 
     /**
@@ -66,8 +66,8 @@ public abstract class JsonParser {
      * @return String: the string version of the JsonElement
      * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String parseJson(JsonElement json, int space) throws JsonElementTypeException {
-        return parseJson(json, space, 2);
+    public static String stringify(JsonElement json, int space) throws JsonElementTypeException {
+        return stringify(json, space, 2);
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class JsonParser {
      * @return String: the string version of the JsonElement
      * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String parseJson(JsonElement json, int space, int tabulation) throws JsonElementTypeException {
+    public static String stringify(JsonElement json, int space, int tabulation) throws JsonElementTypeException {
         if (json.isPrimitive()) {
             return json.isString() ? String.format("\"%s\"",json.getAsString()) : json.toString();
         }
@@ -104,7 +104,7 @@ public abstract class JsonParser {
             AtomicInteger index = new AtomicInteger();
             array.forAll(elem -> {
                 try {
-                    out.append("  ".repeat(spacing)).append(parseJson(elem, spacing, tabulation));
+                    out.append("  ".repeat(spacing)).append(stringify(elem, spacing, tabulation));
                     if (elem.isComment()) eraseLastComma.set(false);
                     else {
                         if (index.get() + 1 < array.size()) {
@@ -133,10 +133,10 @@ public abstract class JsonParser {
                 out.append(tab.repeat(spacing));
                 if (!elem.isComment()) {
                     out.append(String.format("\"%s\"", entry.getKey())).append(" : ");
-                    out.append(parseJson(elem, spacing, tabulation)).append(",\n");
+                    out.append(stringify(elem, spacing, tabulation)).append(",\n");
                     i = out.length()-2;
                 } else {
-                    out.append(parseJson(elem, spacing, tabulation));
+                    out.append(stringify(elem, spacing, tabulation));
                 }
             }
             if (out.charAt(i) == ',') out.deleteCharAt(i);
