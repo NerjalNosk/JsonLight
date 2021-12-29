@@ -37,8 +37,16 @@ public class JsonNumber extends JsonElement {
         return this.value.intValue();
     }
     @Override
+    public long getAsLong() {
+        return this.value.longValue();
+    }
+    @Override
     public float getAsFloat() {
         return this.value.floatValue();
+    }
+    @Override
+    public double getAsDouble() {
+        return this.value.doubleValue();
     }
 
     @Override

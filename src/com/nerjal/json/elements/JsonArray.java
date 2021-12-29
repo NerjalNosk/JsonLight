@@ -125,6 +125,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
                 JsonElement element = get(cursor);
                 lastRet = cursor;
                 cursor++;
+                if (element.isComment()) return next();
                 return element;
             } catch (IndexOutOfBoundsException e) {
                 checkForComodification();

@@ -31,6 +31,17 @@ public class EmptyState extends AbstractState {
     }
 
     @Override
+    public void openString() {
+        boolean singleQuote = this.parser.getActual() == '\'';
+        this.parser.switchState(new StringState(this.parser, this, singleQuote));
+    }
+
+    @Override
+    public void openNum() {
+        this.parser.switchState(new NumberState(this.parser, this));
+    }
+
+    @Override
     public void read(char c) {
         if (c == '\n') this.parser.increaseLine();
 
@@ -43,6 +54,15 @@ public class EmptyState extends AbstractState {
             case '[':
                 this.openArray();
                 break;
+            case '"', '\'':
+                this.openString();
+                break;
+            case '.','0','1','2','3','4','5','6','7','8','9','+','-', 'n', 'N', 'i', 'I':
+                this.openNum();
+                break;
+            case 't', 'T', 'f', 'F':
+                this.readBool(c);
+                break;
             case '/':
                 this.openComment();
                 break;
@@ -54,15 +74,8 @@ public class EmptyState extends AbstractState {
     @Override
     public JsonElement getElem() {
         if (this.element == null) return null;
-        try {
-            JsonObject object = this.element.getAsJsonObject();
-            this.comments.forEach(c -> object.add(null, c));
-            return object;
-        } catch (JsonElementTypeException e) {
-            JsonArray array = (JsonArray) this.element;
-            this.comments.forEach(array::add);
-            return array;
-        }
+        this.comments.forEach(this.element::addRootComment);
+        return this.element;
     }
 
     @Override
