@@ -6,6 +6,7 @@ import com.nerjal.json.elements.JsonElement;
 public abstract class AbstractState implements ParserState {
     protected StringParser parser;
     protected ParserState olderState;
+
     public AbstractState(StringParser stringParser, ParserState olderState) {
         this.parser = stringParser;
         this.olderState = olderState;
@@ -74,6 +75,7 @@ public abstract class AbstractState implements ParserState {
                     this.parser.forward(3);
                     this.addSubElement(new JsonBoolean(true));
                 } else this.error(String.format("unexpected character '%c'",c));
+                break;
             case 'f', 'F':
                 if (String.valueOf(this.parser.getNext(4)).equalsIgnoreCase("alse")) {
                     this.parser.forward(4);
