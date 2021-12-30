@@ -3,11 +3,12 @@ import com.nerjal.json.elements.JsonBoolean;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonNumber;
 import com.nerjal.json.elements.JsonString;
-import com.nerjal.json.mapper.JsonCastingError;
+import com.nerjal.json.mapper.errors.JsonCastingError;
 import com.nerjal.json.mapper.JsonMapper;
 import com.nerjal.json.mapper.annotations.JsonIgnore;
 import com.nerjal.json.mapper.annotations.JsonNode;
 import com.nerjal.json.mapper.annotations.JsonRequired;
+import com.nerjal.json.mapper.errors.JsonMapperFieldRequiredError;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -178,7 +179,7 @@ public class JsonMapperTest {
     }
     @Test
     public void class2MissingReq() {
-        assertThrows(JsonCastingError.class, () -> {
+        assertThrows(JsonMapperFieldRequiredError.class, () -> {
             JsonElement element = JsonParser.parseString("{list: []}");
             JsonMapper.map(element, TestClass2.class);
         });
@@ -214,7 +215,7 @@ public class JsonMapperTest {
     }
     @Test
     public void class3MissingReq() {
-        assertThrows(JsonCastingError.class, () -> {
+        assertThrows(JsonMapperFieldRequiredError.class, () -> {
             JsonElement element = JsonParser.parseString("{}");
             JsonMapper.map(element, TestClass3.class);
         });
