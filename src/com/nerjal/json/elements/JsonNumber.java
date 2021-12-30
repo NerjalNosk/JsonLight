@@ -10,7 +10,7 @@ public class JsonNumber extends JsonElement {
         this(0);
     }
     public JsonNumber(Number n) {
-        this(0, new NumberParseOptions());
+        this(n, new NumberParseOptions());
     }
     public JsonNumber (Number n, NumberParseOptions options) {
         this.value = n;
