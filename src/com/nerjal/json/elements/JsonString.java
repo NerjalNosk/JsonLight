@@ -1,7 +1,10 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.parser.options.StringParseOptions;
+
 public class JsonString extends JsonElement {
     private String value;
+    private StringParseOptions parseOptions;
     
     public JsonString(String value) {
         this.value = value;
@@ -29,6 +32,7 @@ public class JsonString extends JsonElement {
 
     @Override
     public String toString() {
-        return this.value;
+        char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
+        return String.format("%c%s%c",c,this.value,c);
     }
 }
