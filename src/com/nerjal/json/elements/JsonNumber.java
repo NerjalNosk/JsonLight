@@ -33,6 +33,10 @@ public class JsonNumber extends JsonElement {
         this.value = n;
     }
 
+    public void setParseOptions(NumberParseOptions parseOptions) {
+        this.parseOptions = parseOptions;
+    }
+
     @Override
     public boolean isNumber() {
         return true;

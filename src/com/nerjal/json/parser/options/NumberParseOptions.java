@@ -14,7 +14,7 @@ package com.nerjal.json.parser.options;
  * integer value. This won't force the parsed value to change.
  * @author Nerjal Nosk
  */
-public class NumberParseOptions extends ParseOptions {
+public class NumberParseOptions {
     private NumberFormat format;
     private boolean floating;
 
