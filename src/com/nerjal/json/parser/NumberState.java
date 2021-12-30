@@ -1,6 +1,7 @@
 package com.nerjal.json.parser;
 
 import com.nerjal.json.elements.JsonNumber;
+import com.nerjal.json.parser.options.NumberParseOptions;
 
 import java.util.List;
 
@@ -138,12 +139,15 @@ public class NumberState extends AbstractState {
     @Override
     public JsonNumber getElem() {
         String s = String.valueOf(this.parser.getPrecedents(this.charCount))+this.parser.getActual();
-        Number n;
-        if (this.isHex) s = this.hexString(s);
+        NumberParseOptions options = new NumberParseOptions();
+        if (this.isHex) {
+            s = this.hexString(s);
+            options.setFormat(NumberParseOptions.NumberFormat.HEXADECIMAL);
+        }
         if (this.foundE) {
-            n = Double.parseDouble(s);
-        } else if (this.foundDecimal) n = Float.parseFloat(s);
-        else n = Integer.parseInt(s);
-        return new JsonNumber(n);
+            options.setFormat(NumberParseOptions.NumberFormat.SCIENTIFIC);
+            return new JsonNumber(Double.parseDouble(s), options);
+        } else if (this.foundDecimal) return JsonNumber.fromFloatString(s, options);
+        else return JsonNumber.fromIntegerString(s, options);
     }
 }

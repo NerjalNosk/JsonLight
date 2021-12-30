@@ -1,19 +1,32 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.parser.options.NumberParseOptions;
+
 public class JsonNumber extends JsonElement {
     private Number value;
+    private NumberParseOptions parseOptions;
 
     public JsonNumber() {
-        this.value = 0;
+        this(0);
     }
     public JsonNumber(Number n) {
+        this(0, new NumberParseOptions());
+    }
+    public JsonNumber (Number n, NumberParseOptions options) {
         this.value = n;
+        this.parseOptions = options;
     }
-    public JsonNumber fromIntegerString(String s) {
-        return new JsonNumber(Integer.parseInt(s));
+    public static JsonNumber fromIntegerString(String s) {
+        return fromIntegerString(s, new NumberParseOptions());
     }
-    public JsonNumber fromFloatString(String s) {
-        return new JsonNumber(Float.parseFloat(s));
+    public static JsonNumber fromIntegerString(String s, NumberParseOptions options) {
+        return new JsonNumber(Integer.parseInt(s), options);
+    }
+    public static JsonNumber fromFloatString(String s) {
+        return fromFloatString(s, new NumberParseOptions(true));
+    }
+    public static JsonNumber fromFloatString(String s, NumberParseOptions options) {
+        return new JsonNumber(Float.parseFloat(s), options);
     }
 
     public void setValue(Number n) {
