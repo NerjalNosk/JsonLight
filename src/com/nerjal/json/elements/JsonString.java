@@ -26,6 +26,10 @@ public class JsonString extends JsonElement {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "String";
+    }
+    @Override
     public String getAsString() {
         return this.value;
     }

@@ -130,6 +130,10 @@ public class JsonObject extends JsonElement {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "Object";
+    }
+    @Override
     public JsonObject getAsJsonObject() {
         return this;
     }

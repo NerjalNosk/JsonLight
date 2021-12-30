@@ -69,6 +69,10 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "Array";
+    }
+    @Override
     public JsonArray getAsJsonArray() {
         return this;
     }

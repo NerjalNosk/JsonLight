@@ -62,13 +62,18 @@ public class JsonComment extends JsonElement {
 
 
     @Override
-    public JsonComment getAsJsonComment() {
-        return this;
+    public boolean isComment() {
+        return true;
     }
 
     @Override
-    public boolean isComment() {
-        return true;
+    public String typeToString() {
+        return "Comment";
+    }
+
+    @Override
+    public JsonComment getAsJsonComment() {
+        return this;
     }
 
     @Override

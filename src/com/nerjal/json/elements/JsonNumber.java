@@ -46,6 +46,10 @@ public class JsonNumber extends JsonElement {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "Number";
+    }
+    @Override
     public Number getAsNumber() {
         return this.value;
     }

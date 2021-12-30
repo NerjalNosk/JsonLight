@@ -36,6 +36,10 @@ public class JsonBoolean extends JsonElement {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "Boolean";
+    }
+    @Override
     public boolean getAsBoolean() {
         return this.value;
     }

@@ -52,6 +52,8 @@ public abstract class JsonElement {
         return false;
     }
 
+    public abstract String typeToString();
+
     public JsonObject getAsJsonObject() throws JsonError.JsonElementTypeException {
         throw new JsonError.JsonElementTypeException(String.format("%s is not an Object element",this.getClass().getName()));
     }
