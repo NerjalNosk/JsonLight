@@ -1,14 +1,10 @@
 package com.nerjal.json.parser;
 
-import com.nerjal.json.elements.JsonArray;
 import com.nerjal.json.elements.JsonComment;
 import com.nerjal.json.elements.JsonElement;
-import com.nerjal.json.elements.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.nerjal.json.JsonError.*;
 
 public class EmptyState extends AbstractState {
     private JsonElement element = null;
