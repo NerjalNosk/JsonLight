@@ -35,7 +35,7 @@ public class JsonString extends JsonElement {
     }
 
     @Override
-    public String toString() {
+    public String stringify(String indentation) {
         char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
         return String.format("%c%s%c",c,this.value,c);
     }
