@@ -1,18 +1,35 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.parser.options.ArrayParseOptions;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     private final List<JsonElement> list;
+    private ArrayParseOptions parseOptions;
     protected transient int modCount = 0;
 
     public JsonArray() {
         this.list = new ArrayList<>();
+        this.parseOptions = new ArrayParseOptions();
     }
     public JsonArray(Collection<JsonElement> elements) {
         this.list = List.copyOf(elements);
+        this.parseOptions = new ArrayParseOptions();
+    }
+    public JsonArray(ArrayParseOptions options) {
+        this.list = new ArrayList<>();
+        this.parseOptions = options;
+    }
+    public JsonArray(Collection<JsonElement> elements, ArrayParseOptions options) {
+        this.list = List.copyOf(elements);
+        this.parseOptions = options;
+    }
+
+    public void setParseOptions(ArrayParseOptions options) {
+        this.parseOptions = options;
     }
 
     public JsonElement get(int index) {
