@@ -1,5 +1,7 @@
 package com.nerjal.json.parser.options;
 
+import java.text.DecimalFormat;
+
 /**
  * The formatting options of a JsonNumber, used upon stringifying the
  * said JsonNumber.
@@ -17,6 +19,8 @@ package com.nerjal.json.parser.options;
 public class NumberParseOptions {
     private NumberFormat format;
     private boolean floating;
+
+    public static final DecimalFormat sciFormat = new DecimalFormat("0.######E0");
 
     /**
      * Constructs a {@link com.nerjal.json.elements.JsonNumber} parsing

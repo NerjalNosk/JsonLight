@@ -72,6 +72,14 @@ public class JsonNumber extends JsonElement {
 
     @Override
     public String toString() {
-        return String.valueOf(this.value);
+        String s;
+        if (this.parseOptions.usesHexadecimal()) s = Double.toHexString(this.value.doubleValue());
+        else if (this.parseOptions.usesScientific())
+            s = NumberParseOptions.sciFormat.format(this.value.doubleValue());
+        else if (this.getAsDouble() == this.getAsInt()) {
+            s = this.parseOptions.isInteger() ?
+                        Integer.toString(this.value.intValue()) : Double.toString(this.value.doubleValue());
+        } else s = Double.toString(this.value.doubleValue());
+        return s;
     }
 }
