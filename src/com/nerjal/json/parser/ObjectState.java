@@ -78,7 +78,7 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n') this.parser.increaseLine();
+        if (c == '\n' || c == '\r') this.parser.increaseLine();
 
         switch (c) {
             case ' ', '\n', '\t', '\r', '\f':
