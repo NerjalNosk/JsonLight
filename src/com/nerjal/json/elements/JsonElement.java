@@ -85,5 +85,5 @@ public abstract class JsonElement {
         throw new JsonError.JsonElementTypeException(String.format("%s is not a Boolean element",this.getClass().getName()));
     }
 
-    public abstract String stringify(String indentation); // do not commit before time comes
+    public abstract String stringify(String indentation, String indentIncrement); // oops
 }

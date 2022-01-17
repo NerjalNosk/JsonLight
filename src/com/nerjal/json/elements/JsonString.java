@@ -42,7 +42,7 @@ public class JsonString extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation) {
+    public String stringify(String indentation, String indentIncrement) {
         char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
         return String.format("%c%s%c",c,this.value,c);
     }

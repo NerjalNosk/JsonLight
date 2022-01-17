@@ -137,6 +137,10 @@ public class JsonObject extends JsonElement {
     public JsonObject getAsJsonObject() {
         return this;
     }
+    @Override
+    public String stringify(String indentation, String indentIncrement) {
+        return null;
+    }
 
     // iteration
 
