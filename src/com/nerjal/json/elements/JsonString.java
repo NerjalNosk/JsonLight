@@ -5,12 +5,19 @@ import com.nerjal.json.parser.options.StringParseOptions;
 public class JsonString extends JsonElement {
     private String value;
     private StringParseOptions parseOptions;
-    
+
+    public JsonString(String s, StringParseOptions options) {
+        this.value = s;
+        this.parseOptions = options;
+    }
     public JsonString(String value) {
-        this.value = value;
+        this(value, new StringParseOptions());
+    }
+    public JsonString(StringParseOptions options) {
+        this(null, options);
     }
     public JsonString() {
-        this.value = null;
+        this((String) null);
     }
 
     public void setValue(String s) {

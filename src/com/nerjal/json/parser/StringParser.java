@@ -7,6 +7,7 @@ import com.nerjal.json.elements.JsonElement;
  *
  * @see com.nerjal.json.JsonParser
  * @author Nerjal Nosk
+ * @since JDK 16
  */
 
 public class StringParser {

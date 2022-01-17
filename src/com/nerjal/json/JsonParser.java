@@ -43,6 +43,7 @@ import static com.nerjal.json.JsonError.*;
  *     JsonObject< "a":JsonArray< JsonString< "a" >,JsonNumber< 1 >,JsonBoolean< true >>>
  * </pre></blockquote>
  * @author Nerjal Nosk
+ * @since JDK 16
  */
 
 public abstract class JsonParser {
