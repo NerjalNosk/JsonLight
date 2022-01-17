@@ -62,4 +62,15 @@ public abstract class JsonError {
             super(s);
         }
     }
+
+    /**
+     * Thrown when setting a {@link JsonArray} to stringify with
+     * an invalid number of elements per line (negative or null)
+     * @see com.nerjal.json.parser.options.ArrayParseOptions
+     */
+    public static class IllegalLineElementsNumberException extends Exception{
+        public IllegalLineElementsNumberException(String s) {
+            super(s);
+        }
+    }
 }
