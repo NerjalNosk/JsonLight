@@ -34,7 +34,7 @@ import static com.nerjal.json.JsonError.*;
  *     }
  * </pre></blockquote>
  * <p>
- * Using {@link JsonParser#parseString(String)} allows to get
+ * Using {@link JsonParser#jsonify(String)} allows to get
  * the {@link JsonElement} of the given string.
  * <blockquote><pre>
  * using
@@ -153,7 +153,7 @@ public abstract class JsonParser {
      * @return the parsed JsonElement. Can be an instance of any class implementing JsonElement
      * @throws JsonParseException if the given string cannot be parsed (missing quotes, braces, commas, etc.)
      */
-    public static JsonElement parseString(String s) throws JsonParseException {
+    public static JsonElement jsonify(String s) throws JsonParseException {
         StringParser parser = new StringParser(s);
         return parser.parse();
     }

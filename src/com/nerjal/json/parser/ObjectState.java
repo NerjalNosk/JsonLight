@@ -146,7 +146,8 @@ public class ObjectState extends AbstractState {
                 this.requiresIterator = false;
             } else this.error("unexpected object key type found while parsing");
         } else {
-            this.object.add(this.key, element);
+            if (!this.object.add(this.key, element))
+                this.error(String.format("duplicate value for key %s", this.key));
             this.lookForValue = false;
             this.requiresIterator = true;
         }
