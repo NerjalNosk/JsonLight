@@ -97,6 +97,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     }
     @Override
     public String stringify(String indentation, String indentIncrement) {
+        if (this.list.size() == 0) return "[]";
         StringBuilder builder = new StringBuilder("[");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();

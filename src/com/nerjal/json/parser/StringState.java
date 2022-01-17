@@ -2,6 +2,9 @@ package com.nerjal.json.parser;
 
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonString;
+import com.nerjal.json.parser.options.StringParseOptions;
+
+import static com.nerjal.json.parser.options.StringParseOptions.QuoteFormat.*;
 
 public class StringState extends AbstractState {
     private boolean precIsBackslash = false;
@@ -49,6 +52,7 @@ public class StringState extends AbstractState {
 
     @Override
     public JsonElement getElem() {
-        return new JsonString(val.toString());
+        return new JsonString(val.toString(),
+                new StringParseOptions(isSingleQuoteString ? SINGLE_QUOTES : DOUBLE_QUOTES));
     }
 }

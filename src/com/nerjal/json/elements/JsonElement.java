@@ -86,4 +86,13 @@ public abstract class JsonElement {
     }
 
     public abstract String stringify(String indentation, String indentIncrement); // oops
+    public final String stringify(String indentation) {
+        return this.stringify(indentation, "  ");
+    }
+    public final String stringifyRoot(String indentIncrement) {
+        return this.stringify("", indentIncrement);
+    }
+    public final String stringify() {
+        return this.stringify("");
+    }
 }
