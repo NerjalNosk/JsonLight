@@ -51,19 +51,6 @@ public abstract class JsonError {
     }
 
     /**
-     * Thrown when trying to instantiate a {@link JsonObject}
-     * with an invalid 'quotes' value.
-     * Such should be 1 or 2, for simple or double quotes
-     * upon stringify
-     * @see JsonObject#JsonObject(int)
-     */
-    public static class IllegalQuoteValue extends Exception {
-        public IllegalQuoteValue(String s) {
-            super(s);
-        }
-    }
-
-    /**
      * Thrown when setting a {@link JsonArray} to stringify with
      * an invalid number of elements per line (negative or null)
      * @see com.nerjal.json.parser.options.ArrayParseOptions

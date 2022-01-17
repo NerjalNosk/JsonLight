@@ -1,30 +1,37 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.parser.options.ObjectParseOptions;
+
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.nerjal.json.JsonError.*;
 
 public class JsonObject extends JsonElement {
-    private int stringifyKeyQuotes;
     private final Map<String,JsonElement> map;
     private final Set<JsonNode> nodeSet;
     private final Set<JsonComment> commentSet;
+    private ObjectParseOptions parseOptions;
 
     public JsonObject() {
-        this.stringifyKeyQuotes = 2;
         this.map = new HashMap<>();
         this.nodeSet = new HashSet<>();
         this.commentSet = new HashSet<>();
+        this.parseOptions = new ObjectParseOptions();
     }
 
-    public JsonObject(int i) throws IllegalQuoteValue {
-        if (i > 2 || i < 0) throw new IllegalQuoteValue(String.format("Illegal quote value %d",i));
-        this.stringifyKeyQuotes = i;
+    public JsonObject(ObjectParseOptions options) {
         this.map = new HashMap<>();
         this.nodeSet = new HashSet<>();
         this.commentSet = new HashSet<>();
+        this.parseOptions = options;
+    }
+
+    public void setParseOptions(ObjectParseOptions options) {
+        this.parseOptions = options;
     }
 
     // get
@@ -64,6 +71,7 @@ public class JsonObject extends JsonElement {
         if (key == null && element.isComment()) {
             this.map.put(UUID.randomUUID().toString(),element);
             this.commentSet.add((JsonComment) element);
+            return true;
         }
         if (this.map.containsKey(key)) {
             return false;
@@ -116,13 +124,6 @@ public class JsonObject extends JsonElement {
         this.nodeSet.clear();
     }
 
-    // stringify
-
-    public void setStringifyQuotes(int i) throws IllegalQuoteValue {
-        if (i > 2 || i < 0) throw new IllegalQuoteValue(String.format("Illegal quote value %d",i));
-        this.stringifyKeyQuotes = i;
-    }
-
     // JsonElement overrides
 
     @Override
@@ -139,7 +140,31 @@ public class JsonObject extends JsonElement {
     }
     @Override
     public String stringify(String indentation, String indentIncrement) {
-        return null;
+        if (this.map.size() == 0) return "{}";
+        StringBuilder builder = new StringBuilder("{");
+        AtomicInteger count = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger();
+        AtomicInteger lastComma = new AtomicInteger();
+        AtomicBoolean endOnComment = new AtomicBoolean(false);
+        forAll((k,e) -> {
+            count.getAndIncrement();
+            index.getAndIncrement();
+            endOnComment.set(e.isComment());
+            builder.append('\n').append(indentation).append(indentIncrement);
+            if (!e.isComment()) {
+                char c = parseOptions.keyQuoteChar();
+                builder.append(String.format("%c%s%c: ", c, k, c));
+            }
+            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement));
+            if (index.get() < size() &! e.isComment()) {
+                lastComma.set(builder.length());
+                builder.append(", ");
+            }
+        });
+        if (endOnComment.get() && lastComma.get() != 0) builder.deleteCharAt(lastComma.get());
+        builder.append('\n').append(indentation);
+        builder.append('}');
+        return builder.toString();
     }
 
     // iteration
