@@ -45,7 +45,7 @@ public class JsonBoolean extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         if (this.parseOptions.usesAllLowercase()) return String.valueOf(this.value);
         else if (this.parseOptions.usesAllUppercase()) return this.value ? "TRUE" : "FALSE";
         else return this.value ? "True" : "False";

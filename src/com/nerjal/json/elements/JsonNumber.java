@@ -71,7 +71,7 @@ public class JsonNumber extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         String s;
         if (this.parseOptions.usesHexadecimal()) s = Double.toHexString(this.value.doubleValue());
         else if (this.parseOptions.usesScientific())

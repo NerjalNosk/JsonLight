@@ -1,10 +1,9 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.JsonError.RecursiveJsonElementException;
 import com.nerjal.json.parser.options.ArrayParseOptions;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -96,30 +95,33 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return this;
     }
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+            throws RecursiveJsonElementException {
         if (this.list.size() == 0) return "[]";
         StringBuilder builder = new StringBuilder("[");
-        AtomicInteger count = new AtomicInteger();
-        AtomicInteger index = new AtomicInteger();
-        AtomicInteger lastComma = new AtomicInteger();
-        AtomicBoolean endOnComment = new AtomicBoolean(false);
+        int count = 0;
+        int index = 0;
+        int lastComma = 0;
+        boolean endOnComment = false;
         long maxLine = parseOptions.getNumPerLine();
-        forAll(e -> {
-            count.getAndIncrement();
-            index.getAndIncrement();
-            endOnComment.set(e.isComment());
-            if (!parseOptions.isAllInOneLine() && count.get() <= maxLine) {
+        for (JsonElement e : this.list) {
+            if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
+            count++;
+            index++;
+            endOnComment = e.isComment();
+            if (!parseOptions.isAllInOneLine() && count <= maxLine) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
             }
-            if (count.get() == maxLine) count.getAndSet(0);
-            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement));
-            if (index.get() < size() &! e.isComment()) {
-                lastComma.set(builder.length());
+            if (count == maxLine) count = 0;
+            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
+            if (index < size() &! e.isComment()) {
+                lastComma = builder.length();
                 builder.append(", ");
             }
-        });
-        if (endOnComment.get() && lastComma.get() != 0) builder.deleteCharAt(lastComma.get());
+            stack.rem(e);
+        }
+        if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
         if (!parseOptions.isAllInOneLine()) builder.append('\n').append(indentation);
         builder.append(']');
         return builder.toString();

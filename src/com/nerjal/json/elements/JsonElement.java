@@ -1,6 +1,7 @@
 package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError;
+import com.nerjal.json.JsonError.RecursiveJsonElementException;
 
 import java.util.Arrays;
 
@@ -85,14 +86,18 @@ public abstract class JsonElement {
         throw new JsonError.JsonElementTypeException(String.format("%s is not a Boolean element",this.getClass().getName()));
     }
 
-    public abstract String stringify(String indentation, String indentIncrement); // oops
-    public final String stringify(String indentation) {
-        return this.stringify(indentation, "  ");
+    abstract String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+            throws RecursiveJsonElementException;
+    public final String stringify(String indentation, String indentIncrement) throws RecursiveJsonElementException {
+        return this.stringify(indentation, indentIncrement, new JsonStringifyStack(this));
     }
-    public final String stringifyRoot(String indentIncrement) {
-        return this.stringify("", indentIncrement);
+    public final String stringify(String indentation) throws RecursiveJsonElementException {
+        return this.stringify(indentation, "  ", new JsonStringifyStack(this));
     }
-    public final String stringify() {
-        return this.stringify("");
+    public final String stringifyRoot(String indentIncrement) throws RecursiveJsonElementException {
+        return this.stringify("", indentIncrement, new JsonStringifyStack(this));
+    }
+    public final String stringify() throws RecursiveJsonElementException {
+        return this.stringify("", "  ", new JsonStringifyStack(this));
     }
 }

@@ -89,7 +89,7 @@ public class JsonComment extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         if (!this.isBlock) return "//"+this.value;
         StringBuilder b = new StringBuilder("/*\n");
         for (String s : this.getSplitValue()) {

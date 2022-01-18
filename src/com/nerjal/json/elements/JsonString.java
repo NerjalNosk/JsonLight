@@ -20,6 +20,10 @@ public class JsonString extends JsonElement {
         this((String) null);
     }
 
+    public void setParseOptions(StringParseOptions options) {
+        this.parseOptions = options;
+    }
+
     public void setValue(String s) {
         this.value = s;
     }
@@ -42,7 +46,7 @@ public class JsonString extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
         return String.format("%c%s%c",c,this.value,c);
     }

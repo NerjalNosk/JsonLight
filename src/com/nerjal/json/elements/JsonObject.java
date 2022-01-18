@@ -139,14 +139,18 @@ public class JsonObject extends JsonElement {
         return this;
     }
     @Override
-    public String stringify(String indentation, String indentIncrement) {
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+            throws RecursiveJsonElementException {
         if (this.map.size() == 0) return "{}";
         StringBuilder builder = new StringBuilder("{");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();
         AtomicInteger lastComma = new AtomicInteger();
         AtomicBoolean endOnComment = new AtomicBoolean(false);
-        forAll((k,e) -> {
+        for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
+            String k = entry.getKey();
+            JsonElement e = entry.getValue();
+            if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonObject");
             count.getAndIncrement();
             index.getAndIncrement();
             endOnComment.set(e.isComment());
@@ -155,12 +159,13 @@ public class JsonObject extends JsonElement {
                 char c = parseOptions.keyQuoteChar();
                 builder.append(String.format("%c%s%c: ", c, k, c));
             }
-            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement));
+            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (index.get() < size() &! e.isComment()) {
                 lastComma.set(builder.length());
                 builder.append(", ");
             }
-        });
+            stack.rem(e);
+        }
         if (endOnComment.get() && lastComma.get() != 0) builder.deleteCharAt(lastComma.get());
         builder.append('\n').append(indentation);
         builder.append('}');

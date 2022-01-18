@@ -60,4 +60,15 @@ public abstract class JsonError {
             super(s);
         }
     }
+
+    /**
+     * Thrown when trying to stringify a JsonElement containing
+     * itself.
+     *
+     */
+    public static class RecursiveJsonElementException extends Exception {
+        public RecursiveJsonElementException(String s) {
+            super(s);
+        }
+    }
 }
