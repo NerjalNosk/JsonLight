@@ -78,7 +78,7 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n') this.parser.increaseLine();
+        if (c == '\n' || c == '\r') this.parser.increaseLine();
 
         switch (c) {
             case ' ', '\n', '\t', '\r', '\f':
@@ -146,7 +146,8 @@ public class ObjectState extends AbstractState {
                 this.requiresIterator = false;
             } else this.error("unexpected object key type found while parsing");
         } else {
-            this.object.add(this.key, element);
+            if (!this.object.add(this.key, element))
+                this.error(String.format("duplicate value for key %s", this.key));
             this.lookForValue = false;
             this.requiresIterator = true;
         }

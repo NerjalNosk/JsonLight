@@ -1,18 +1,36 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.JsonError.RecursiveJsonElementException;
+import com.nerjal.json.parser.options.ArrayParseOptions;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     private final List<JsonElement> list;
+    private ArrayParseOptions parseOptions;
     protected transient int modCount = 0;
 
     public JsonArray() {
         this.list = new ArrayList<>();
+        this.parseOptions = new ArrayParseOptions();
     }
     public JsonArray(Collection<JsonElement> elements) {
         this.list = List.copyOf(elements);
+        this.parseOptions = new ArrayParseOptions();
+    }
+    public JsonArray(ArrayParseOptions options) {
+        this.list = new ArrayList<>();
+        this.parseOptions = options;
+    }
+    public JsonArray(Collection<JsonElement> elements, ArrayParseOptions options) {
+        this.list = List.copyOf(elements);
+        this.parseOptions = options;
+    }
+
+    public void setParseOptions(ArrayParseOptions options) {
+        this.parseOptions = options;
     }
 
     public JsonElement get(int index) {
@@ -69,10 +87,48 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "Array";
+    }
+    @Override
     public JsonArray getAsJsonArray() {
         return this;
     }
+    @Override
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+            throws RecursiveJsonElementException {
+        if (this.list.size() == 0) return "[]";
+        StringBuilder builder = new StringBuilder("[");
+        int count = 0;
+        int index = 0;
+        int lastComma = 0;
+        boolean endOnComment = false;
+        long maxLine = parseOptions.getNumPerLine();
+        for (JsonElement e : this.list) {
+            if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
+            count++;
+            index++;
+            endOnComment = e.isComment();
+            if (!parseOptions.isAllInOneLine() && count <= maxLine) {
+                builder.append('\n');
+                builder.append(indentation).append(indentIncrement);
+            }
+            if (count == maxLine) count = 0;
+            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
+            if (index < size() &! e.isComment()) {
+                lastComma = builder.length();
+                builder.append(", ");
+            }
+            stack.rem(e);
+        }
+        if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
+        if (!parseOptions.isAllInOneLine()) builder.append('\n').append(indentation);
+        builder.append(']');
+        return builder.toString();
+    }
 
+
+    /* ITERATION */
 
     public void forAll(Consumer<JsonElement> action) {
         this.list.forEach(action);

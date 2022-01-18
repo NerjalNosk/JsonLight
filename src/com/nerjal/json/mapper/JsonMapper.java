@@ -7,6 +7,8 @@ import com.nerjal.json.mapper.annotations.JsonIgnore;
 import com.nerjal.json.mapper.annotations.JsonNode;
 import com.nerjal.json.mapper.annotations.JsonRequired;
 import com.nerjal.json.mapper.annotations.JsonSkipSuperclass;
+import com.nerjal.json.mapper.errors.JsonCastingError;
+import com.nerjal.json.mapper.errors.JsonMapperFieldRequiredError;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -72,11 +74,12 @@ public class JsonMapper {
      * @throws IllegalAccessException if can't access a field or the constructor
      * @throws JsonError.JsonElementTypeException if can't get element's type
      * @throws JsonCastingError if can't map element onto target
+     * @throws JsonMapperFieldRequiredError if a required field is not present in structure
      */
     @SuppressWarnings("unchecked")
     public static <T> T map(JsonElement element, Class<T> target)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException,
-            JsonError.JsonElementTypeException, JsonError.ChildNotFoundException, JsonCastingError {
+            JsonError.JsonElementTypeException, JsonError.ChildNotFoundException, JsonCastingError, JsonMapperFieldRequiredError {
 
         if (target == Integer.class || target == int.class) {
             if (!element.isNumber())
@@ -144,7 +147,7 @@ public class JsonMapper {
 
             if (!element.getAsJsonObject().contains(name)) {
                 if (required)
-                    throw new JsonCastingError(element, target);
+                    throw new JsonMapperFieldRequiredError(name);
                 else continue;
             }
 

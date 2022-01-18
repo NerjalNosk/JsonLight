@@ -1,6 +1,8 @@
 package com.nerjal.json.elements;
 
 
+import com.nerjal.json.parser.options.CommentParseOptions;
+
 import java.util.Collection;
 
 /**
@@ -26,6 +28,7 @@ import java.util.Collection;
 public class JsonComment extends JsonElement {
     private String value;
     private boolean isBlock;
+    private final CommentParseOptions parseOptions = new CommentParseOptions();
 
     public JsonComment(String s, boolean b) {
         this.value = s;
@@ -56,19 +59,28 @@ public class JsonComment extends JsonElement {
         return isBlock;
     }
 
+    public CommentParseOptions getParseOptions() {
+        return parseOptions;
+    }
+
     public String[] getSplitValue() {
         return this.value.split("\n");
     }
 
 
     @Override
-    public JsonComment getAsJsonComment() {
-        return this;
+    public boolean isComment() {
+        return true;
     }
 
     @Override
-    public boolean isComment() {
-        return true;
+    public String typeToString() {
+        return "Comment";
+    }
+
+    @Override
+    public JsonComment getAsJsonComment() {
+        return this;
     }
 
     @Override
@@ -77,7 +89,15 @@ public class JsonComment extends JsonElement {
     }
 
     @Override
-    public String toString() {
-        return this.value;
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
+        if (!this.isBlock) return "//"+this.value;
+        StringBuilder b = new StringBuilder("/*\n");
+        for (String s : this.getSplitValue()) {
+            if (this.parseOptions.usesIndent()) b.append(indentation);
+            if (this.parseOptions.doesNewlineAsterisk()) b.append("* ");
+            b.append(s);
+        }
+        b.append("*/");
+        return b.toString();
     }
 }

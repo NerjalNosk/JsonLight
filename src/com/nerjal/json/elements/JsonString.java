@@ -1,13 +1,27 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.parser.options.StringParseOptions;
+
 public class JsonString extends JsonElement {
     private String value;
-    
+    private StringParseOptions parseOptions;
+
+    public JsonString(String s, StringParseOptions options) {
+        this.value = s;
+        this.parseOptions = options;
+    }
     public JsonString(String value) {
-        this.value = value;
+        this(value, new StringParseOptions());
+    }
+    public JsonString(StringParseOptions options) {
+        this(null, options);
     }
     public JsonString() {
-        this.value = null;
+        this((String) null);
+    }
+
+    public void setParseOptions(StringParseOptions options) {
+        this.parseOptions = options;
     }
 
     public void setValue(String s) {
@@ -23,12 +37,17 @@ public class JsonString extends JsonElement {
         return true;
     }
     @Override
+    public String typeToString() {
+        return "String";
+    }
+    @Override
     public String getAsString() {
         return this.value;
     }
 
     @Override
-    public String toString() {
-        return this.value;
+    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
+        char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
+        return String.format("%c%s%c",c,this.value,c);
     }
 }

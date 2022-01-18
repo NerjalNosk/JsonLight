@@ -34,7 +34,7 @@ import static com.nerjal.json.JsonError.*;
  *     }
  * </pre></blockquote>
  * <p>
- * Using {@link JsonParser#parseString(String)} allows to get
+ * Using {@link JsonParser#jsonify(String)} allows to get
  * the {@link JsonElement} of the given string.
  * <blockquote><pre>
  * using
@@ -43,6 +43,7 @@ import static com.nerjal.json.JsonError.*;
  *     JsonObject< "a":JsonArray< JsonString< "a" >,JsonNumber< 1 >,JsonBoolean< true >>>
  * </pre></blockquote>
  * @author Nerjal Nosk
+ * @since JDK 16
  */
 
 public abstract class JsonParser {
@@ -52,10 +53,9 @@ public abstract class JsonParser {
      * (automatically calls for the value's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @return String: the string version of the JsonElement
-     * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String stringify(JsonElement json) throws JsonElementTypeException {
-        return stringify(json, 0, 2);
+    public static String stringify(JsonElement json) throws RecursiveJsonElementException {
+        return stringify(json, 0, 2, ' ');
     }
 
     /**
@@ -64,10 +64,9 @@ public abstract class JsonParser {
      * @param json the JsonElement to parse to String
      * @param space the indentation level (for recursive parsing, uses 0 by default)
      * @return String: the string version of the JsonElement
-     * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String stringify(JsonElement json, int space) throws JsonElementTypeException {
-        return stringify(json, space, 2);
+    public static String stringify(JsonElement json, int space) throws RecursiveJsonElementException {
+        return stringify(json, space, 2, ' ');
     }
 
     /**
@@ -75,75 +74,15 @@ public abstract class JsonParser {
      * (automatically calls for the given object's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @param space the indentation level (for recursive parsing, uses 0 by default)
-     * @param tabulation the number of spaces added in the beginning of each line by indentation level
+     * @param tabulation the number of tabchar added in the beginning of each line by indentation level
+     * @param tabChar the character ti use for indentations
      * @return String: the string version of the JsonElement
-     * @throws JsonElementTypeException if the given JsonElement isn't valid
      */
-    public static String stringify(JsonElement json, int space, int tabulation) throws JsonElementTypeException {
-        if (json.isPrimitive()) {
-            return json.isString() ? String.format("\"%s\"",json.getAsString()) : json.toString();
-        }
-        StringBuilder out = new StringBuilder();
-        String tab = " ".repeat(tabulation);
-        if (json.isComment()) {
-            JsonComment comment = json.getAsJsonComment();
-            if (comment.isBlock()) {
-                String[] lines = comment.getSplitValue();
-                out.append("/*\n");
-                for (String s : lines) out.append(tab.repeat(space)).append("* ").append(s).append("\n");
-                out.append(tab.repeat(space)).append("*/\n");
-            } else out.append("//").append(comment);
-            return out.toString();
-        }
-        int spacing = space + 1;
-        if (json.isJsonArray()) {
-            JsonArray array = json.getAsJsonArray();
-            out.append("[\n");
-            AtomicInteger i = new AtomicInteger();
-            AtomicBoolean eraseLastComma = new AtomicBoolean(false);
-            AtomicInteger index = new AtomicInteger();
-            array.forAll(elem -> {
-                try {
-                    out.append("  ".repeat(spacing)).append(stringify(elem, spacing, tabulation));
-                    if (elem.isComment()) eraseLastComma.set(false);
-                    else {
-                        if (index.get() + 1 < array.size()) {
-                            out.append(",");
-                            i.set(out.length() - 1);
-                        }
-                        eraseLastComma.set(true);
-                        out.append("\n");
-                    }
-                } catch (JsonElementTypeException e) {
-                    e.printStackTrace();
-                }
-                index.getAndIncrement();
-            });
-            if (eraseLastComma.get() && out.charAt(i.get())==',') out.deleteCharAt(i.get());
-            out.append("  ".repeat(space)).append("]");
-            return out.toString();
-        }
-        if (json.isJsonObject()) {
-            JsonObject object = json.getAsJsonObject();
-            out.append("{\n");
-            int i = 0;
-            // i is used to remove last iteration comma without caring about comments
-            for (Map.Entry<String,JsonElement> entry : object.allEntriesSet()) {
-                JsonElement elem = entry.getValue();
-                out.append(tab.repeat(spacing));
-                if (!elem.isComment()) {
-                    out.append(String.format("\"%s\"", entry.getKey())).append(" : ");
-                    out.append(stringify(elem, spacing, tabulation)).append(",\n");
-                    i = out.length()-2;
-                } else {
-                    out.append(stringify(elem, spacing, tabulation));
-                }
-            }
-            if (out.charAt(i) == ',') out.deleteCharAt(i);
-            out.append("  ".repeat(space)).append("}\n");
-            return out.toString();
-        }
-        throw new JsonElementTypeException(String.format("Unknown Json type element %s",json.getClass().getName()));
+    public static String stringify(JsonElement json, int space, int tabulation, char tabChar)
+            throws RecursiveJsonElementException {
+        String tab = String.format("%c",tabChar).repeat(tabulation);
+        String indentation = tab.repeat(space);
+        return json.stringify(indentation,tab);
     }
 
     /**
@@ -152,7 +91,7 @@ public abstract class JsonParser {
      * @return the parsed JsonElement. Can be an instance of any class implementing JsonElement
      * @throws JsonParseException if the given string cannot be parsed (missing quotes, braces, commas, etc.)
      */
-    public static JsonElement parseString(String s) throws JsonParseException {
+    public static JsonElement jsonify(String s) throws JsonParseException {
         StringParser parser = new StringParser(s);
         return parser.parse();
     }
