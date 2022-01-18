@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static com.nerjal.json.JsonError.*;
 
@@ -78,11 +79,13 @@ public class JsonObject extends JsonElement {
         }
         this.map.put(key, element);
         this.nodeSet.add(new JsonNode(key, element));
+        for (JsonComment comment : element.getRootComments()) this.add(null, comment);
         return true;
     }
     public void put(String key, JsonElement element) {
         this.map.put(key, element);
         this.nodeSet.add(new JsonNode(key, element));
+        for (JsonComment comment : element.getRootComments()) this.add(null, comment);
     }
 
     public JsonElement remove(String key) throws ChildNotFoundException {
@@ -117,6 +120,26 @@ public class JsonObject extends JsonElement {
             else this.nodeSet.remove(new JsonNode(key, j));
         }
         return b;
+    }
+
+    /**
+     * Removes all {@link JsonElement} from the object meeting the given operator,
+     * then returns them.<br>
+     * The operator must return null for all not-fitting elements.
+     * @param operator The operator to apply to all child element of the object.
+     * @return a {@link Collection} of all the {@link JsonElement} removed from the object.
+     */
+    public Collection<JsonElement> remove(UnaryOperator<JsonElement> operator) {
+        Set<String> remove = new HashSet<>();
+        Set<JsonElement> removed = new HashSet<>();
+        for (String key : map.keySet())
+            if (map.get(key).isComment() && operator.apply(map.get(key)) != null) remove.add(key);
+        for (String key : remove) {
+            try {
+                removed.add(remove(key));
+            } catch (ChildNotFoundException ignored) {}
+        }
+        return removed;
     }
 
     public void clear() {

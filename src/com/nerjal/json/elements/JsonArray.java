@@ -59,18 +59,34 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     }
     public void add(JsonElement element) {
         this.list.add(element);
+        this.list.addAll(List.of(element.getRootComments()));
+        element.clearRootComment();
         modCount++;
     }
     public void add(int index, JsonElement element) {
         this.list.add(index, element);
+        int k = index+1;
+        for (JsonComment comment : element.getRootComments()) {
+            this.list.add(k, comment);
+            k++;
+        }
+        element.clearRootComment();
         modCount++;
     }
     public void addAll(Collection<JsonElement> elements) {
         this.list.addAll(elements);
+        elements.forEach(e -> {
+            list.addAll(List.of(e.getRootComments()));
+            e.clearRootComment();
+        });
         modCount++;
     }
     public void addAll(JsonElement[] elements) {
         this.addAll(List.of(elements));
+        for (JsonElement e : elements) {
+            list.addAll(List.of(e.getRootComments()));
+            e.clearRootComment();
+        }
         modCount++;
     }
     public void replaceAll(UnaryOperator<JsonElement> operator) {
