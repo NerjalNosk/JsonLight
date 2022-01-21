@@ -3,7 +3,7 @@ package com.nerjal.json.parser.options;
 import com.nerjal.json.JsonError;
 
 public class ArrayParseOptions {
-    private int numPerLine;
+    private long numPerLine;
     private ArrayFormat format;
 
     public ArrayParseOptions(ArrayFormat format, int numPerLine) {
@@ -29,12 +29,12 @@ public class ArrayParseOptions {
         if (i == 1) this.format = ArrayFormat.ONE_PER_LINE;
         else if (i == Long.MAX_VALUE) this.format = ArrayFormat.INLINE;
         else {
-            this.numPerLine = (int)i;
+            this.numPerLine = i;
             this.format = ArrayFormat.MULTIPLE_PER_LINE;
         }
     }
 
-    public int getNumPerLine() {
+    public long getNumPerLine() {
         if (this.format == ArrayFormat.INLINE) return Integer.MAX_VALUE;
         if (this.format == ArrayFormat.ONE_PER_LINE) return 1;
         return this.numPerLine;

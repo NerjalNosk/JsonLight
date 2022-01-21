@@ -13,7 +13,10 @@ public class NumberState extends AbstractState {
 
     public NumberState(StringParser stringParser, ParserState olderState) {
         super(stringParser, olderState);
-        if (this.parser.getActual() == '.') this.foundDecimal = true;
+        if (this.parser.getActual() == '.') {
+            this.foundDecimal = true;
+            this.charCount ++;
+        }
     }
 
     private void foundX() {
@@ -138,7 +141,12 @@ public class NumberState extends AbstractState {
 
     @Override
     public JsonNumber getElem() {
-        String s = String.valueOf(this.parser.getPrecedents(this.charCount))+this.parser.getActual();
+        String s;
+        try {
+            s = String.valueOf(this.parser.getPrecedents(this.charCount))+this.parser.getActual();
+        } catch (IndexOutOfBoundsException e) {
+            s = String.valueOf(this.parser.getPrecedents(this.charCount));
+        }
         NumberParseOptions options = new NumberParseOptions();
         if (this.isHex) {
             s = this.hexString(s);

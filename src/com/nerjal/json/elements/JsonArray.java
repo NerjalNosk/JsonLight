@@ -122,14 +122,14 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         long maxLine = parseOptions.getNumPerLine();
         for (JsonElement e : this.list) {
             if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
-            count++;
-            index++;
-            endOnComment = e.isComment();
-            if (!parseOptions.isAllInOneLine() && count <= maxLine) {
+            if (!parseOptions.isAllInOneLine() && (count >= maxLine || index == 0)) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
             }
             if (count == maxLine) count = 0;
+            count++;
+            index++;
+            endOnComment = e.isComment();
             builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (index < size() &! e.isComment()) {
                 lastComma = builder.length();
