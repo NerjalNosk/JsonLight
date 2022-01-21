@@ -114,6 +114,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
             throws RecursiveJsonElementException {
         if (this.list.size() == 0) return "[]";
+        if (stack == null) stack = new JsonStringifyStack(this);
         StringBuilder builder = new StringBuilder("[");
         int count = 0;
         int index = 0;

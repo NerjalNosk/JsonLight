@@ -250,6 +250,7 @@ public class JsonObject extends JsonElement {
     @Override
     public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
             throws RecursiveJsonElementException {
+        if (stack == null) stack = new JsonStringifyStack(this);
         if (this.map.size() == 0) return "{}";
         StringBuilder builder = new StringBuilder("{");
         AtomicInteger count = new AtomicInteger();

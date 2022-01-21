@@ -39,11 +39,11 @@ class JsonStringifyStack {
      * @return true if the element is already in the stack
      * (error case), false otherwise.
      */
-    public boolean hasOrAdd(JsonElement e) {
+    public final boolean hasOrAdd(JsonElement e) {
         return findOrAdd(e.hashCode()) < 0;
     }
 
-    public void rem(JsonElement e) {
+    public final void rem(JsonElement e) {
         int i = e.hashCode();
         int up = stack.size();
         if (stack.get(up-1) < i) return;
