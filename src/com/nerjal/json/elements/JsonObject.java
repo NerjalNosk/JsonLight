@@ -24,7 +24,9 @@ import static com.nerjal.json.JsonError.*;
  * set with a {@link ObjectParseOptions} attribute,
  * defaulted to match the JSON4 syntax, which can
  * be replaced or instantiated to a different value.
+ * <br>These options allow to set the keys quoting.
  * </p>
+ * @author Nerjal Nosk
  */
 public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;
