@@ -28,10 +28,15 @@ import java.util.Collection;
 public class JsonComment extends JsonElement {
     private String value;
     private boolean isBlock;
+    private boolean lockBlock = false;
     private final CommentParseOptions parseOptions = new CommentParseOptions();
 
     public JsonComment(String s, boolean b) {
         this.value = s;
+        if (s != null && s.split("\n").length > 1)
+            this.lockBlock = true;
+        if (!b && this.lockBlock)
+            throw new UnsupportedOperationException("Multi-line comment cannot be set as non-block");
         this.isBlock = b;
     }
 
@@ -49,9 +54,15 @@ public class JsonComment extends JsonElement {
 
     public void setValue(String s) {
         this.value = s;
+        if (s != null && s.split("\n").length > 1) {
+            this.isBlock = true;
+            this.lockBlock = true;
+        } else this.lockBlock = false;
     }
 
-    public void setBlock(boolean block) {
+    public void setBlock(boolean block) throws UnsupportedOperationException {
+        if (!block && this.lockBlock)
+            throw new UnsupportedOperationException("Multi-line comment cannot be set as non-block");
         isBlock = block;
     }
 
