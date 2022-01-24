@@ -2,28 +2,88 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.parser.options.StringParseOptions;
 
+/**
+ * <p>An object made to symbolise a String
+ * in a JSON Structure.
+ * </p>
+ * <p>Stringification options rely on a
+ * {@link StringParseOptions} object,
+ * which allows to set whether the object
+ * should be stringified with simple or
+ * double quotes.
+ * </p>
+ * <p>Default Stringification options means
+ * double quiting.
+ * </p>
+ * Stringifies as {@code null} if the
+ * value is null, just as {@code null}
+ * is parsed as a null JsonString with
+ * the parser.
+ */
 public class JsonString extends JsonElement {
     private String value;
     private StringParseOptions parseOptions;
 
+    /**
+     * Instantiates a new JsonString with the
+     * specified value and stringification
+     * options.
+     * @param s the value of the string
+     * @param options the stringification
+     *                options for the new
+     *                instance
+     */
     public JsonString(String s, StringParseOptions options) {
         this.value = s;
         this.parseOptions = options;
     }
+
+    /**
+     * Instantiates a new JsonString with the
+     * specified value and default
+     * stringification options.
+     * @param value the value of the string
+     */
     public JsonString(String value) {
         this(value, new StringParseOptions());
     }
+
+    /**
+     * Instantiates a new JsonString with a
+     * {@code null} value and the specified
+     * stringification options.
+     * @param options the stringification
+     *                options for the new
+     *                instance
+     */
     public JsonString(StringParseOptions options) {
         this(null, options);
     }
+
+    /**
+     * Instantiates a new JsonString with a
+     * {@code null} value and default
+     * stringification options.
+     */
     public JsonString() {
         this((String) null);
     }
 
+    /**
+     * Changes the object's stringification
+     * options to the specified ones
+     * @param options the new stringification
+     *                options
+     */
     public void setParseOptions(StringParseOptions options) {
         this.parseOptions = options;
     }
 
+    /**
+     * Changes the string's value to the
+     * specified one.
+     * @param s the new value for the object
+     */
     public void setValue(String s) {
         this.value = s;
     }
@@ -48,6 +108,6 @@ public class JsonString extends JsonElement {
     @Override
     public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
-        return String.format("%c%s%c",c,this.value,c);
+        return this.value != null ? String.format("%c%s%c",c,this.value,c) : "null";
     }
 }
