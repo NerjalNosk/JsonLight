@@ -14,6 +14,7 @@ public interface ParserState {
     void openComment();
     void closeComment();
     void readBool(char c);
+    void readNull(char c);
     void error(String s);
 
     void read(char c);

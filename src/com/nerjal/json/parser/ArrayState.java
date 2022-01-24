@@ -82,7 +82,10 @@ public class ArrayState extends AbstractState {
             case '/':
                 this.openComment();
                 break;
-            case '.','0','1','2','3','4','5','6','7','8','9','+','-', 'n', 'N', 'i', 'I':
+            case 'n', 'N':
+                this.readNull(c);
+                break;
+            case '.','0','1','2','3','4','5','6','7','8','9','+','-', 'i', 'I':
                 this.openNum();
                 break;
             case 't', 'T', 'f', 'F':

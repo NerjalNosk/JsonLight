@@ -110,10 +110,14 @@ public class ObjectState extends AbstractState {
             case '/':
                 this.openComment();
                 break;
+            case 'n', 'N':
+                if (this.lookForKey) this.readKey();
+                else this.readNull(c);
+                break;
             case '.','0','1','2','3','4','5','6','7','8','9','+','-':
                 this.openNum();
                 break;
-            case 'n', 'N', 'i', 'I':
+            case 'i', 'I':
                 if (this.lookForKey) this.readKey();
                 else this.openNum();
                 break;

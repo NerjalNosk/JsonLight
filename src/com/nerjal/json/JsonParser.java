@@ -86,10 +86,15 @@ public abstract class JsonParser {
     }
 
     /**
-     * Parses a string to a JsonElement. The JsonElement type will depend on the String content
+     * Parses a string to a JsonElement. The JsonElement
+     * type will depend on the String content.<br>
+     * Warning: all {@code null} value will be considered
+     * as a null {@link com.nerjal.json.elements.JsonString}
      * @param s String: the String to parse
-     * @return the parsed JsonElement. Can be an instance of any class implementing JsonElement
-     * @throws JsonParseException if the given string cannot be parsed (missing quotes, braces, commas, etc.)
+     * @return the parsed JsonElement. Can be an instance of
+     *         any class implementing JsonElement
+     * @throws JsonParseException if the given string cannot
+     *         be parsed (missing quotes, braces, commas...)
      */
     public static JsonElement jsonify(String s) throws JsonParseException {
         StringParser parser = new StringParser(s);

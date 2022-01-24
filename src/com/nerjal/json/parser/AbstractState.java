@@ -2,6 +2,7 @@ package com.nerjal.json.parser;
 
 import com.nerjal.json.elements.JsonBoolean;
 import com.nerjal.json.elements.JsonElement;
+import com.nerjal.json.elements.JsonString;
 
 public abstract class AbstractState implements ParserState {
     protected StringParser parser;
@@ -82,6 +83,18 @@ public abstract class AbstractState implements ParserState {
                     this.addSubElement(new JsonBoolean(false));
                 } else this.error(String.format("unexpected character '%c'", c));
         }
+    }
+
+    @Override
+    public final void readNull(char c) {
+        if (c == 'n' || c == 'N') {
+            if (String.valueOf(this.parser.getNext(3)).equalsIgnoreCase("ull")) {
+                this.parser.forward(3);
+                this.addSubElement(new JsonString());
+                return;
+            }
+        }
+        this.openNum();
     }
 
     @Override
