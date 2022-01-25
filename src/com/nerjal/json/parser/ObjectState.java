@@ -28,7 +28,7 @@ public class ObjectState extends AbstractState {
         StringBuilder s = new StringBuilder(String.valueOf(this.parser.getActual()));
         while (true) {
             char c = this.parser.getNext();
-            if ((c > 64 && c < 91) || (c > 96 && c < 123) || c == 95) s.append(c);
+            if ((c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123) || c == 95) s.append(c);
             else break;
             this.parser.forward();
         }
