@@ -4,10 +4,30 @@ import com.nerjal.json.elements.JsonBoolean;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonString;
 
+/**
+ * Abstract class stating some final
+ * overrides for methods which don't
+ * need any more from
+ * {@link ParserState}, as well as
+ * default overrides for a cleaner
+ * parsing states code.<br>
+ * Also sets links to the parser and
+ * its older state.
+ * @since JDK 12
+ */
 public abstract class AbstractState implements ParserState {
     protected StringParser parser;
     protected ParserState olderState;
 
+    /**
+     * Instantiates a new
+     * {@link StringParser} state.
+     * @param stringParser the state's
+     *                     affiliated
+     *                     parser
+     * @param olderState the parser's
+     *                   older state
+     */
     public AbstractState(StringParser stringParser, ParserState olderState) {
         this.parser = stringParser;
         this.olderState = olderState;
