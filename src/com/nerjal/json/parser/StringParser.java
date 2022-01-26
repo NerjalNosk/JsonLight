@@ -248,7 +248,7 @@ public class StringParser {
      * @return the char at the cursor's pos - 1
      */
     public char getPrecedent() {
-        return this.index < 1 ? null : this.readStr.charAt(this.index-1);
+        return this.index < 1 ? 0 : this.readStr.charAt(this.index-1);
     }
 
     /**
