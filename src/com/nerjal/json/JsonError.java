@@ -64,7 +64,7 @@ public abstract class JsonError {
     /**
      * Thrown when trying to stringify a JsonElement containing
      * itself.
-     *
+     * @see JsonElement#stringify()
      */
     public static class RecursiveJsonElementException extends Exception {
         public RecursiveJsonElementException(String s) {

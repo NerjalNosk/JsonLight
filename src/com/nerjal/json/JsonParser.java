@@ -40,12 +40,11 @@ import static com.nerjal.json.JsonError.*;
  * using
  *     JsonElement jElem = JsonParser.parseString("{"a":["a",1,true]}");
  * gives
- *     JsonObject< "a":JsonArray< JsonString< "a" >,JsonNumber< 1 >,JsonBoolean< true >>>
+ *     JsonObject[ "a": JsonArray[ JsonString["a"], JsonNumber[1], JsonBoolean[true]]]
  * </pre></blockquote>
  * @author Nerjal Nosk
  * @since JDK 16
  */
-
 public abstract class JsonParser {
 
     /**
@@ -74,7 +73,7 @@ public abstract class JsonParser {
      * (automatically calls for the given object's toString method if primitive)
      * @param json the JsonElement to parse to String
      * @param space the indentation level (for recursive parsing, uses 0 by default)
-     * @param tabulation the number of tabchar added in the beginning of each line by indentation level
+     * @param tabulation the number of tabChar added in the beginning of each line by indentation level
      * @param tabChar the character ti use for indentations
      * @return String: the string version of the JsonElement
      */
