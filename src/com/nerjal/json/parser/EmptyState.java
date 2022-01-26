@@ -6,6 +6,16 @@ import com.nerjal.json.elements.JsonElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@link StringParser} JSON
+ * root parsing state class.<br>
+ * Can hold one other element, to
+ * be the one returned by the
+ * parser.<br>
+ * Closes at the end of the
+ * parsed string.
+ * @author Nerjal Nosk
+ */
 public class EmptyState extends AbstractState {
     private JsonElement element = null;
     private final List<JsonComment> comments = new ArrayList<>();

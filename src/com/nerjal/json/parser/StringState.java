@@ -6,6 +6,17 @@ import com.nerjal.json.parser.options.StringParseOptions;
 
 import static com.nerjal.json.parser.options.StringParseOptions.QuoteFormat.*;
 
+/**
+ * The {@link StringParser} JSON
+ * string parsing state class.<br>
+ * Cannot hold other elements<br>
+ * Depending on the state opening
+ * char, and therefore the string
+ * quoting, closes on either
+ * <i>{@code '}</i> or
+ * <i>{@code "}</i>
+ * @author Nerjal Nosk
+ */
 public class StringState extends AbstractState {
     private boolean precIsBackslash = false;
     private final boolean isSingleQuoteString;

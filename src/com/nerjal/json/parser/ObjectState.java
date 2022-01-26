@@ -4,6 +4,15 @@ import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.elements.JsonString;
 
+/**
+ * The {@link StringParser} JSON
+ * object parsing state class.<br>
+ * Can hold other elements, in
+ * order to fill in the parsed
+ * object. Thus, can open any
+ * kind of other states.
+ * @author Nerjal Nosk
+ */
 public class ObjectState extends AbstractState {
     private boolean lookForKey = true;
     private boolean lookForAttributive = false;
@@ -18,11 +27,26 @@ public class ObjectState extends AbstractState {
         super(stringParser, olderState);
     }
 
+    /**
+     * Sets the affiliated
+     * parser to throw an
+     * exception due to an
+     * empty iteration in
+     * the object being
+     * parsed.
+     */
     private void trailingError() {
         this.parser.forward(this.parser.getIndex()-this.trailingIndex);
-        this.error("empty array iteration");
+        this.error("empty object iteration");
     }
 
+    /**
+     * Reads an object key from
+     * the parser's string, and
+     * sets the state as looking
+     * for an attributive char.
+     * ( {@code ':'} )
+     */
     private void readKey() {
         if (!this.lookForKey) this.error(String.format("unexpected character %c",this.parser.getActual()));
         StringBuilder s = new StringBuilder(String.valueOf(this.parser.getActual()));

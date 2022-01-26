@@ -3,6 +3,19 @@ package com.nerjal.json.parser;
 import com.nerjal.json.elements.JsonComment;
 import com.nerjal.json.elements.JsonElement;
 
+/**
+ * The {@link StringParser} JSON
+ * comment parsing state class.<br>
+ * Cannot hold other elements.<br>
+ * Closing depends on the comment
+ * type:<ul>
+ * <li>In-line comment: closes on
+ * line break</li>
+ * <li>Block comment: closes on
+ * {@code *}{@code /}</li>
+ * </ul>
+ * @author Nerjal Nosk
+ */
 public class CommentState extends AbstractState {
     private boolean isBlock;
     private final StringBuilder val = new StringBuilder();

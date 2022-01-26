@@ -3,6 +3,16 @@ package com.nerjal.json.parser;
 import com.nerjal.json.elements.JsonArray;
 import com.nerjal.json.elements.JsonElement;
 
+/**
+ * The {@link StringParser} JSON
+ * array parsing state class.<br>
+ * Can hold other elements, in
+ * order to fill in the parsed
+ * array. Thus, can open any
+ * kind of other states.<br>
+ * Closes on {@code ']'}
+ * @author Nerjal Nosk
+ */
 public class ArrayState extends AbstractState {
     private boolean lookForValue = true;
     private boolean requiresIterator = false;

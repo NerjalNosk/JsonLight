@@ -5,6 +5,14 @@ import com.nerjal.json.parser.options.NumberParseOptions;
 
 import java.util.List;
 
+/**
+ * The {@link StringParser} JSON
+ * number parsing state class.<br>
+ * Cannot hold other elements<br>
+ * Closes on any not corresponding
+ * char.
+ * @author Nerjal Nosk
+ */
 public class NumberState extends AbstractState {
     private int charCount = 0;
     private boolean foundE = false;
@@ -19,6 +27,13 @@ public class NumberState extends AbstractState {
         }
     }
 
+    /**
+     * Specifies the state to be
+     * parsing a hexadecimal
+     * number, if an {@code 'x'}
+     * char has been found at a
+     * matching position.
+     */
     private void foundX() {
         if (this.charCount > 0 || this.parser.getPrecedent() != '0')
             this.error(String.format("unexpected character %c", this.parser.getActual()));
@@ -27,6 +42,17 @@ public class NumberState extends AbstractState {
         }
     }
 
+    /**
+     * Transforms the specified
+     * hex number string to a
+     * decimal number string
+     * @param s the hex string to
+     *          transform into
+     *          a decimal
+     * @return the decimal string
+     *         of the specified
+     *         hex number string
+     */
     private String hexString(String s) {
         List<String> str = List.of(s.substring(2).split("\\."));
         StringBuilder sb = new StringBuilder();
@@ -48,6 +74,15 @@ public class NumberState extends AbstractState {
         return sb.toString();
     }
 
+    /**
+     * Reads a {@code NaN} value
+     * from the parser's string,
+     * and closes the state.<br>
+     * Appends the NaN value to
+     * the parent state if
+     * the parsing ends
+     * successfully.
+     */
     private void readNaN() {
         if (this.charCount == 0 && (this.parser.getPrecedent() == 'n' || this.parser.getPrecedent() == 'N') &&
                 (this.parser.getNext() == 'n' || this.parser.getNext() == 'N')) {
@@ -57,6 +92,16 @@ public class NumberState extends AbstractState {
         } else this.error(String.format("unexpected character %c", this.parser.getActual()));
     }
 
+    /**
+     * Reads a {@code infinity}
+     * value from the parser's
+     * string, and closes the
+     * state.<br>
+     * Appends the {@code +/-}
+     * infinity value to the
+     * parent state if the
+     * parsing ends successfully.
+     */
     private void readInfinity() {
         if (this.charCount != 0) {
             this.parser.error(String.format("unexpected character %c", this.parser.getActual()));
