@@ -323,21 +323,22 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         long maxLine = parseOptions.getNumPerLine();
         for (JsonElement e : this.list) {
             if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
-            if (!parseOptions.isAllInOneLine() && (count >= maxLine || index == 0)) {
+            if ((!parseOptions.isAllInOneLine() && (count >= maxLine || index == 0)) || e.isComment() ||
+                    (index > 0 && list.get(index-1).isComment())) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
             }
-            if (count == maxLine) count = 0;
-            count++;
+            if (count == maxLine || e.isComment()) count = 0;
             index++;
             endOnComment = e.isComment();
             builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (!e.isComment()) {
+                count++;
                 if (index < size()){
                     lastComma = builder.length();
                     builder.append(", ");
                 }
-            } else if (!((JsonComment)e).isBlock()) builder.append('\n');
+            }
             stack.rem(e);
         }
         if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
