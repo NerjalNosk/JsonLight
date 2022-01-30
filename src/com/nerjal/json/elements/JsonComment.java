@@ -3,7 +3,8 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.parser.options.CommentParseOptions;
 
-import java.util.function.Consumer;
+import static com.nerjal.json.parser.options.CommentParseOptions.CommentType.*;
+import static com.nerjal.json.parser.options.CommentParseOptions.*;
 
 /**
  * <p>Represents a JSON comment, inside a
@@ -23,7 +24,7 @@ public class JsonComment extends JsonElement {
     private String value;
     private boolean isBlock;
     private boolean lockBlock = false;
-    private final CommentParseOptions parseOptions = new CommentParseOptions();
+    private CommentParseOptions parseOptions = new CommentParseOptions();
 
     /**
      * Instantiates a new in-line JsonComment
@@ -89,6 +90,7 @@ public class JsonComment extends JsonElement {
         this.value = s;
         if (s != null && s.split("\n").length > 1) {
             this.isBlock = true;
+            this.parseOptions = blockCommentParseOptions(parseOptions.usesIndent(), parseOptions.doesNewlineAsterisk());
             this.lockBlock = true;
         } else this.lockBlock = false;
     }
@@ -107,6 +109,8 @@ public class JsonComment extends JsonElement {
         if (!block && this.lockBlock)
             throw new UnsupportedOperationException("Multi-line comment cannot be set as non-block");
         isBlock = block;
+        this.parseOptions = new CommentParseOptions(
+                parseOptions.usesIndent(), parseOptions.doesNewlineAsterisk(),block? BLOCK : LINE);
     }
 
     /**
