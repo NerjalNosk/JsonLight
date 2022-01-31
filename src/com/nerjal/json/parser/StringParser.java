@@ -15,8 +15,8 @@ import com.nerjal.json.elements.JsonElement;
  * a string to the corresponding element.
  * </p>
  * @see com.nerjal.json.JsonParser
- * @author Nerjal Nosk
  * @since JDK 16
+ * @author Nerjal Nosk
  */
 public class StringParser {
     private ParserState state;

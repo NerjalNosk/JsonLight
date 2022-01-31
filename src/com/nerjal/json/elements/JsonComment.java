@@ -19,6 +19,7 @@ import static com.nerjal.json.parser.options.CommentParseOptions.*;
  * {@link JsonArray#forAll}, allow to still
  * get them, and therefore edit them if
  * wished to.
+ * @author Nerjal Nosk
  */
 public class JsonComment extends JsonElement {
     private String value;

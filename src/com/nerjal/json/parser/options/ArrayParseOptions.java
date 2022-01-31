@@ -23,6 +23,7 @@ import static com.nerjal.json.JsonError.*;
  * multiple-per-line rule, always
  * being on a new line, and
  * followed by one.
+ * @author Nerjal Nosk
  */
 public class ArrayParseOptions {
     private long numPerLine;

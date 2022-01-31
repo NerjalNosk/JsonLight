@@ -17,6 +17,7 @@ import com.nerjal.json.parser.options.BooleanParseOptions;
  * <p>Default stringification options
  * imply full lowercase.
  * </p>
+ * @author Nerjal Nosk
  */
 public class JsonBoolean extends JsonElement {
     private boolean value;

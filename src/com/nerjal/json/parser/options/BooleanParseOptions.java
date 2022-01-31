@@ -21,6 +21,7 @@ import com.nerjal.json.elements.JsonBoolean;
  * always be stringified in
  * full letters, by their
  * English name.</p>
+ * @author Nerjal Nosk
  */
 public class BooleanParseOptions {
     private BooleanFormat format;

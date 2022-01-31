@@ -14,6 +14,7 @@ import com.nerjal.json.elements.JsonString;
  * Also sets links to the parser and
  * its older state.
  * @since JDK 12
+ * @author Nerjal Nosk
  */
 public abstract class AbstractState implements ParserState {
     protected StringParser parser;

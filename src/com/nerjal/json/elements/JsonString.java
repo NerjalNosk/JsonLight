@@ -19,6 +19,7 @@ import com.nerjal.json.parser.options.StringParseOptions;
  * value is null, just as {@code null}
  * is parsed as a null JsonString with
  * the parser.
+ * @author Nerjal Nosk
  */
 public class JsonString extends JsonElement {
     private String value;

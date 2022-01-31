@@ -11,6 +11,7 @@ import java.util.Arrays;
  * in order to properly manipulate JSON elements. All
  * further functionalities are specified in the different
  * classes themselves.
+ * @author Nerjal Nosk
  */
 public abstract class JsonElement {
     private JsonComment[] comments = new JsonComment[]{};
