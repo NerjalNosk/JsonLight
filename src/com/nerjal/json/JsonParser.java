@@ -1,14 +1,7 @@
 package com.nerjal.json;
 
-import com.nerjal.json.elements.JsonArray;
-import com.nerjal.json.elements.JsonComment;
 import com.nerjal.json.elements.JsonElement;
-import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.parser.StringParser;
-
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.nerjal.json.JsonError.*;
 

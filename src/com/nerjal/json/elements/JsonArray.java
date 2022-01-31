@@ -2,7 +2,6 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError.RecursiveJsonElementException;
 import com.nerjal.json.parser.options.ArrayParseOptions;
-import com.nerjal.json.parser.options.ObjectParseOptions;
 
 import java.util.*;
 import java.util.function.Consumer;
