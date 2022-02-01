@@ -43,19 +43,27 @@ public class StringState extends AbstractState {
         else if (c == '\'' && !this.precIsBackslash && this.isSingleQuoteString) this.closeString();
         else if (this.precIsBackslash) {
             switch (c) {
-                case 'b' -> this.val.append('\b'); // backspace
-                case 'f' -> this.val.append('\f'); // from-feed
-                case 'n' -> this.val.append('\n'); // newline
-                case 'r' -> {
+                case 'b':
+                    this.val.append('\b'); // backspace
+                    break;
+                case 'f':
+                    this.val.append('\f'); // from-feed
+                    break;
+                case 'n':
+                    this.val.append('\n'); // newline
+                    break;
+                case 'r':
                     this.val.append('\r'); // return
                     this.parser.increaseLine(); // escaped return
-                }
-                case 't' -> this.val.append('\t'); // tab
-                case '\n' -> {
+                    break;
+                case 't': this.val.append('\t'); // tab
+                    break;
+                case '\n':
                     this.val.append('\n'); // escaped newline
                     this.parser.increaseLine();
-                }
-                default -> this.val.append('\\').append(c);
+                    break;
+                default:
+                    this.val.append('\\').append(c);
             }
             this.precIsBackslash = false;
         } else this.val.append(c);

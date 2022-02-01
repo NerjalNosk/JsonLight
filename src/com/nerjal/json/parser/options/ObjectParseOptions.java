@@ -73,11 +73,18 @@ public class ObjectParseOptions {
      *         quoting format.
      */
     public char keyQuoteChar() {
-        return switch (format) {
-            case UNQUOTED_KEYS -> 0;
-            case SINGLE_QUOTED_KEYS -> '\'';
-            default -> '"';
-        };
+        char c;
+        switch (format) {
+            case UNQUOTED_KEYS :
+                c = 0;
+                break;
+            case SINGLE_QUOTED_KEYS:
+                c = '\'';
+                break;
+            default:
+                c = '"';
+        }
+        return c;
     }
 
     /**

@@ -15,7 +15,7 @@ import com.nerjal.json.elements.JsonElement;
  * a string to the corresponding element.
  * </p>
  * @see com.nerjal.json.JsonParser
- * @since JDK 16
+ * @since JDK 11
  * @author Nerjal Nosk
  */
 public class StringParser {

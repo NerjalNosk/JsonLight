@@ -13,7 +13,7 @@ import com.nerjal.json.elements.JsonString;
  * parsing states code.<br>
  * Also sets links to the parser and
  * its older state.
- * @since JDK 12
+ * @since JDK 11
  * @author Nerjal Nosk
  */
 public abstract class AbstractState implements ParserState {
@@ -78,9 +78,14 @@ public abstract class AbstractState implements ParserState {
     public final void openComment() {
         this.parser.forward(1);
         switch (this.parser.getActual()) {
-            case '/' -> this.parser.switchState(new CommentState(this.parser, this, false));
-            case '*' -> this.parser.switchState(new CommentState(this.parser, this, true));
-            default -> this.error("unexpected character '/'");
+            case '/':
+                this.parser.switchState(new CommentState(this.parser, this, false));
+                break;
+            case '*':
+                this.parser.switchState(new CommentState(this.parser, this, true));
+                break;
+            default:
+                this.error("unexpected character '/'");
         }
     }
 
@@ -92,13 +97,15 @@ public abstract class AbstractState implements ParserState {
     @Override
     public final void readBool(char c) {
         switch (c) {
-            case 't', 'T':
+            case 't':
+            case 'T':
                 if (String.valueOf(this.parser.getNext(3)).equalsIgnoreCase("rue")) {
                     this.parser.forward(3);
                     this.addSubElement(new JsonBoolean(true));
                 } else this.error(String.format("unexpected character '%c'",c));
                 break;
-            case 'f', 'F':
+            case 'f':
+            case 'F':
                 if (String.valueOf(this.parser.getNext(4)).equalsIgnoreCase("alse")) {
                     this.parser.forward(4);
                     this.addSubElement(new JsonBoolean(false));

@@ -6,7 +6,7 @@ import com.nerjal.json.elements.*;
  * All exception classes used by the generic JsonLight API<br>
  * (doesn't include Mapper exceptions)
  * @author Nerjal Nosk
- * @since JDK 16
+ * @since JDK 11
  */
 public abstract class JsonError {
     /**

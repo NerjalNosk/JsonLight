@@ -69,7 +69,11 @@ public class ArrayState extends AbstractState {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
 
         switch (c) {
-            case ' ', '\n', '\t', '\r', '\f':
+            case ' ':
+            case '\t':
+            case '\n':
+            case '\r':
+            case '\f':
                 return;
             case ',':
                 if (this.requiresIterator) {
@@ -80,7 +84,8 @@ public class ArrayState extends AbstractState {
                     this.trailingIndex = this.parser.getIndex();
                 } else this.error("unexpected iterator ','");
                 break;
-            case '"', '\'':
+            case '"':
+            case '\'':
                 this.openString();
                 break;
             case '{':
@@ -92,13 +97,31 @@ public class ArrayState extends AbstractState {
             case '/':
                 this.openComment();
                 break;
-            case 'n', 'N':
+            case 'n':
+            case 'N':
                 this.readNull(c);
                 break;
-            case '.','0','1','2','3','4','5','6','7','8','9','+','-', 'i', 'I':
+            case '.':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '+':
+            case '-':
+            case 'i':
+            case 'I':
                 this.openNum();
                 break;
-            case 't', 'T', 'f', 'F':
+            case 't':
+            case 'T':
+            case 'f':
+            case 'F':
                 this.readBool(c);
                 break;
             case ']':

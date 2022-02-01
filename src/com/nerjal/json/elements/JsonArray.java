@@ -456,7 +456,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
                 return element;
             } catch (IndexOutOfBoundsException e) {
                 checkForComodification();
-                throw new NoSuchElementException(e);
+                throw new NoSuchElementException(e.getMessage());
             }
         }
 
