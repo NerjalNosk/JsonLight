@@ -115,3 +115,4 @@ bin/
 # API tests
 
 **ApiTests*
+**.json

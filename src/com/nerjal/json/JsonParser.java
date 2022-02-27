@@ -3,6 +3,10 @@ package com.nerjal.json;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.parser.StringParser;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
 import static com.nerjal.json.JsonError.*;
 
 /**
@@ -90,6 +94,21 @@ public abstract class JsonParser {
      */
     public static JsonElement jsonify(String s) throws JsonParseException {
         StringParser parser = new StringParser(s);
+        return parser.parse();
+    }
+
+    public static JsonElement parseFile(String s) throws IOException, JsonParseException {
+        File f = new File(s);
+        return parseFile(f);
+    }
+
+    public static JsonElement parseFile(File f) throws IOException, JsonParseException {
+        StringBuilder str = new StringBuilder();
+        Scanner scanner = new Scanner(f);
+        do {
+            str.append(scanner.nextLine());
+        } while (scanner.hasNextLine());
+        StringParser parser = new StringParser(str.toString());
         return parser.parse();
     }
 }

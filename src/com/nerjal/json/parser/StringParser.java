@@ -19,14 +19,14 @@ import com.nerjal.json.elements.JsonElement;
  * @author Nerjal Nosk
  */
 public class StringParser {
-    private ParserState state;
+    protected ParserState state;
     private String readStr;
     private int index = 0;
     private int line = 1;
     private int lineIndex = 0;
-    private boolean run = false;
-    private boolean stop = false;
-    private boolean isErrored = false;
+    protected boolean run = false;
+    protected boolean stop = false;
+    protected boolean isErrored = false;
     private String errMessage = null;
 
     /**
@@ -45,6 +45,18 @@ public class StringParser {
     public StringParser(String s) {
         this.readStr = s;
         this.state = new EmptyState(this,null);
+    }
+
+    /**
+     * Increments indexes.
+     *
+     * Used for superclasses, while
+     * keeping {@code index} and
+     * {@code lineIndex} private.
+     */
+    protected final void incrementIndexes() {
+        this.index++;
+        this.lineIndex++;
     }
 
     /**
@@ -198,7 +210,7 @@ public class StringParser {
      *         parser is not running when trying to
      *         apply the changes.
      */
-    public void increaseLine() {
+    public final void increaseLine() {
         if (!this.run) throw new UnsupportedOperationException("Cannot move a not running parser's line index");
         this.line++;
         this.lineIndex = 0;
@@ -208,7 +220,7 @@ public class StringParser {
      * Returns the parser's current cursor position
      * @return the parser's current cursor position
      */
-    public int getIndex() {
+    public final int getIndex() {
         return this.index;
     }
 
@@ -289,7 +301,7 @@ public class StringParser {
      * @return the parser's throw exception
      *         to throw
      */
-    private JsonParseException buildError() {
+    protected final JsonParseException buildError() {
         return new JsonParseException(String.format(
                 "Error parsing string to json element: %s at index %d of line %d",
                 this.errMessage, this.lineIndex, this.line));
