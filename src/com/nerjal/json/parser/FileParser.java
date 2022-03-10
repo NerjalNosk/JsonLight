@@ -3,10 +3,8 @@ package com.nerjal.json.parser;
 import com.nerjal.json.JsonError;
 import com.nerjal.json.elements.JsonElement;
 
-import java.io.File;
+import java.io.*;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 import static com.nerjal.json.JsonError.*;
 
@@ -26,7 +24,7 @@ import static com.nerjal.json.JsonError.*;
  * @author Nerjal Nosk
  */
 public class FileParser extends StringParser {
-    private final FileReader reader;
+    private final InputStreamReader reader;
     private boolean reachFileEnd;
     private int readIndex = 0;
     private int stateLength;
@@ -36,6 +34,11 @@ public class FileParser extends StringParser {
     public FileParser(File f) throws FileNotFoundException {
         reader = new FileReader(f);
         super.state = new EmptyState(this,null);
+    }
+
+    private FileParser(InputStreamReader stream) {
+        reader = stream;
+        super.state = new EmptyState(this, null);
     }
 
     /**
@@ -117,6 +120,11 @@ public class FileParser extends StringParser {
      */
     public static JsonElement parse(File f) throws JsonParseException, FileNotFoundException {
         FileParser parser = new FileParser(f);
+        return parser.parse();
+    }
+
+    public static JsonElement parseStream(InputStreamReader streamReader) throws JsonParseException {
+        FileParser parser = new FileParser(streamReader);
         return parser.parse();
     }
 
