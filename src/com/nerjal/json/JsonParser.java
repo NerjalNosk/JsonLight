@@ -1,6 +1,7 @@
 package com.nerjal.json;
 
 import com.nerjal.json.elements.JsonElement;
+import com.nerjal.json.parser.FileParser;
 import com.nerjal.json.parser.StringParser;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import static com.nerjal.json.JsonError.*;
  * </pre></blockquote>
  * @author Nerjal Nosk
  * @since JDK 16
+ * @version 1.1
  */
 public abstract class JsonParser {
 
@@ -103,12 +105,7 @@ public abstract class JsonParser {
     }
 
     public static JsonElement parseFile(File f) throws IOException, JsonParseException {
-        StringBuilder str = new StringBuilder();
-        Scanner scanner = new Scanner(f);
-        do {
-            str.append(scanner.nextLine());
-        } while (scanner.hasNextLine());
-        StringParser parser = new StringParser(str.toString());
+        FileParser parser = new FileParser(f);
         return parser.parse();
     }
 }

@@ -48,8 +48,7 @@ public class StringParser {
     }
 
     /**
-     * Increments indexes.
-     *
+     * Increments indexes.<br>
      * Used for superclasses, while
      * keeping {@code index} and
      * {@code lineIndex} private.
@@ -151,7 +150,7 @@ public class StringParser {
      *         parser hasn't run or has
      *         since been reset
      */
-    public JsonElement getElem() throws JsonParseException {
+    public final JsonElement getElem() throws JsonParseException {
         if (!this.stop) throw new JsonParseException("Parser haven't parsed any string");
         return this.state.getElem();
     }
@@ -288,7 +287,7 @@ public class StringParser {
      *         parser is not running when trying to
      *         apply the changes
      */
-    public void error(String s) {
+    public final void error(String s) {
         if (!this.run) throw new UnsupportedOperationException("Cannot set an error on a not running parser");
         this.isErrored = true;
         this.errMessage = s;

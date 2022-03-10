@@ -48,6 +48,9 @@ public abstract class JsonError {
         public JsonParseException(String s) {
             super(s);
         }
+        public JsonParseException(Exception e) {
+            super(e);
+        }
     }
 
     /**
@@ -69,6 +72,21 @@ public abstract class JsonError {
     public static class RecursiveJsonElementException extends Exception {
         public RecursiveJsonElementException(String s) {
             super(s);
+        }
+    }
+
+    /**
+     * Thrown when trying to parse an invalid file
+     * to
+     * a {@link JsonElement}
+     * @see com.nerjal.json.parser.FileParser
+     */
+    public static class FileNotFoundException extends JsonParseException{
+        public FileNotFoundException(String s) {
+            super(s);
+        }
+        public FileNotFoundException(Exception e) {
+            super(e);
         }
     }
 }

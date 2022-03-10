@@ -141,8 +141,8 @@ public class NumberState extends AbstractState {
     @Override
     public void closeNum() {
         this.parser.forward(-1);
-        this.parser.switchState(this.olderState);
         this.olderState.addSubElement(this.getElem());
+        this.parser.switchState(this.olderState);
     }
 
     @Override
