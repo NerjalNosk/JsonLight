@@ -6,7 +6,6 @@ import com.nerjal.json.parser.StringParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 
 import static com.nerjal.json.JsonError.*;
 
