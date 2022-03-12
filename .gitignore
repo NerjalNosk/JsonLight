@@ -119,7 +119,7 @@ bin/
 
 # Maven
 
-target
+!target
 
 
 bin
