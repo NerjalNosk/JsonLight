@@ -43,6 +43,7 @@ com/nerjal/json/JsonError$JsonElementTypeException.class
 com/nerjal/json/elements/JsonBoolean.class
 com/nerjal/json/mapper/annotations/JsonNode.class
 com/nerjal/json/JsonParser.class
+com/nerjal/json/elements/JsonArray$1.class
 com/nerjal/json/parser/ObjectState.class
 com/nerjal/json/mapper/annotations/JsonRequired.class
 com/nerjal/json/elements/JsonElement.class

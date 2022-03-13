@@ -40,11 +40,11 @@ public class JsonMapper {
     private static <E> E arrayListToArray(ArrayList<?> arrayList, Class<E> target) {
         if (!target.isArray()) return null;
         Class<?> subType = target.getComponentType();
-        var out = target.cast(Array.newInstance(subType, arrayList.size()));
+        Object out = target.cast(Array.newInstance(subType, arrayList.size()));
         for (int i = 0; i < arrayList.size(); i++) {
             Array.set(out, i, arrayList.get(i));
         }
-        return out;
+        return (E)out;
     }
 
     /**
@@ -113,7 +113,7 @@ public class JsonMapper {
             if (!element.isJsonArray())
                 throw new JsonCastingError(element, target);
             Class<?> subType = target.getComponentType();
-            var arr = new ArrayList<>();
+            ArrayList arr = new ArrayList<>();
             for (JsonElement elem : element.getAsJsonArray()) {
                 arr.add(map(elem, subType));
             }
@@ -140,7 +140,7 @@ public class JsonMapper {
             boolean required = field.isAnnotationPresent(JsonRequired.class);
             String name = field.getName();
             if (field.isAnnotationPresent(JsonNode.class)) {
-                var elem = field.getAnnotation(JsonNode.class);
+                JsonNode elem = field.getAnnotation(JsonNode.class);
                 required |= elem.required();
                 name = elem.value();
             }
@@ -157,8 +157,8 @@ public class JsonMapper {
 
                 Type t = field.getGenericType();
 
-                var type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                var arr = new ArrayList<>();
+                Class type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                List arr = new ArrayList<>();
                 for (JsonElement elem : element.getAsJsonObject().get(name).getAsJsonArray()) {
                     arr.add(map(elem, type));
                 }
@@ -169,13 +169,13 @@ public class JsonMapper {
 
                 Type t = field.getGenericType();
 
-                var keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                var valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
+                Class keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                Class valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
 
                 if (keyType != String.class)
                     throw new JsonCastingError(element, keyType);
 
-                var map = new HashMap<String, Object>();
+                Map map = new HashMap<String, Object>();
 
                 for (JsonObject.JsonNode node : element.getAsJsonObject().get(name).getAsJsonObject().entrySet()) {
                     map.put(
