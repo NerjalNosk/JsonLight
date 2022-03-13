@@ -292,7 +292,7 @@ public class JsonObject extends JsonElement {
      * @return a set of all non-comment children
      */
     public Set<JsonNode> entrySet() {
-        return Set.copyOf(this.nodeSet);
+        return new HashSet<>(this.nodeSet);
     }
 
     /**

@@ -105,7 +105,11 @@ public class ObjectState extends AbstractState {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
 
         switch (c) {
-            case ' ', '\n', '\t', '\r', '\f':
+            case ' ':
+            case '\n':
+            case '\t':
+            case '\r':
+            case '\f':
                 return;
             case ',':
                 if (this.requiresIterator) {
@@ -122,7 +126,8 @@ public class ObjectState extends AbstractState {
                     this.lookForValue = true;
                 } else this.error("unexpected key-value attributive ':'");
                 break;
-            case '"', '\'':
+            case '"':
+            case '\'':
                 this.openString();
                 break;
             case '{':
@@ -134,18 +139,35 @@ public class ObjectState extends AbstractState {
             case '/':
                 this.openComment();
                 break;
-            case 'n', 'N':
+            case 'n':
+            case 'N':
                 if (this.lookForKey) this.readKey();
                 else this.readNull(c);
                 break;
-            case '.','0','1','2','3','4','5','6','7','8','9','+','-':
+            case '.':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '+':
+            case '-':
                 this.openNum();
                 break;
-            case 'i', 'I':
+            case 'i':
+            case 'I':
                 if (this.lookForKey) this.readKey();
                 else this.openNum();
                 break;
-            case 't', 'T', 'f', 'F':
+            case 't':
+            case 'T':
+            case 'f':
+            case 'F':
                 if (this.lookForKey) this.readKey();
                 else this.readBool(c);
                 break;

@@ -3,6 +3,7 @@ package com.nerjal.json.parser;
 import com.nerjal.json.elements.JsonNumber;
 import com.nerjal.json.parser.options.NumberParseOptions;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class NumberState extends AbstractState {
      *         hex number string
      */
     private String hexString(String s) {
-        List<String> str = List.of(s.substring(2).split("\\."));
+        List<String> str = Arrays.asList(s.substring(2).split("\\."));
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (char c : str.get(0).toCharArray()) {
@@ -110,7 +111,8 @@ public class NumberState extends AbstractState {
         boolean negative = false;
         char c = this.parser.getActual();
         switch (c) {
-            case 'i', 'I':
+            case 'i':
+            case 'I':
                 if (this.parser.getPrecedent() == '-') negative = true;
                 else if (this.parser.getPrecedent() == '+') break;
                 else {
@@ -118,7 +120,8 @@ public class NumberState extends AbstractState {
                     return;
                 }
                 break;
-            case 'n', 'N':
+            case 'n':
+            case 'N':
                 if (this.parser.getPrecedent() != 'i' && this.parser.getPrecedent() != 'I') {
                     this.error(String.format("unexpected character %c", c));
                 }
@@ -148,9 +151,19 @@ public class NumberState extends AbstractState {
     @Override
     public void read(char c) {
         switch (c) {
-            case '0', '1', '2','3','4','5','6','7','8','9':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                 break;
-            case 'e','E':
+            case 'e':
+            case 'E':
                 if (this.isHex) break;
                 else if (this.foundE) this.error("scientific notation with double E");
                 else this.foundE = true;
@@ -159,22 +172,35 @@ public class NumberState extends AbstractState {
                 if (this.foundDecimal) this.error("unexpected decimal character '.'");
                 else this.foundDecimal = true;
                 break;
-            case 'x', 'X':
+            case 'x':
+            case 'X':
                 this.foundX();
                 break;
-            case 'a', 'A':
+            case 'a':
+            case 'A':
                 if (this.isHex) break;
                 else if (this.charCount == 0) this.readNaN();
                 else this.error(String.format("unexpected character %c", c));
                 break;
-            case 'b', 'B', 'c', 'C', 'd', 'D', 'f', 'F':
+            case 'b':
+            case 'B':
+            case 'c':
+            case 'C':
+            case 'd':
+            case 'D':
+            case 'f':
+            case 'F':
                 if (!this.isHex) this.error(String.format("unexpected character %c",c));
                 break;
-            case 'i','I','n','N':
+            case 'i':
+            case 'I':
+            case 'n':
+            case 'N':
                 if (this.charCount < 2) this.readInfinity();
                 else this.error(String.format("unexpected character %c", c));
                 break;
-            case '-', '+':
+            case '-':
+            case '+':
                 if (this.charCount != 0 && (this.parser.getPrecedent() == 'e' || this.parser.getPrecedent() == 'E'))
                     break;
             default:
