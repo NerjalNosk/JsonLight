@@ -6,6 +6,7 @@ import com.nerjal.json.parser.StringParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static com.nerjal.json.JsonError.*;
 
@@ -77,8 +78,8 @@ public abstract class JsonParser {
      */
     public static String stringify(JsonElement json, int space, int tabulation, char tabChar)
             throws RecursiveJsonElementException {
-        String tab = String.format("%c",tabChar).repeat(tabulation);
-        String indentation = tab.repeat(space);
+        String tab = string_repeat(String.format("%c",tabChar),tabulation);
+        String indentation = string_repeat(tab,space);
         return json.stringify(indentation,tab);
     }
 
@@ -106,5 +107,37 @@ public abstract class JsonParser {
     public static JsonElement parseFile(File f) throws IOException, JsonParseException {
         FileParser parser = new FileParser(f);
         return parser.parse();
+    }
+
+    /**
+     * JDK 11+ String#repeat(int):String backport
+     */
+    private static String string_repeat(String s, int i) {
+        if (i < 0) throw new IllegalArgumentException("count is negative "+i);
+        if (i == 1) return s;
+        int len = s.length();
+        if (len != 0 && i != 0) {
+            if (len == 1) {
+                byte[] single = new byte[i];
+                Arrays.fill(single, s.getBytes()[0]);
+                return new String(single);
+            } else if (2147483647 / i < len) {
+                throw new OutOfMemoryError("Repeating " + len + " bytes String " + i + " times will produce a String exceeding maximum size.");
+            } else {
+                int limit = len * i;
+                byte[] multiple = new byte[limit];
+                System.arraycopy(s.getBytes(), 0, multiple, 0, len);
+
+                int copied;
+                for(copied = len; copied < limit - copied; copied <<= 1) {
+                    System.arraycopy(multiple, 0, multiple, copied, copied);
+                }
+
+                System.arraycopy(multiple, 0, multiple, copied, limit - copied);
+                return new String(multiple);
+            }
+        } else {
+            return "";
+        }
     }
 }
