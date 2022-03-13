@@ -36,7 +36,7 @@ public class FileParser extends StringParser {
         super.state = new EmptyState(this,null);
     }
 
-    private FileParser(InputStreamReader stream) {
+    public FileParser(InputStreamReader stream) {
         reader = stream;
         super.state = new EmptyState(this, null);
     }
