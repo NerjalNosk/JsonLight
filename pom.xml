@@ -9,9 +9,9 @@
     <version>1.1.0</version>
 
     <properties>
-        <maven.compiler.release>15</maven.compiler.release>
-        <maven.compiler.source>15</maven.compiler.source>
-        <maven.compiler.target>15</maven.compiler.target>
+        <maven.compiler.release>16</maven.compiler.release>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
     </properties>
 
     <build>
@@ -22,9 +22,9 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <release>15</release>
-                        <source>15</source>
-                        <target>15</target>
+                        <release>16</release>
+                        <source>16</source>
+                        <target>16</target>
                     </configuration>
                 </plugin>
                 <plugin>
