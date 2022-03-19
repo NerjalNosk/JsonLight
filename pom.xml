@@ -6,7 +6,7 @@
 
     <groupId>com.nerjal.json</groupId>
     <artifactId>JsonLight</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 
     <!--<properties>
         <maven.compiler.source>15</maven.compiler.source>
@@ -40,6 +40,31 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <name>JsonLight</name>
+    <description>A lightweight Java JSON API aiming to fully support Json5 </description>
+    <url>https://github.com/NerjalNosk/JsonLight/</url>
+    <inceptionYear>2022</inceptionYear>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://mit-license.org/</url>
+            <distribution>repo</distribution>
+            <comments>A short and simple permissive license with conditions only requiring preservation of copyright and license notices</comments>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Nerjal Nosk</name>
+            <url>github.com/NerjalNosk</url>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>CodedSakura</name>
+            <url>github.com/CodedSakura</url>
+        </contributor>
+    </contributors>
 
     <distributionManagement>
         <repository>
