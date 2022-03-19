@@ -18,6 +18,7 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonStringifyStack.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/EmptyState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/JsonMapper.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/package-info.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/StringState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/CommentState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonIgnore.java
