@@ -135,7 +135,6 @@ public class FileParser extends StringParser {
             if (isErrored) throw buildError();
             readFileToIndex();
             if (stop || reachFileEnd || act == '\uFFFF') break;
-            System.out.println(act);
             state.read(act);
             stateLength++;
             readIndex++;
