@@ -120,6 +120,7 @@ bin/
 # Maven
 
 !target
+!target/**.jar
 
 
 bin
