@@ -2,11 +2,11 @@
 
 ### Description
 
-This is a minimalist and lightweight Java Json5 API<br>
-Classes and methods names are freely inspired from the Google Gson API
+This is a minimalist and lightweight Java Json5 library<br>
+Classes and methods names are freely inspired from the Google Gson library
 
-This API aims to fully support Json5, which up to this day isn't
-done by Gson. Hence, should this API allow you to make use of comments
+This library aims to fully support Json5, which up to this day isn't
+done by Gson. Hence, should this lib allow you to make use of comments
 and such in your projects.
 
 ### Example
