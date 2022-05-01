@@ -72,7 +72,7 @@ your own project
         <dependency>
             <groupId>com.github.NerjalNosk</groupId>
             <artifactId>JsonLight</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.3</version>
         </dependency>
     </dependencies>
 </project>
@@ -86,6 +86,6 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.NerjalNosk:JsonLight-Gson-Compat:1.0.1"
+    implementation "com.github.NerjalNosk:JsonLight-Gson-Compat:1.1.3"
 }
 ```
