@@ -86,6 +86,6 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.NerjalNosk:JsonLight-Gson-Compat:1.1.3"
+    implementation "com.github.NerjalNosk:JsonLight:1.1.3"
 }
 ```
