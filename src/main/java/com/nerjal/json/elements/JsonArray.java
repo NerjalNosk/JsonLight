@@ -1,5 +1,6 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.JsonError;
 import com.nerjal.json.JsonError.RecursiveJsonElementException;
 import com.nerjal.json.parser.options.ArrayParseOptions;
 
@@ -110,8 +111,88 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      *         targets a position out of the array's
      *         boundaries.
      */
-    public JsonElement get(int index) {
+    public JsonElement get(int index) throws IndexOutOfBoundsException {
         return this.list.get(index);
+    }
+
+    /**
+     * Returns the number stored at the specified index
+     * in the array
+     * @param index the index at which is stored the
+     *              expected number
+     * @return the number stored at the specified index
+     * @throws IndexOutOfBoundsException if the index
+     *         targets a position out of the array's
+     *         boundaries
+     * @throws JsonError.JsonElementTypeException if the
+     *         element doesn't have a numeral value
+     */
+    public Number getNumber(int index) throws IndexOutOfBoundsException, JsonError.JsonElementTypeException {
+        return this.get(index).getAsNumber();
+    }
+
+    /**
+     * Returns the string stored at the specified index
+     * in the array
+     * @param index the index at which is stored the
+     *              expected string
+     * @return the number stored at the specified index
+     * @throws IndexOutOfBoundsException if the index
+     *         targets a position out of the array's
+     *         boundaries
+     * @throws JsonError.JsonElementTypeException if the
+     *         element doesn't have a string value
+     */
+    public String getString(int index) throws IndexOutOfBoundsException, JsonError.JsonElementTypeException {
+        return this.get(index).getAsString();
+    }
+
+    /**
+     * Returns the boolean stored at the specified index
+     * in the array
+     * @param index the index at which is stored the
+     *              expected boolean
+     * @return the boolean stored at the specified index
+     * @throws IndexOutOfBoundsException if the index
+     *         targets a position out of the array's
+     *         boundaries
+     * @throws JsonError.JsonElementTypeException if the
+     *         element doesn't have a boolean value
+     */
+    public boolean getBoolean(int index) throws IndexOutOfBoundsException, JsonError.JsonElementTypeException {
+        return this.get(index).getAsBoolean();
+    }
+
+    /**
+     * Returns the array stored at the specified index
+     * in the array
+     * @param index the index at which is stored the
+     *              expected array
+     * @return the array stored at the specified index
+     * @throws IndexOutOfBoundsException if the index
+     *         targets a position out of the array's
+     *         boundaries
+     * @throws JsonError.JsonElementTypeException if the
+     *         element doesn't have an array value
+     */
+    public JsonArray getArray(int index) throws IndexOutOfBoundsException, JsonError.JsonElementTypeException {
+        return this.get(index).getAsJsonArray();
+    }
+
+    /**
+     * Returns the object stored at the specified index
+     * in the array
+     * @param index the index at which is stored the
+     *              expected object
+     * @return the object stored at the specified index
+     * @throws IndexOutOfBoundsException if the index
+     *         targets a position out of the array's
+     *         boundaries
+     * @throws JsonError.JsonElementTypeException if the
+     *         element doesn't have an object value
+     */
+    public JsonObject getObject(int index) throws IndexOutOfBoundsException, JsonError.JsonElementTypeException {
+        return this.get(index).getAsJsonObject();
     }
 
     /**

@@ -79,6 +79,71 @@ public class JsonObject extends JsonElement {
     }
 
     /**
+     * Returns the number associated with the specified key
+     * @param key the key which is mapped for the expected number
+     * @return the number mapped for the specified key
+     * @throws ChildNotFoundException when there is no child associated with
+     *         the specified key in the object
+     * @throws JsonElementTypeException if the element doesn't have a numeral
+     *         value
+     */
+    public Number getNumber(String key) throws ChildNotFoundException, JsonElementTypeException {
+        return this.get(key).getAsNumber();
+    }
+
+    /**
+     * Returns the String associated with the specified key
+     * @param key the key which is mapped for the expected string
+     * @return the string mapped for the specified key
+     * @throws ChildNotFoundException when there is no child associated with
+     *         the specified key in the object
+     * @throws JsonElementTypeException if the element doesn't have a string
+     *         value
+     */
+    public String getString(String key) throws ChildNotFoundException, JsonElementTypeException {
+        return this.get(key).getAsString();
+    }
+
+    /**
+     * Returns the boolean associated with the specified key
+     * @param key the key which is mapped for the expected boolean
+     * @return the boolean mapped for the specified key
+     * @throws ChildNotFoundException when there is no child associated with
+     *         the specified key in the object
+     * @throws JsonElementTypeException if the element doesn't have a boolean
+     *         value
+     */
+    public boolean getBoolean(String key) throws ChildNotFoundException, JsonElementTypeException {
+        return this.get(key).getAsBoolean();
+    }
+
+    /**
+     * Returns the array associated with the specified key
+     * @param key the key which is mapped for the expected array
+     * @return the array mapped for the specified key
+     * @throws ChildNotFoundException when there is no child associated with
+     *         the specified key in the object
+     * @throws JsonElementTypeException if the element doesn't have an array
+     *         value
+     */
+    public JsonArray getArray(String key) throws ChildNotFoundException, JsonElementTypeException {
+        return this.get(key).getAsJsonArray();
+    }
+
+    /**
+     * Returns the object associated with the specified key
+     * @param key the key which is mapped for the expected object
+     * @return the object mapped for the specified key
+     * @throws ChildNotFoundException when there is no child associated with
+     *         the specified key in the object
+     * @throws JsonElementTypeException if the element doesn't have an object
+     *         value
+     */
+    public JsonObject getObject(String key) throws ChildNotFoundException, JsonElementTypeException {
+        return this.get(key).getAsJsonObject();
+    }
+
+    /**
      * @return {@code true} if this object has no child element,
      *         {@link JsonComment} included
      */
