@@ -14,7 +14,7 @@ import com.nerjal.json.elements.JsonElement;
  * <li>Block comment: closes on
  * {@code *}{@code /}</li>
  * </ul>
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class CommentState extends AbstractState {
     private boolean isBlock;

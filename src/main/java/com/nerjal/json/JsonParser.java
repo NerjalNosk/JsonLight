@@ -40,7 +40,7 @@ import static com.nerjal.json.JsonError.*;
  * gives
  *     JsonObject[ "a": JsonArray[ JsonString["a"], JsonNumber[1], JsonBoolean[true]]]
  * </pre></blockquote>
- * @author Nerjal Nosk
+ * @author nerjal
  * @since JDK 16
  * @version 1.1
  */

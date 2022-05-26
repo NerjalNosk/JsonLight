@@ -11,7 +11,7 @@ import java.util.List;
  * </p>
  * Stack works on the elements'
  * hash.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 class JsonStringifyStack {
     private final List<Integer> stack = new ArrayList<>();

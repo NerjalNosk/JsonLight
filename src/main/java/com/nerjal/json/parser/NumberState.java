@@ -12,7 +12,7 @@ import java.util.List;
  * Cannot hold other elements<br>
  * Closes on any not corresponding
  * char.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class NumberState extends AbstractState {
     private int charCount = 0;

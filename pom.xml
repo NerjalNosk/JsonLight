@@ -4,6 +4,42 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>JsonLight</name>
+    <url>https://github.com/NerjalNosk/JsonLight/</url>
+    <inceptionYear>2022</inceptionYear>
+    <description>A simple lightweight JSON5 Java library, made to be easy to use and master</description>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://mit-license.org/</url>
+            <distribution>repo</distribution>
+            <comments>A short and simple permissive license with conditions only requiring preservation of copyright and license notices</comments>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>nerjal</id>
+            <name>Nerjal Nosk</name>
+            <email>nosk.nerjal@gmx.com</email>
+            <url>https://github.com/NerjalNosk</url>
+            <roles>
+                <role>developer</role>
+                <role>project-headmaster</role>
+            </roles>
+            <timezone>France/Paris</timezone>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>CodedSakura</name>
+            <email>sakuracided@gmail.com</email>
+            <url>http://codedsakura.eu</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </contributor>
+    </contributors>
+
     <groupId>com.nerjal.json</groupId>
     <artifactId>JsonLight</artifactId>
     <version>1.1.4</version>
@@ -41,30 +77,6 @@
         </pluginManagement>
     </build>
 
-    <name>JsonLight</name>
-    <description>A lightweight Java JSON API aiming to fully support Json5 </description>
-    <url>https://github.com/NerjalNosk/JsonLight/</url>
-    <inceptionYear>2022</inceptionYear>
-    <licenses>
-        <license>
-            <name>MIT</name>
-            <url>https://mit-license.org/</url>
-            <distribution>repo</distribution>
-            <comments>A short and simple permissive license with conditions only requiring preservation of copyright and license notices</comments>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <name>Nerjal Nosk</name>
-            <url>github.com/NerjalNosk</url>
-        </developer>
-    </developers>
-    <contributors>
-        <contributor>
-            <name>CodedSakura</name>
-            <url>github.com/CodedSakura</url>
-        </contributor>
-    </contributors>
 
     <distributionManagement>
         <repository>

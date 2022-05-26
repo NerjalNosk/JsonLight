@@ -14,7 +14,7 @@ import java.util.List;
  * parser.<br>
  * Closes at the end of the
  * parsed string.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class EmptyState extends AbstractState {
     private JsonElement element = null;

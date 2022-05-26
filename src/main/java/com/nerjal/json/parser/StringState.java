@@ -15,7 +15,7 @@ import static com.nerjal.json.parser.options.StringParseOptions.QuoteFormat.*;
  * quoting, closes on either
  * <i>{@code '}</i> or
  * <i>{@code "}</i>
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class StringState extends AbstractState {
     private boolean precIsBackslash = false;

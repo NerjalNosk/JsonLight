@@ -19,7 +19,7 @@ import com.nerjal.json.parser.options.NumberParseOptions;
  * By default, stringification is set to
  * return an integer decimal string of the
  * number.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class JsonNumber extends JsonElement {
     private Number value;

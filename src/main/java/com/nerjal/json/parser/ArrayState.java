@@ -11,7 +11,7 @@ import com.nerjal.json.elements.JsonElement;
  * array. Thus, can open any
  * kind of other states.<br>
  * Closes on {@code ']'}
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class ArrayState extends AbstractState {
     private boolean lookForValue = true;

@@ -19,7 +19,7 @@ import static com.nerjal.json.parser.options.CommentParseOptions.*;
  * {@link JsonArray#forAll}, allow to still
  * get them, and therefore edit them if
  * wished to.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class JsonComment extends JsonElement {
     private String value;
@@ -168,12 +168,15 @@ public class JsonComment extends JsonElement {
     @Override
     public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
         if (!this.isBlock) return "//"+this.value;
-        StringBuilder b = new StringBuilder("/*\n");
+        StringBuilder b = new StringBuilder("/*");
         for (String s : this.getSplitValue()) {
-            if (this.parseOptions.usesIndent()) b.append(indentation);
+            if (s.length() == 0) continue;
+            if (this.parseOptions.usesIndent()) b.append('\n').append(indentation);
             if (this.parseOptions.doesNewlineAsterisk()) b.append("* ");
             b.append(s);
         }
+        if (this.parseOptions.usesIndent() && this.parseOptions.doesNewlineAsterisk())
+            b.append('\n').append(indentation);
         b.append("*/");
         return b.toString();
     }

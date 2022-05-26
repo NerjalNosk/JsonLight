@@ -16,7 +16,7 @@ import com.nerjal.json.elements.JsonElement;
  * </p>
  * @see com.nerjal.json.JsonParser
  * @since JDK 16
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class StringParser {
     protected ParserState state;

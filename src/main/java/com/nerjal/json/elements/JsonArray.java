@@ -41,7 +41,7 @@ import java.util.function.UnaryOperator;
  * comments, which are still followed by a line
  * break)
  * </p>
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     private final List<JsonElement> list;

@@ -21,7 +21,7 @@ import static com.nerjal.json.JsonError.*;
  * </p>
  * @see com.nerjal.json.JsonParser
  * @since JDK 16
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class FileParser extends StringParser {
     private final InputStreamReader reader;

@@ -26,7 +26,7 @@ import static com.nerjal.json.JsonError.*;
  * be replaced or instantiated to a different value.
  * <br>These options allow to set the keys quoting.
  * </p>
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;

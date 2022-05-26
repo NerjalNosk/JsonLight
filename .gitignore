@@ -116,6 +116,7 @@ bin/
 
 **ApiTests*
 **.json
+**.json5
 
 # Maven
 

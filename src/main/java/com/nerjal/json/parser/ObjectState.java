@@ -11,7 +11,7 @@ import com.nerjal.json.elements.JsonString;
  * order to fill in the parsed
  * object. Thus, can open any
  * kind of other states.
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public class ObjectState extends AbstractState {
     private boolean lookForKey = true;

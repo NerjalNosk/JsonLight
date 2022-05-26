@@ -28,7 +28,7 @@ import com.nerjal.json.elements.JsonElement;
  * <li>Getting/editing the state's
  * parsing result</li>
  * </ul>
- * @author Nerjal Nosk
+ * @author nerjal
  */
 public interface ParserState {
 
