@@ -1,0 +1,46 @@
+@options
+@packages
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/nerjal/IdeaProjects/JsonLight/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2022. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/nerjal/IdeaProjects/JsonLight/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'JsonLight 1.2.0 API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' '/home/nerjal/IdeaProjects/JsonLight/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'JsonLight 1.2.0 API'
+com.nerjal.json.elements
+com.nerjal.json
+com.nerjal.json.parser
+com.nerjal.json.parser.options
+com.nerjal.json.mapper
+com.nerjal.json.mapper.errors
+com.nerjal.json.mapper.annotations
+/home/nerjal/IdeaProjects/JsonLight/src/main/java = 1647111880512
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/script.js = 1657151246193
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index.html = 1657151246185
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/help-doc.html = 1657151246193
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-noframe.html = 1657151246185
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-summary.html = 1657151246189
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-frame.html = 1657151245977
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/package-list = 1657151245977
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/stylesheet.css = 1657151047548
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/deprecated-list.html = 1657151246185
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-tree.html = 1657151246161
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index-all.html = 1657151246181
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/serialized-form.html = 1657151246045
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/constant-values.html = 1657151246033
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-frame.html = 1657151246185
