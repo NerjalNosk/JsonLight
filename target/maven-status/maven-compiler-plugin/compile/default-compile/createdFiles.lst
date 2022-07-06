@@ -25,6 +25,7 @@ com/nerjal/json/parser/ParserState.class
 com/nerjal/json/parser/options/ArrayParseOptions.class
 com/nerjal/json/parser/options/CommentParseOptions.class
 com/nerjal/json/parser/options/ObjectParseOptions.class
+com/nerjal/json/mapper/JsonUnmapper.class
 com/nerjal/json/mapper/JsonMapper.class
 com/nerjal/json/JsonError$IllegalLineElementsNumberException.class
 com/nerjal/json/mapper/errors/JsonCastingError.class

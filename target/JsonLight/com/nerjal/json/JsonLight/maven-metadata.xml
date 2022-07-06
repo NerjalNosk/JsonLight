@@ -3,10 +3,10 @@
   <groupId>com.nerjal.json</groupId>
   <artifactId>JsonLight</artifactId>
   <versioning>
-    <release>1.1.4</release>
+    <release>1.2.0</release>
     <versions>
-      <version>1.1.4</version>
+      <version>1.2.0</version>
     </versions>
-    <lastUpdated>20220508104034</lastUpdated>
+    <lastUpdated>20220706225723</lastUpdated>
   </versioning>
 </metadata>

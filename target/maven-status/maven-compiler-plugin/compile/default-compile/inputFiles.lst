@@ -7,6 +7,7 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonSkipSuperclass.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/ParserState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonString.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/package-info.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/errors/JsonCastingError.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonObject.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/StringParseOptions.java
@@ -17,6 +18,7 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/ObjectParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonStringifyStack.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/EmptyState.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/package-info.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/JsonMapper.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/package-info.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/StringState.java
@@ -25,9 +27,12 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/NumberState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/StringParser.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/CommentParseOptions.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/package-info.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/JsonUnmapper.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonComment.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/errors/JsonMapperFieldRequiredError.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonNumber.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/package-info.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/BooleanParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonRequired.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonBoolean.java

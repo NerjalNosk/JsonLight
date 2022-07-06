@@ -1,5 +1,6 @@
 package com.nerjal.json.elements;
 
+import com.nerjal.json.JsonError;
 import com.nerjal.json.parser.options.StringParseOptions;
 
 /**
@@ -100,6 +101,10 @@ public class JsonString extends JsonElement {
     @Override
     public String typeToString() {
         return "String";
+    }
+    @Override
+    public JsonString getAsJsonString() {
+        return this;
     }
     @Override
     public String getAsString() {

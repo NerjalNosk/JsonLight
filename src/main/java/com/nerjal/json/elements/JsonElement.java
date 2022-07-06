@@ -17,6 +17,18 @@ public abstract class JsonElement {
     private JsonComment[] comments = new JsonComment[]{};
 
     /**
+     * For a cleaner exception code
+     * @param targetType the expected type for a proper
+     *                   method execution
+     * @return The exception to be thrown
+     */
+    protected final JsonError.JsonElementTypeException buildTypeError(String targetType) {
+        return new JsonError.JsonElementTypeException(
+                String.format("%s is not a %s element", this.getClass().getName(), targetType)
+        );
+    }
+
+    /**
      * Adds a comment to the element's root comments
      * @param comment the comment to add
      */
@@ -119,7 +131,7 @@ public abstract class JsonElement {
      *         a JsonObject
      */
     public JsonObject getAsJsonObject() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not an Object element",this.getClass().getName()));
+        throw buildTypeError("Object");
     }
 
     /**
@@ -130,7 +142,7 @@ public abstract class JsonElement {
      *         a JsonArray
      */
     public JsonArray getAsJsonArray() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not an Array element",this.getClass().getName()));
+        throw buildTypeError("Array");
     }
 
     /**
@@ -141,7 +153,29 @@ public abstract class JsonElement {
      *         a JsonComment
      */
     public JsonComment getAsJsonComment() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not a Comment element", this.getClass().getName()));
+        throw buildTypeError("Comment");
+    }
+
+    /**
+     * Gives off the JsonNumber of the element.<br>
+     * Has the same effect as casting the element.
+     * @return The JsonNumber cast of the element
+     * @throws JsonError.JsonElementTypeException if the element isn't
+     *         a JsonNumber
+     */
+    public JsonNumber getAsJsonNumber() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("Number");
+    }
+
+    /**
+     * Gives off the JsonString of the element.<br>
+     * Has the same effect as casting the element.
+     * @return The JsonString cast of the element
+     * @throws JsonError.JsonElementTypeException if the element isn't
+     *         a JsonString
+     */
+    public JsonString getAsJsonString() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("String");
     }
 
     /**
@@ -153,7 +187,7 @@ public abstract class JsonElement {
      *         have a string value
      */
     public String getAsString() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not a String element",this.getClass().getName()));
+        throw buildTypeError("String");
     }
 
     /**
@@ -164,7 +198,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public Number getAsNumber() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not a Number element",this.getClass().getName()));
+        throw buildTypeError("Number");
     }
 
     /**
@@ -175,7 +209,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public int getAsInt() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
+        throw buildTypeError("Int");
     }
 
     /**
@@ -186,7 +220,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public long getAsLong() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
+        throw buildTypeError("Long");
     }
 
     /**
@@ -197,7 +231,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public float getAsFloat() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not a Float element",this.getClass().getName()));
+        throw buildTypeError("Float");
     }
 
     /**
@@ -208,7 +242,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public double getAsDouble() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not an int element",this.getClass().getName()));
+        throw buildTypeError("Double");
     }
 
     /**
@@ -219,7 +253,7 @@ public abstract class JsonElement {
      *         have a numeral value
      */
     public boolean getAsBoolean() throws JsonError.JsonElementTypeException {
-        throw new JsonError.JsonElementTypeException(String.format("%s is not a Boolean element",this.getClass().getName()));
+        throw buildTypeError("Boolean");
     }
 
     /**

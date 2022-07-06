@@ -201,8 +201,58 @@ public class JsonObject extends JsonElement {
     }
 
     /**
-     * Associates a value to the specified key, and creates a new entry if
-     * none already exists for the specified key
+     * Renames the node with the specified key to the
+     * specified new key.
+     * @param key the old key of the node to rename
+     * @param newKey the new key of the node
+     * @return whether the node could be renamed. The
+     *         node cannot be renamed to an already
+     *         used key (see {@link JsonObject#forceRename})
+     * @throws ChildNotFoundException if there is no entry
+     *         with the specified key.
+     * @throws IllegalArgumentException if any of the
+     *         specified keys is {@code null}.
+     */
+    public boolean rename(String key, String newKey) throws ChildNotFoundException, IllegalArgumentException {
+        return rename(key, newKey, false) == null;
+    }
+
+    /**
+     * Renames by force the entry with the specified key
+     * to the given new key. Any entry with the specified
+     * new key will be overwritten, contrarily to
+     * {@link JsonObject#rename}
+     * @param key the old key of the node to rename
+     * @param newKey the new key if the node
+     * @return the value of any overwritten entry if there
+     *         was, {@code null} otherwise.
+     * @throws ChildNotFoundException if there is no entry
+     *         with the specified key.
+     * @throws IllegalArgumentException if any of the
+     *         specified keys is {@code null}.
+     */
+    public JsonElement forceRename(String key, String newKey) throws ChildNotFoundException, IllegalArgumentException {
+        return rename(key, newKey, true);
+    }
+
+    private JsonElement rename(String key, String newKey, boolean force)
+            throws ChildNotFoundException, IllegalArgumentException {
+        JsonElement e = null;
+        if (key == null || newKey == null)
+            throw new IllegalArgumentException("Unable to rename from or to a null key");
+        if (!this.map.containsKey(key))
+            throw new ChildNotFoundException(String.format("Object has no such child '%s'",key));
+        if (this.map.containsKey(newKey)) {
+            e = map.remove(newKey);
+            if (!force) return e;
+        }
+        this.map.put(newKey, this.map.remove(key));
+        return e;
+    }
+
+    /**
+     * Associates a value to the specified key, and creates
+     * a new entry if none already exists for the specified key
      * @param key the key to add or edit an entry for
      * @param element the value to associate to the key
      */
@@ -211,6 +261,16 @@ public class JsonObject extends JsonElement {
         this.nodeSet.remove(new JsonNode(key, null, this));
         this.nodeSet.add(new JsonNode(key, element, this));
         for (JsonComment comment : element.getRootComments()) this.add(null, comment);
+    }
+
+    /**
+     * An alias to {@link JsonObject#put}
+     * @param key the key to add or edit an entry for
+     * @param element the value to associate to the key
+     * @see JsonObject#put
+     */
+    public void set(String key, JsonElement element) {
+        this.put(key, element);
     }
 
     /**
