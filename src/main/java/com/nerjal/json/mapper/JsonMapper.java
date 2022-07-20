@@ -53,7 +53,7 @@ public class JsonMapper {
      * @param type - class type
      * @return expanded list of fields
      */
-    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+    static List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
         if (type.getSuperclass() != null && !type.isAnnotationPresent(JsonSkipSuperclass.class)) {
@@ -162,11 +162,13 @@ public class JsonMapper {
                     if (required) {
                         if (field.isAnnotationPresent(JsonEnumDefault.class)) {
                             for (Field f : target.getFields()) {
-                                if (f.getName().equalsIgnoreCase(field.getAnnotation(JsonEnumDefault.class).value()))
-                                    field.set(instance, Enum.valueOf( (Class) target, f.getName()));
-                                break;
+                                if (f.getName().equalsIgnoreCase(field.getAnnotation(JsonEnumDefault.class).value())) {
+                                    field.set(instance, Enum.valueOf((Class) target, f.getName()));
+                                    break;
+                                }
                             }
-                            throw new JsonValueError((JsonString) element, target);
+                            if (field.get(instance) == null)
+                                throw new JsonValueError((JsonString) element, target);
                         } else
                             throw new JsonMapperFieldRequiredError(name);
                     }
