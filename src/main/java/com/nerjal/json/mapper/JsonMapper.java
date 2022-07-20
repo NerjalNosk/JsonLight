@@ -3,15 +3,16 @@ package com.nerjal.json.mapper;
 import com.nerjal.json.JsonError;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
-import com.nerjal.json.mapper.annotations.JsonIgnore;
-import com.nerjal.json.mapper.annotations.JsonNode;
-import com.nerjal.json.mapper.annotations.JsonRequired;
-import com.nerjal.json.mapper.annotations.JsonSkipSuperclass;
+import com.nerjal.json.elements.JsonString;
+import com.nerjal.json.mapper.annotations.*;
 import com.nerjal.json.mapper.errors.JsonCastingError;
 import com.nerjal.json.mapper.errors.JsonMapperFieldRequiredError;
+import com.nerjal.json.mapper.errors.JsonValueError;
 
 import java.lang.reflect.*;
 import java.util.*;
+
+import static com.nerjal.json.JsonError.*;
 
 /**
  * Class for mapping a {@link JsonElement} onto any class
@@ -72,14 +73,15 @@ public class JsonMapper {
      * @throws InstantiationException if fails to instance target
      * @throws NoSuchMethodException if target has no constructor
      * @throws IllegalAccessException if can't access a field or the constructor
-     * @throws JsonError.JsonElementTypeException if can't get element's type
+     * @throws JsonElementTypeException if can't get element's type
      * @throws JsonCastingError if can't map element onto target
      * @throws JsonMapperFieldRequiredError if a required field is not present in structure
      */
     @SuppressWarnings("unchecked")
     public static <T> T map(JsonElement element, Class<T> target)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException,
-            JsonError.JsonElementTypeException, JsonError.ChildNotFoundException, JsonCastingError, JsonMapperFieldRequiredError {
+            JsonElementTypeException, ChildNotFoundException, JsonCastingError,
+            JsonMapperFieldRequiredError, JsonValueError {
 
         if (target == Integer.class || target == int.class) {
             if (!element.isNumber())
@@ -108,6 +110,15 @@ public class JsonMapper {
             if (!element.isString())
                 throw new JsonCastingError(element, target);
             return (T) element.getAsString();
+
+        } else if (target.isEnum()) {
+            if (!element.isString())
+                throw new JsonCastingError( element, target);
+            for (Field field : target.getFields()) {
+                if (field.getName().equalsIgnoreCase(element.getAsString()))
+                    return (T) Enum.valueOf((Class) target, field.getName());
+            }
+            throw new JsonValueError((JsonString) element, target);
 
         } else if (target.isArray()) {
             if (!element.isJsonArray())
@@ -145,50 +156,63 @@ public class JsonMapper {
                 name = elem.value();
             }
 
-            if (!element.getAsJsonObject().contains(name)) {
-                if (required)
-                    throw new JsonMapperFieldRequiredError(name);
-                else continue;
-            }
-
-            if (Collection.class.isAssignableFrom(field.getType())) {
-                if (!element.getAsJsonObject().get(name).isJsonArray())
-                    throw new JsonCastingError(element.getAsJsonObject().get(name), target);
-
-                Type t = field.getGenericType();
-
-                Class type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                List arr = new ArrayList<>();
-                for (JsonElement elem : element.getAsJsonObject().get(name).getAsJsonArray()) {
-                    arr.add(map(elem, type));
+            try {
+                if (!element.getAsJsonObject().contains(name)) {
+                    if (required) {
+                        if (field.isAnnotationPresent(JsonEnumDefault.class)) {
+                            for (Field f : target.getFields()) {
+                                if (f.getName().equalsIgnoreCase(field.getAnnotation(JsonEnumDefault.class).value()))
+                                    field.set(instance, Enum.valueOf( (Class) target, f.getName()));
+                                break;
+                            }
+                            throw new JsonValueError((JsonString) element, target);
+                        } else
+                            throw new JsonMapperFieldRequiredError(name);
+                    }
+                    continue;
                 }
-                field.set(instance, arr);
-            } else if (Map.class.isAssignableFrom(field.getType())) {
-                if (!element.getAsJsonObject().get(name).isJsonObject())
-                    throw new JsonCastingError(element.getAsJsonObject().get(name), target);
 
-                Type t = field.getGenericType();
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    if (!element.getAsJsonObject().get(name).isJsonArray())
+                        throw new JsonCastingError(element.getAsJsonObject().get(name), target);
 
-                Class keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                Class valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
+                    Type t = field.getGenericType();
 
-                if (keyType != String.class)
-                    throw new JsonCastingError(element, keyType);
+                    Class type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                    List arr = new ArrayList<>();
+                    for (JsonElement elem : element.getAsJsonObject().get(name).getAsJsonArray()) {
+                        arr.add(map(elem, type));
+                    }
+                    field.set(instance, arr);
+                } else if (Map.class.isAssignableFrom(field.getType())) {
+                    if (!element.getAsJsonObject().get(name).isJsonObject())
+                        throw new JsonCastingError(element.getAsJsonObject().get(name), target);
 
-                Map map = new HashMap<String, Object>();
+                    Type t = field.getGenericType();
 
-                for (JsonObject.JsonNode node : element.getAsJsonObject().get(name).getAsJsonObject().entrySet()) {
-                    map.put(
-                            node.getKey(),
-                            map(node.getValue(), valueType)
+                    Class keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                    Class valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
+
+                    if (keyType != String.class)
+                        throw new JsonCastingError(element, keyType);
+
+                    Map map = new HashMap<String, Object>();
+
+                    for (JsonObject.JsonNode node : element.getAsJsonObject().get(name).getAsJsonObject().entrySet()) {
+                        map.put(
+                                node.getKey(),
+                                map(node.getValue(), valueType)
+                        );
+                    }
+                    field.set(instance, map);
+                } else {
+                    field.set(
+                            instance,
+                            map(element.getAsJsonObject().get(name), field.getType())
                     );
                 }
-                field.set(instance, map);
-            } else {
-                field.set(
-                        instance,
-                        map(element.getAsJsonObject().get(name), field.getType())
-                );
+            } catch (JsonCastingError e) {
+                if (!ignoreException) throw e;
             }
         }
         return instance;
