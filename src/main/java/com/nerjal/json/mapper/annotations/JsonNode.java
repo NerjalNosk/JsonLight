@@ -13,6 +13,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonNode {
+    /**
+     * The Json object key target
+     */
     String value();
+
+    /**
+     * Whether an exception should be raised if there is no node with the specified value upon mapping an object
+     */
     boolean required() default false;
+
+    /**
+     * Whether cast/value exceptions occurring during mapping should be ignored
+     */
+    boolean ignoreExceptions() default false;
 }

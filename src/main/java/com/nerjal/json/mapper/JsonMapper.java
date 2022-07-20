@@ -1,6 +1,5 @@
 package com.nerjal.json.mapper;
 
-import com.nerjal.json.JsonError;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.elements.JsonString;
@@ -149,10 +148,12 @@ public class JsonMapper {
 
             field.setAccessible(true);
             boolean required = field.isAnnotationPresent(JsonRequired.class);
+            boolean ignoreException = field.isAnnotationPresent(JsonIgnoreExceptions.class);
             String name = field.getName();
             if (field.isAnnotationPresent(JsonNode.class)) {
                 JsonNode elem = field.getAnnotation(JsonNode.class);
                 required |= elem.required();
+                ignoreException |= elem.ignoreExceptions();
                 name = elem.value();
             }
 
