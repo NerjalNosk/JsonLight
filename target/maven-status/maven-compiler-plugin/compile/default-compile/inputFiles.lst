@@ -8,12 +8,15 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/ParserState.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonString.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/package-info.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonIgnoreExceptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/errors/JsonCastingError.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/errors/JsonValueError.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonObject.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/StringParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonElement.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonArray.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/ApiTests.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonEnumDefault.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/JsonError.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/ObjectParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonStringifyStack.java

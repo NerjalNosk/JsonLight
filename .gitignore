@@ -123,5 +123,10 @@ bin/
 !target
 !target/**.jar
 
+# javadoc
+**.html
+**.css
+**.js
+target/apidocs
 
 bin
