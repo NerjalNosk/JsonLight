@@ -8,10 +8,7 @@ import com.nerjal.json.mapper.errors.JsonMapperFieldRequiredError;
 import com.nerjal.json.parser.options.NumberParseOptions;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import static com.nerjal.json.parser.options.NumberParseOptions.NumberFormat.*;
 
@@ -27,6 +24,11 @@ public class JsonUnmapper {
      * @return the JsonElement fitting the specified object
      */
     public static <T> JsonElement serialize(T object) {
+        return serialize(object, new HashSet<>());
+    }
+
+    private static <T> JsonElement serialize(T object, Set<Integer> stack) {
+
         if (object == null) return new JsonString((String) null);
         Class<?> target = object.getClass();
         if (target == Integer.class || target == int.class)
@@ -56,7 +58,7 @@ public class JsonUnmapper {
         }
         if (target.isArray()) {
             JsonArray array = new JsonArray();
-            Arrays.asList((Object[]) object).forEach(o -> array.add(serialize(o)));
+            Arrays.asList((Object[]) object).forEach(o -> array.add(serialize(o, stack)));
             return array;
         }
         if (Collection.class.isAssignableFrom(target)) {
@@ -66,14 +68,14 @@ public class JsonUnmapper {
                 c = c.getSuperclass();
             }
             JsonArray array = new JsonArray();
-            ((Collection)object).forEach(o -> array.add(serialize(o)));
+            ((Collection)object).forEach(o -> array.add(serialize(o, stack)));
             return array;
         }
         if (Map.class.isAssignableFrom(target)) {
             JsonObject obj = new JsonObject();
             ((Map)object).forEach((key, value) -> {
                 if (!(key instanceof String)) return;
-                obj.put((String) key, serialize(value));
+                obj.put((String) key, serialize(value, stack));
             });
             return obj;
         }
@@ -93,7 +95,7 @@ public class JsonUnmapper {
 
             try {
                 if (field.get(object) == null && nonNull) throw new JsonMapperFieldRequiredError(field.getName());
-                obj.put(name, serialize(field.get(object)));
+                obj.put(name, serialize(field.get(object), stack));
             } catch (IllegalAccessException | JsonMapperFieldRequiredError e) {
                 throw new RuntimeException(e);
             }

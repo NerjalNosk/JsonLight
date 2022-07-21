@@ -80,7 +80,16 @@ public class JsonMapper {
     public static <T> T map(JsonElement element, Class<T> target)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException,
             JsonElementTypeException, ChildNotFoundException, JsonCastingError,
-            JsonMapperFieldRequiredError, JsonValueError {
+            JsonMapperFieldRequiredError, JsonValueError, RecursiveJsonElementException {
+        return map(element, target, new HashSet<>());
+    }
+
+    private static <T> T map (JsonElement element, Class<T> target, Set<Integer> stack)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+            JsonElementTypeException, ChildNotFoundException, JsonCastingError,
+            JsonMapperFieldRequiredError, JsonValueError, RecursiveJsonElementException {
+        if (!stack.add(element.hashCode()))
+            throw new RecursiveJsonElementException("Unsupported recursive Json structure");
 
         if (target == Integer.class || target == int.class) {
             if (!element.isNumber())
@@ -125,7 +134,7 @@ public class JsonMapper {
             Class<?> subType = target.getComponentType();
             ArrayList arr = new ArrayList<>();
             for (JsonElement elem : element.getAsJsonArray()) {
-                arr.add(map(elem, subType));
+                arr.add(map(elem, subType,stack));
             }
             if (isPrimitive(subType)) {
                 return arrayListToArray(arr, target);
@@ -187,7 +196,7 @@ public class JsonMapper {
                     Class type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
                     List arr = new ArrayList<>();
                     for (JsonElement elem : element.getAsJsonObject().get(name).getAsJsonArray()) {
-                        arr.add(map(elem, type));
+                        arr.add(map(elem, type, stack));
                     }
                     field.set(instance, arr);
                 } else if (Map.class.isAssignableFrom(field.getType())) {
@@ -207,14 +216,14 @@ public class JsonMapper {
                     for (JsonObject.JsonNode node : element.getAsJsonObject().get(name).getAsJsonObject().entrySet()) {
                         map.put(
                                 node.getKey(),
-                                map(node.getValue(), valueType)
+                                map(node.getValue(), valueType, stack)
                         );
                     }
                     field.set(instance, map);
                 } else {
                     field.set(
                             instance,
-                            map(element.getAsJsonObject().get(name), field.getType())
+                            map(element.getAsJsonObject().get(name), field.getType(), stack)
                     );
                 }
             } catch (JsonCastingError e) {
