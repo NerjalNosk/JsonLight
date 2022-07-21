@@ -41,6 +41,19 @@ public class JsonUnmapper {
             return new JsonBoolean((Boolean) object);
         if (target == String.class)
             return new JsonString((String) object);
+        if (target.isEnum()) {
+            JsonString string = new JsonString((String) null);
+            for (Field field : target.getFields()) {
+                field.setAccessible(true);
+                try {
+                    if (field.get(object) == object) {
+                        string.setValue(field.getName());
+                        break;
+                    }
+                } catch (IllegalAccessException ignored) {}
+            }
+            return string;
+        }
         if (target.isArray()) {
             JsonArray array = new JsonArray();
             Arrays.asList((Object[]) object).forEach(o -> array.add(serialize(o)));
