@@ -9,6 +9,8 @@ import com.nerjal.json.elements.*;
  * @since JDK 16
  */
 public abstract class JsonError {
+    private JsonError() {}
+
     /**
      * Thrown when trying to get a typed element from a
      * {@link JsonElement} which isn't of the corresponding type.
