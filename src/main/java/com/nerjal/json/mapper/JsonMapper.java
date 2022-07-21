@@ -137,7 +137,7 @@ public class JsonMapper {
             throw new JsonCastingError(element, target);
         }
 
-        if (!element.isJsonObject()) {
+        if (!element.isJsonObject() &! (element.isString() && element.typeToString().equals("null"))) {
             throw new JsonCastingError(element, target);
         }
 
@@ -156,6 +156,9 @@ public class JsonMapper {
                 ignoreException |= elem.ignoreExceptions();
                 name = elem.value();
             }
+
+            if (element.isString() && element.typeToString().equals("null") &! required)
+                return null;
 
             try {
                 if (!element.getAsJsonObject().contains(name)) {

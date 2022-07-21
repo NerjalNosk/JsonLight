@@ -100,7 +100,7 @@ public class JsonString extends JsonElement {
     }
     @Override
     public String typeToString() {
-        return "String";
+        return value == null ? "null" : "String";
     }
     @Override
     public JsonString getAsJsonString() {

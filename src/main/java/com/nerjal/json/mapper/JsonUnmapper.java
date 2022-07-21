@@ -27,6 +27,7 @@ public class JsonUnmapper {
      * @return the JsonElement fitting the specified object
      */
     public static <T> JsonElement serialize(T object) {
+        if (object == null) return new JsonString((String) null);
         Class<?> target = object.getClass();
         if (target == Integer.class || target == int.class)
             return new JsonNumber((Integer)object);
