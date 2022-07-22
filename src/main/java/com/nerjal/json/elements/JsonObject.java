@@ -154,7 +154,7 @@ public class JsonObject extends JsonElement {
     /**
      * Returns the number of child element in this object<br>
      * Warning! This includes {@link JsonComment} instances as well,
-     * although they are not registered as entries.
+     * although they are not registered as nodes.
      * @return the number of children element of this object
      */
     public int size() {
@@ -252,7 +252,8 @@ public class JsonObject extends JsonElement {
 
     /**
      * Associates a value to the specified key, and creates
-     * a new entry if none already exists for the specified key
+     * a new entry if none already exists for the specified key.
+     * Use {@link #add} to add comments
      * @param key the key to add or edit an entry for
      * @param element the value to associate to the key
      */
@@ -360,6 +361,66 @@ public class JsonObject extends JsonElement {
         this.nodeSet.clear();
     }
 
+    /**
+     * Pushes all the nodes of the specified object into
+     * this one, and returns the number of modifications made.
+     * See {@link #pushAll} to push comments at the same time.
+     * @param object the object to push into this one. Will not be affected.
+     * @return the number of modifications this object underwent.
+     */
+    public int push(JsonObject object) {
+        AtomicInteger i = new AtomicInteger();
+        object.forEach((key, value) -> i.getAndAdd(this.add(key, value)?1:0));
+        return i.get();
+    }
+
+    /**
+     * Pushes all the nodes and comments of the specified object
+     * into this one, and returns the number of modifications made.
+     * All pushed comment counts as a modification.
+     * See {@link #push} to ignore comments
+     * @param object The object to push into this one. Will not be affected.
+     * @return the number of modifications this object underwent, counting comments
+     */
+    public int pushAll(JsonObject object) {
+        AtomicInteger i = new AtomicInteger();
+        object.forAll((key, value) -> i.getAndAdd(this.add(key, value)?1:0));
+        return i.get();
+    }
+
+    /**
+     * <p>Creates a new JsonObject with the nodes and unique comments
+     * of all the specified objects.
+     * </p>
+     * <p>Objects are each overwriting each other on the final output
+     * in the order they are specified.
+     * </p>
+     * <p>Comments are compared via their hash.
+     * </p>
+     * @param o1 The first object to merge. Will not be affected.
+     * @param o2 The second object to merge Will not be affected.
+     * @param objects All the objects to merge. None will be affected.
+     * @return a new object containing the nodes and comments of
+     *         specified objects, in the order they are given.
+     */
+    public static JsonObject merge(JsonObject o1, JsonObject o2, JsonObject... objects) {
+        JsonObject out = new JsonObject();
+        out.pushAll(o1);
+        out.push(o2);
+        for (JsonComment c : o2.commentSet) {
+            if (out.commentSet.contains(c)) continue;
+            out.add(null,c);
+        }
+        for (JsonObject object : objects) {
+            out.push(object);
+            for (JsonComment c : object.commentSet) {
+                if (out.commentSet.contains(c)) continue;
+                out.add(null, c);
+            }
+        }
+        return out;
+    }
+
     // JsonElement overrides
 
     @Override
@@ -439,7 +500,7 @@ public class JsonObject extends JsonElement {
      * @throws ConcurrentModificationException if an element is found to be
      *         added or removed during iteration
      */
-    public void forEach(BiConsumer<String, JsonElement> action) {
+    public void forEach(BiConsumer<String, ? super JsonElement> action) {
         Objects.requireNonNull(action);
         this.nodeSet.forEach(node -> action.accept(node.key, node.value));
     }
@@ -453,7 +514,7 @@ public class JsonObject extends JsonElement {
      * @throws ConcurrentModificationException if an element is found to be
      * added or removed during iteration
      */
-    public void forAll(BiConsumer<String, JsonElement> action) {
+    public void forAll(BiConsumer<String, ? super JsonElement> action) {
         Objects.requireNonNull(action);
         this.map.forEach(action);
     }
@@ -467,7 +528,7 @@ public class JsonObject extends JsonElement {
      * @throws ConcurrentModificationException if an element is found to be
      *         added or removed during iteration
      */
-    public void forAllComments(Consumer<JsonElement> action) {
+    public void forAllComments(Consumer<JsonComment> action) {
         Objects.requireNonNull(action);
         this.commentSet.forEach(action);
     }

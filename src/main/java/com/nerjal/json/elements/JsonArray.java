@@ -45,6 +45,7 @@ import java.util.function.UnaryOperator;
  */
 public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     private final List<JsonElement> list;
+    private final Set<JsonComment> commentSet;
     private ArrayParseOptions parseOptions;
     protected transient int modCount = 0;
 
@@ -53,6 +54,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public JsonArray() {
         this.list = new ArrayList<>();
+        this.commentSet = new HashSet<>();
         this.parseOptions = new ArrayParseOptions();
     }
 
@@ -66,6 +68,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public JsonArray(Collection<JsonElement> elements) {
         this.list = new ArrayList<>(elements);
+        this.commentSet = new HashSet<>();
+        elements.forEach(e -> {
+            if (e.isComment())
+                commentSet.add((JsonComment) e);
+        });
         this.parseOptions = new ArrayParseOptions();
     }
     /**
@@ -76,6 +83,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public JsonArray(ArrayParseOptions options) {
         this.list = new ArrayList<>();
+        this.commentSet = new HashSet<>();
         this.parseOptions = options;
     }
     /**
@@ -90,6 +98,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public JsonArray(Collection<JsonElement> elements, ArrayParseOptions options) {
         this.list = new ArrayList<>(elements);
+        this.commentSet = new HashSet<>();
+        elements.forEach(e -> {
+            if (e.isComment())
+                commentSet.add((JsonComment) e);
+        });
         this.parseOptions = options;
     }
 
@@ -214,6 +227,27 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     }
 
     /**
+     * Returns an array of all the comments in this
+     * array.
+     * @return an array of all the comments in this
+     *         array
+     */
+    public JsonComment[] getAllComments() {
+        return (JsonComment[]) Arrays.copyOf(this.commentSet.toArray(), this.commentSet.size());
+    }
+
+    /**
+     * Returns the number of elements in this list.<br>
+     * If this list contains more than
+     * {@code Integer.MAX_VALUE} elements, returns
+     * {@code Integer.MAX_VALUE}
+     * @return the number of elements in ths list
+     */
+    public int size() {
+        return this.list.size();
+    }
+
+    /**
      * Removes the first occurrence (with the lowest
      * index) of the specified object in this list,
      * if it is present. The list is unchanged if no
@@ -229,7 +263,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public boolean remove(JsonElement element) {
         boolean b = this.list.remove(element);
-        if (b) modCount++;
+        if (b) {
+            modCount++;
+            if (element.isComment())
+                commentSet.remove((JsonComment) element);
+        }
         return b;
     }
 
@@ -249,6 +287,8 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public JsonElement remove(int index) {
         JsonElement e = this.list.remove(index);
         modCount++;
+        if (e.isComment())
+            commentSet.remove((JsonComment) e);
         return e;
     }
 
@@ -270,7 +310,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public Collection<JsonElement> removeAll(Collection<JsonElement> elements) {
         List<JsonElement> returnList = new ArrayList<>();
         elements.forEach(e -> {
-            if (list.remove(e)) returnList.add(e);
+            if (list.remove(e)) {
+                returnList.add(e);
+                if (e.isComment())
+                    commentSet.remove((JsonComment) e);
+            }
         });
         modCount++;
         return returnList;
@@ -283,8 +327,12 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      */
     public void add(JsonElement element) {
         this.list.add(element);
-        this.list.addAll(Arrays.asList(element.getRootComments()));
-        element.clearRootComment();
+        if (element.isComment())
+            commentSet.add((JsonComment) element);
+        else {
+            this.list.addAll(Arrays.asList(element.getRootComments()));
+            element.clearRootComment();
+        }
         modCount++;
     }
 
@@ -305,9 +353,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public void add(int index, JsonElement element) {
         this.list.add(index, element);
         int k = index+1;
-        for (JsonComment comment : element.getRootComments()) {
-            this.list.add(k, comment);
-            k++;
+        if (element.isComment()) {
+            commentSet.add((JsonComment) element);
+        } else for (JsonComment comment : element.getRootComments()) {
+                this.list.add(k, comment);
+                k++;
         }
         element.clearRootComment();
         modCount++;
@@ -329,8 +379,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public void addAll(Collection<JsonElement> elements) {
         this.list.addAll(elements);
         elements.forEach(e -> {
-            list.addAll(Arrays.asList(e.getRootComments()));
-            e.clearRootComment();
+            if (e.isComment()) commentSet.add((JsonComment) e);
+            else {
+                list.addAll(Arrays.asList(e.getRootComments()));
+                e.clearRootComment();
+            }
         });
         modCount++;
     }
@@ -348,8 +401,11 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public void addAll(JsonElement[] elements) {
         this.addAll(Arrays.asList(elements));
         for (JsonElement e : elements) {
-            list.addAll(Arrays.asList(e.getRootComments()));
-            e.clearRootComment();
+            if (e.isComment()) commentSet.add((JsonComment) e);
+            else {
+                list.addAll(Arrays.asList(e.getRootComments()));
+                e.clearRootComment();
+            }
         }
         modCount++;
     }
@@ -368,14 +424,52 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     }
 
     /**
-     * Returns the number of elements in this list.<br>
-     * If this list contains more than
-     * {@code Integer.MAX_VALUE} elements, returns
-     * {@code Integer.MAX_VALUE}
-     * @return the number of elements in ths list
+     * Pushes all the items of the specified array into this one.
+     * @param array the array to push into this one. Will not be affected.
      */
-    public int size() {
-        return this.list.size();
+    public void push(JsonArray array) {
+        array.forEach(this::add);
+    }
+
+    /**
+     * Pushes akk the items and comments of the specified
+     * array into this one.
+     * @param array the array to push into this one. Will not be affected.
+     */
+    public void pushAll(JsonArray array) {
+        array.forAll(this::add);
+    }
+
+    /**
+     * Creates a new JsonArray with the element and
+     * unique comments of all the specified arrays.
+     * Comments are compared via their hash.
+     * @param a1 The first array to merge.
+     *           Will not be affected.
+     * @param a2 The second array to merge.
+     *           Will not be affected.
+     * @param arrays All the arrays to merge as well.
+     *               None will be affected.
+     * @return A new array containing the children and
+     *         comments of all the specified arrays,
+     *         in the order they are given.
+     */
+    public static JsonArray merge(JsonArray a1, JsonArray a2, JsonArray... arrays) {
+        JsonArray arr = new JsonArray();
+        arr.pushAll(a1);
+        arr.push(a2);
+        for (JsonComment comment : a2.commentSet) {
+            if (arr.commentSet.contains(comment)) continue;
+            arr.add(comment);
+        }
+        for (JsonArray array : arrays) {
+            arr.push(array);
+            for (JsonComment comment : array.commentSet) {
+                if (arr.commentSet.contains(comment)) continue;
+                arr.add(comment);
+            }
+        }
+        return arr;
     }
 
     @Override
@@ -449,7 +543,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      *         action tries to append, remove, or
      *         replace elements in this list
      */
-    public void forAll(Consumer<JsonElement> action) {
+    public void forAll(Consumer<? super JsonElement> action) {
         this.list.forEach(action);
     }
 

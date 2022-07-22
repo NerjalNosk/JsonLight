@@ -15,13 +15,13 @@
 -docencoding
 'UTF-8'
 -doctitle
-'JsonLight 1.3.0 API'
+'JsonLight 1.3.1 API'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/home/nerjal/IdeaProjects/JsonLight/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'JsonLight 1.3.0 API'
+'JsonLight 1.3.1 API'
 com.nerjal.json.elements
 com.nerjal.json
 com.nerjal.json.parser
@@ -30,17 +30,17 @@ com.nerjal.json.mapper
 com.nerjal.json.mapper.errors
 com.nerjal.json.mapper.annotations
 /home/nerjal/IdeaProjects/JsonLight/src/main/java = 1647111880512
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/script.js = 1658417992774
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index.html = 1658417992766
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/help-doc.html = 1658417992770
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-noframe.html = 1658417992766
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-summary.html = 1658417992770
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-frame.html = 1658417992570
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/package-list = 1658417992566
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/stylesheet.css = 1658417992774
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/deprecated-list.html = 1658417992762
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-tree.html = 1658417992738
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index-all.html = 1658417992762
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/serialized-form.html = 1658417992622
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/constant-values.html = 1658417992614
-/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-frame.html = 1658417992766
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/script.js = 1658517473918
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index.html = 1658517473914
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/help-doc.html = 1658517473918
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-noframe.html = 1658517473914
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-summary.html = 1658517473918
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-frame.html = 1658517473702
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/package-list = 1658517473702
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/stylesheet.css = 1658517443478
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/deprecated-list.html = 1658517473910
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/overview-tree.html = 1658517473882
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/index-all.html = 1658517473906
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/serialized-form.html = 1658517473754
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/constant-values.html = 1658517473746
+/home/nerjal/IdeaProjects/JsonLight/target/apidocs/allclasses-frame.html = 1658517473914

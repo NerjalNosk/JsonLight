@@ -21,7 +21,7 @@ import static com.nerjal.json.parser.options.CommentParseOptions.*;
  * wished to.
  * @author nerjal
  */
-public class JsonComment extends JsonElement {
+public final class JsonComment extends JsonElement {
     private String value;
     private boolean isBlock;
     private boolean lockBlock = false;
