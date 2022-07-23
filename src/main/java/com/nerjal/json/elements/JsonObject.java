@@ -370,7 +370,32 @@ public class JsonObject extends JsonElement {
      */
     public int push(JsonObject object) {
         AtomicInteger i = new AtomicInteger();
-        object.forEach((key, value) -> i.getAndAdd(this.add(key, value)?1:0));
+        object.forEach((key, value) -> {
+            i.incrementAndGet();
+            this.put(key, value);
+        });
+        return i.get();
+    }
+
+    /**
+     * Recursively pushes the specified object into
+     * this one, and returns the number of modifications
+     * made. The recursion only occurs over object values
+     * with the same key.
+     * @param object the object to push into this one. Will not be affected.
+     * @return the number of modifications this object and its
+     *         nodes recursively underwent.
+     */
+    public int recursivePush(JsonObject object) {
+        AtomicInteger i = new AtomicInteger();
+        object.forEach((key, value) -> {
+            if (this.map.containsKey(key) && this.map.get(key).isJsonObject() && value.isJsonObject())
+                i.getAndAdd(((JsonObject)map.get(key)).recursivePush((JsonObject) value));
+            else {
+                i.incrementAndGet();
+                this.put(key, value);
+            }
+        });
         return i.get();
     }
 
@@ -384,7 +409,37 @@ public class JsonObject extends JsonElement {
      */
     public int pushAll(JsonObject object) {
         AtomicInteger i = new AtomicInteger();
-        object.forAll((key, value) -> i.getAndAdd(this.add(key, value)?1:0));
+        object.forAll((key, value) -> {
+            i.incrementAndGet();
+            if (value.isComment())
+                this.add(key, value);
+            else this.put(key, value);
+        });
+        return i.get();
+    }
+
+    /**
+     * Recursively pushes all the nodes and comments of the
+     * specified object into this one returns the number of
+     * modifications applied.
+     * All pushed comment counts as a modification, recursion
+     * only occurs over objects values with the same key.
+     * @param object The object to push into this one. Will not be affected.
+     * @return the number of modifications this object and
+     *         nodes recursively underwent, counting comments.
+     */
+    public int recursivePushAll(JsonObject object) {
+        AtomicInteger i = new AtomicInteger();
+        object.forAll((key, value) -> {
+            if (this.map.containsKey(key) && this.map.get(key).isJsonObject() && value.isJsonObject())
+                i.getAndAdd(((JsonObject)map.get(key)).recursivePush((JsonObject) value));
+            else {
+                i.getAndIncrement();
+                if (value.isComment())
+                    this.add(key, value);
+                else this.put(key, value);
+            }
+        });
         return i.get();
     }
 
@@ -413,6 +468,39 @@ public class JsonObject extends JsonElement {
         }
         for (JsonObject object : objects) {
             out.push(object);
+            for (JsonComment c : object.commentSet) {
+                if (out.commentSet.contains(c)) continue;
+                out.add(null, c);
+            }
+        }
+        return out;
+    }
+
+    /**
+     * <p>Creates a new JsonObject recursively combining the nodes
+     * and unique comments of all the specified objects.
+     * </p>
+     * <p>Objects are each overwriting each other on the final output
+     * in the order they are specified.
+     * </p>
+     * <p>Comments are compared via their hash.
+     * </p>
+     * @param o1 The first object to merge. Will not be affected.
+     * @param o2 The second object to recursively merge Will not be affected.
+     * @param objects All the objects to recursively merge. None will be affected.
+     * @return a new object containing the nodes and comments of
+     *         specified objects, in the order they are given.
+     */
+    public static JsonObject recursiveMerge(JsonObject o1, JsonObject o2, JsonObject... objects) {
+        JsonObject out = new JsonObject();
+        out.recursivePushAll(o1);
+        out.recursivePush(o2);
+        for (JsonComment c : o2.commentSet) {
+            if (out.commentSet.contains(c)) continue;
+            out.add(null, c);
+        }
+        for (JsonObject object : objects) {
+            out.recursivePush(object);
             for (JsonComment c : object.commentSet) {
                 if (out.commentSet.contains(c)) continue;
                 out.add(null, c);
