@@ -38,10 +38,7 @@ public class JsonObject extends JsonElement {
      * An empty JsonObject with default stringification options
      */
     public JsonObject() {
-        this.map = new HashMap<>();
-        this.nodeSet = new HashSet<>();
-        this.commentSet = new HashSet<>();
-        this.parseOptions = new ObjectParseOptions();
+        this(new ObjectParseOptions());
     }
 
     public JsonObject(ObjectParseOptions options) {
@@ -237,15 +234,15 @@ public class JsonObject extends JsonElement {
 
     private JsonElement rename(String key, String newKey, boolean force)
             throws ChildNotFoundException, IllegalArgumentException {
-        JsonElement e = null;
         if (key == null || newKey == null)
             throw new IllegalArgumentException("Unable to rename from or to a null key");
+        if (key.equals(newKey))
+            return null;
         if (!this.map.containsKey(key))
             throw new ChildNotFoundException(String.format("Object has no such child '%s'",key));
-        if (this.map.containsKey(newKey)) {
-            e = map.remove(newKey);
-            if (!force) return e;
-        }
+        if (!force && this.map.containsKey(newKey))
+            return new JsonString();
+        JsonElement e = map.remove(newKey);
         this.map.put(newKey, this.map.remove(key));
         return e;
     }
