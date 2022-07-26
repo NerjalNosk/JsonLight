@@ -3,6 +3,7 @@ package com.nerjal.json.elements;
 import com.nerjal.json.JsonError;
 import com.nerjal.json.JsonError.RecursiveJsonElementException;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Arrays;
  * classes themselves.
  * @author nerjal
  */
-public abstract class JsonElement {
+public abstract class JsonElement implements Serializable {
     private JsonComment[] comments = new JsonComment[]{};
 
     /**

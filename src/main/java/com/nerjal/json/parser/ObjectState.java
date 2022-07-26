@@ -3,6 +3,7 @@ package com.nerjal.json.parser;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.elements.JsonObject;
 import com.nerjal.json.elements.JsonString;
+import com.nerjal.json.parser.options.ObjectParseOptions;
 
 /**
  * The {@link StringParser} JSON
@@ -21,7 +22,7 @@ public class ObjectState extends AbstractState {
     private boolean trailingIterator = false;
     private int trailingIndex = 0;
     private String key = null;
-    private final JsonObject object = new JsonObject();
+    private final JsonObject object = new JsonObject(new ObjectParseOptions(true));
 
     public ObjectState(StringParser stringParser, ParserState olderState) {
         super(stringParser, olderState);

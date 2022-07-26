@@ -32,6 +32,7 @@ public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;
     private final Set<JsonNode> nodeSet;
     private final Set<JsonComment> commentSet;
+    private final List<JsonNode> orderList;
     private ObjectParseOptions parseOptions;
 
     /**
@@ -45,6 +46,7 @@ public class JsonObject extends JsonElement {
         this.map = new HashMap<>();
         this.nodeSet = new HashSet<>();
         this.commentSet = new HashSet<>();
+        this.orderList = new ArrayList<>();
         this.parseOptions = options;
     }
 
@@ -183,16 +185,19 @@ public class JsonObject extends JsonElement {
      *         altered if {@code false}
      */
     public boolean add(String key, JsonElement element) {
+        JsonNode node = new JsonNode(key, element, this);
         if (key == null && element.isComment()) {
             this.map.put(UUID.randomUUID().toString(),element);
             this.commentSet.add((JsonComment) element);
+            this.orderList.add(node);
             return true;
         }
         if (this.map.containsKey(key)) {
             return false;
         }
         this.map.put(key, element);
-        this.nodeSet.add(new JsonNode(key, element, this));
+        this.nodeSet.add(node);
+        this.orderList.add(node);
         for (JsonComment comment : element.getRootComments()) this.add(null, comment);
         return true;
     }
@@ -243,6 +248,7 @@ public class JsonObject extends JsonElement {
         if (!force && this.map.containsKey(newKey))
             return new JsonString();
         JsonElement e = map.remove(newKey);
+        this.orderList.removeIf(node -> (node.key.equals(newKey) && node.value == e));
         this.map.put(newKey, this.map.remove(key));
         return e;
     }
@@ -255,10 +261,14 @@ public class JsonObject extends JsonElement {
      * @param element the value to associate to the key
      */
     public void put(String key, JsonElement element) {
+        boolean b = this.map.containsKey(key);
+        JsonNode node = new JsonNode(key, element, this);
         this.map.put(key, element);
         this.nodeSet.remove(new JsonNode(key, null, this));
-        this.nodeSet.add(new JsonNode(key, element, this));
+        this.nodeSet.add(node);
+        if (!b) this.orderList.add(node);
         for (JsonComment comment : element.getRootComments()) this.add(null, comment);
+        element.clearRootComment();
     }
 
     /**
@@ -302,6 +312,7 @@ public class JsonObject extends JsonElement {
                 }
             });
             else this.nodeSet.remove(new JsonNode(key,j, this));
+            this.orderList.removeIf(node -> node.key.equals(key));
             return j;
         } catch (NullPointerException e) {
             throw new ChildNotFoundException("");
@@ -320,6 +331,7 @@ public class JsonObject extends JsonElement {
         if (b) {
             if (j.isComment()) this.commentSet.removeIf(e -> e.hashCode() == j.hashCode());
             else this.nodeSet.remove(new JsonNode(key, j, this));
+            this.orderList.removeIf(node -> node.key.equals(key) && node.value == j);
         }
         return b;
     }
@@ -335,12 +347,15 @@ public class JsonObject extends JsonElement {
         Set<String> remove = new HashSet<>();
         Set<JsonElement> removed = new HashSet<>();
         for (String key : map.keySet())
-            if (map.get(key).isComment() && operator.apply(map.get(key)) != null) remove.add(key);
+            if ((!map.get(key).isComment()) && operator.apply(map.get(key)) != null) remove.add(key);
         for (String key : remove) {
             try {
                 JsonElement e = remove(key);
                 removed.add(e);
                 nodeSet.remove(new JsonNode(key, e, this));
+                if (e.isComment())
+                    commentSet.remove((JsonComment) e);
+                orderList.removeIf(node -> node.key.equals(key));
             } catch (ChildNotFoundException ignored) {}
         }
         return removed;
@@ -356,6 +371,8 @@ public class JsonObject extends JsonElement {
     public void clear() {
         this.map.clear();
         this.nodeSet.clear();
+        this.commentSet.clear();
+        this.orderList.clear();
     }
 
     /**
@@ -530,9 +547,13 @@ public class JsonObject extends JsonElement {
         AtomicInteger index = new AtomicInteger();
         AtomicInteger lastComma = new AtomicInteger();
         AtomicBoolean endOnComment = new AtomicBoolean(false);
-        for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
-            String k = entry.getKey();
-            JsonElement e = entry.getValue();
+        List<JsonNode> l = this.parseOptions.isOrdered() ? orderList : new ArrayList<>();
+        if (!this.parseOptions.isOrdered()) {
+            this.map.forEach((k, v) -> l.add(new JsonNode(k, v, this)));
+        }
+        for (JsonNode node : l) {
+            String k = node.key;
+            JsonElement e = node.value;
             if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonObject");
             count.getAndIncrement();
             index.getAndIncrement();

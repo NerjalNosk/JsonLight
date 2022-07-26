@@ -24,21 +24,24 @@ import com.nerjal.json.elements.JsonObject;
  */
 public class ObjectParseOptions {
     private ObjectFormat format;
+    private boolean ordered;
 
     /**
      * Instantiates new
-     * double-quoted keys object
+     * double-quoted keys and
+     * unordered object
      * stringification options.
      */
     public ObjectParseOptions() {
-        this.format = ObjectFormat.DOUBLE_QUOTED_KEYS;
+        this(ObjectFormat.DOUBLE_QUOTED_KEYS, false);
     }
 
     /**
      * Instantiates new object
      * stringification options
      * with the specified keys
-     * stringification format
+     * stringification and
+     * unordered format
      * @param format the keys
      *               stringification
      *               format for
@@ -46,7 +49,51 @@ public class ObjectParseOptions {
      *               options
      */
     public ObjectParseOptions(ObjectFormat format) {
+        this(format, false);
+    }
+
+    /**
+     * Instantiates new
+     * double-quoted keys
+     * and with the specified
+     * ordering object
+     * stringification format
+     * @param ordered whether
+     *                should the
+     *                object be
+     *                stringified
+     *                with its
+     *                elements
+     *                ordered as
+     *                added to it
+     */
+    public ObjectParseOptions(boolean ordered) {
+        this(ObjectFormat.DOUBLE_QUOTED_KEYS, ordered);
+    }
+
+    /**
+     * Instantiates new object
+     * stringification options
+     * with the specified keys
+     * format and element
+     * ordering.
+     * @param format the keys
+     *               stringification
+     *               format for
+     *               the new
+     *               options
+     * @param ordered whether
+     *                should the
+     *                object be
+     *                stringified
+     *                with its
+     *                elements
+     *                ordered as
+     *                added to it
+     */
+    public ObjectParseOptions(ObjectFormat format, boolean ordered) {
         this.format = format;
+        this.ordered = ordered;
     }
 
     /**
@@ -60,6 +107,36 @@ public class ObjectParseOptions {
      */
     public void setFormat(ObjectFormat format) {
         this.format = format;
+    }
+
+    /**
+     * Sets the ordering
+     * stringification format
+     * for the options
+     * @param ordered the new
+     *                ordering
+     *                stringification
+     *                format of the
+     *                options
+     */
+    public void setOrdering(boolean ordered) {
+        this.ordered = ordered;
+    }
+
+    /**
+     * Returns whether the
+     * object's elements
+     * should be ordered
+     * as added upon
+     * stringification
+     * @return whether the
+     *         object's elements
+     *         should be ordered
+     *         as added upon
+     *         stringification
+     */
+    public boolean isOrdered() {
+        return ordered;
     }
 
     /**
