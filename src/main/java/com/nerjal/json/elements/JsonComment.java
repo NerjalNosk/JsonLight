@@ -2,6 +2,7 @@ package com.nerjal.json.elements;
 
 
 import com.nerjal.json.parser.options.CommentParseOptions;
+import com.nerjal.json.parser.options.ParseSet;
 
 import static com.nerjal.json.parser.options.CommentParseOptions.CommentType.*;
 import static com.nerjal.json.parser.options.CommentParseOptions.*;
@@ -166,16 +167,19 @@ public final class JsonComment extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+        CommentParseOptions setOptions = (CommentParseOptions) parseSet.getOptions(this.getClass());
+        CommentParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
         if (!this.isBlock) return "//"+this.value;
         StringBuilder b = new StringBuilder("/*");
         for (String s : this.getSplitValue()) {
             if (s.length() == 0) continue;
-            if (this.parseOptions.usesIndent()) b.append('\n').append(indentation);
-            if (this.parseOptions.doesNewlineAsterisk()) b.append("* ");
+            if (options.usesIndent()) b.append('\n').append(indentation);
+            if (options.doesNewlineAsterisk()) b.append("* ");
             b.append(s);
         }
-        if (this.parseOptions.usesIndent() && this.parseOptions.doesNewlineAsterisk())
+        if (options.usesIndent() && options.doesNewlineAsterisk())
             b.append('\n').append(indentation);
         b.append("*/");
         return b.toString();

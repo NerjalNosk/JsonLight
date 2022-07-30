@@ -2,6 +2,7 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError;
 import com.nerjal.json.JsonError.RecursiveJsonElementException;
+import com.nerjal.json.parser.options.ParseSet;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -273,8 +274,29 @@ public abstract class JsonElement implements Serializable {
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
-    abstract String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+    abstract String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
             throws RecursiveJsonElementException;
+
+    /**
+     * Returns the JSON String corresponding to this JsonElement, recursively
+     * parsing the internal elements if there are, with the according base
+     * indentation and level indent incrementation.
+     * @param parseSet the default stringification options for this object
+     *                 and its children.
+     * @param indentation the base indent at which should be the element,
+     *                    hence the one-lower level of its children
+     * @param indentIncrement the string to increment to the indentation at
+     *                        each indentation level, recursively to the
+     *                        element's children as well as their own, etc.
+     * @return The JSON String corresponding to this element.
+     * @throws RecursiveJsonElementException If the element or one of its
+     *         children contains an element already in the stack or
+     *         one of themselves, which would end up in loop parsing.
+     */
+    public final String stringify(ParseSet parseSet, String indentation, String indentIncrement)
+            throws RecursiveJsonElementException {
+        return this.stringify(parseSet, indentation, indentIncrement, new JsonStringifyStack(this));
+    }
 
     /**
      * Returns the JSON String corresponding to this JsonElement, recursively
@@ -285,14 +307,45 @@ public abstract class JsonElement implements Serializable {
      * @param indentIncrement the string to increment to the indentation at
      *                        each indentation level, recursively to the
      *                        element's children as well as their own, etc.
-     * @return The foolproof security check to avoid recursive
-     *         stringification. Can be null.
+     * @return The JSON String corresponding to this element.
      * @throws RecursiveJsonElementException If the element or one of its
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(String indentation, String indentIncrement) throws RecursiveJsonElementException {
-        return this.stringify(indentation, indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), indentation, indentIncrement, new JsonStringifyStack(this));
+    }
+
+    /**
+     * Returns the JSON String corresponding to this JsonElement, recursively
+     * parsing the internal elements if there are, with the according base
+     * indentation and level indent incrementation
+     * @param indentation the base indent at which should be the element,
+     *                    hence the one-lower level of its children
+     * @param parseSet the default stringification options for this object
+     *                 and its children.
+     * @return The JSON String corresponding to this element.
+     * @throws RecursiveJsonElementException If the element or one of its
+     *         children contains an element already in the stack or
+     *         one of themselves, which would end up in loop parsing.
+     */
+    public final String stringify(ParseSet parseSet, String indentation) throws RecursiveJsonElementException {
+        return this.stringify(parseSet, indentation, "  ", new JsonStringifyStack(this));
+    }
+
+    /**
+     * Returns the JSON String corresponding to this JsonElement, recursively
+     * parsing the internal elements if there are, with a null base indentation
+     * and a double space per-level indent incrementation.
+     * @param parseSet the default stringification options for this object
+     *                 and its children.
+     * @return The JSON String corresponding to this element.
+     * @throws RecursiveJsonElementException If the element or one of its
+     *         children contains an element already in the stack or
+     *         one of themselves, which would end up in loop parsing.
+     */
+    public final String stringify(ParseSet parseSet) throws RecursiveJsonElementException {
+        return this.stringify(parseSet, "", "  ", new JsonStringifyStack(this));
     }
 
     /**
@@ -301,14 +354,31 @@ public abstract class JsonElement implements Serializable {
      * indentation and a double space default per-level indent incrementation
      * @param indentation the base indent at which should be the element,
      *                    hence the one-lower level of its children
-     * @return The foolproof security check to avoid recursive
-     *         stringification. Can be null.
+     * @return The JSON String corresponding to this element.
      * @throws RecursiveJsonElementException If the element or one of its
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(String indentation) throws RecursiveJsonElementException {
-        return this.stringify(indentation, "  ", new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), indentation, "  ", new JsonStringifyStack(this));
+    }
+
+    /**
+     * Returns the JSON String corresponding to this JsonElement, recursively
+     * parsing the internal elements if there are, with the according base
+     * per-level indent incrementation, at a null base indentation
+     * @param parseSet the default stringification options for this object
+     *                 and its children.
+     * @param indentIncrement the string to increment to the indentation at
+     *                        each indentation level, recursively to the
+     *                        element's children as well as their own, etc.
+     * @return The JSON String corresponding to this element.
+     * @throws RecursiveJsonElementException If the element or one of its
+     *         children contains an element already in the stack or
+     *         one of themselves, which would end up in loop parsing.
+     */
+    public final String stringifyRoot(ParseSet parseSet, String indentIncrement) throws RecursiveJsonElementException {
+        return this.stringify(parseSet, "", indentIncrement, new JsonStringifyStack(this));
     }
 
     /**
@@ -318,27 +388,25 @@ public abstract class JsonElement implements Serializable {
      * @param indentIncrement the string to increment to the indentation at
      *                        each indentation level, recursively to the
      *                        element's children as well as their own, etc.
-     * @return The foolproof security check to avoid recursive
-     *         stringification. Can be null.
+     * @return The JSON String corresponding to this element.
      * @throws RecursiveJsonElementException If the element or one of its
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringifyRoot(String indentIncrement) throws RecursiveJsonElementException {
-        return this.stringify("", indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), "", indentIncrement, new JsonStringifyStack(this));
     }
 
     /**
      * Returns the JSON String corresponding to this JsonElement, recursively
      * parsing the internal elements if there are, with a null base indentation
      * and a double space per-level indent incrementation.
-     * @return The foolproof security check to avoid recursive
-     *         stringification. Can be null.
+     * @return The JSON String corresponding to this element.
      * @throws RecursiveJsonElementException If the element or one of its
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify() throws RecursiveJsonElementException {
-        return this.stringify("", "  ", new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(),"", "  ", new JsonStringifyStack(this));
     }
 }

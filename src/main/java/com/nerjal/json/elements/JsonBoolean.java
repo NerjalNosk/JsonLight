@@ -1,6 +1,7 @@
 package com.nerjal.json.elements;
 
 import com.nerjal.json.parser.options.BooleanParseOptions;
+import com.nerjal.json.parser.options.ParseSet;
 
 /**
  * <p>An object that allows instantiating a
@@ -94,9 +95,13 @@ public class JsonBoolean extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
-        if (this.parseOptions.usesAllLowercase()) return String.valueOf(this.value);
-        else if (this.parseOptions.usesAllUppercase()) return this.value ? "TRUE" : "FALSE";
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+        if (parseSet == null) parseSet = new ParseSet();
+        BooleanParseOptions setOptions = (BooleanParseOptions) parseSet.getOptions(this.getClass());
+        BooleanParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
+        if (options.usesAllLowercase()) return String.valueOf(this.value);
+        else if (options.usesAllUppercase()) return this.value ? "TRUE" : "FALSE";
         else return this.value ? "True" : "False";
     }
 }

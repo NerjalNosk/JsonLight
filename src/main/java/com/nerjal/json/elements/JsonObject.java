@@ -1,6 +1,7 @@
 package com.nerjal.json.elements;
 
 import com.nerjal.json.parser.options.ObjectParseOptions;
+import com.nerjal.json.parser.options.ParseSet;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -538,17 +539,20 @@ public class JsonObject extends JsonElement {
         return this;
     }
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
             throws RecursiveJsonElementException {
         if (stack == null) stack = new JsonStringifyStack(this);
+        ObjectParseOptions setOptions = (ObjectParseOptions) parseSet.getOptions(this.getClass());
+        ObjectParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
         if (this.map.size() == 0) return "{}";
         StringBuilder builder = new StringBuilder("{");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();
         AtomicInteger lastComma = new AtomicInteger();
         AtomicBoolean endOnComment = new AtomicBoolean(false);
-        List<JsonNode> l = this.parseOptions.isOrdered() ? orderList : new ArrayList<>();
-        if (!this.parseOptions.isOrdered()) {
+        List<JsonNode> l = options.isOrdered() ? orderList : new ArrayList<>();
+        if (!options.isOrdered()) {
             this.map.forEach((k, v) -> l.add(new JsonNode(k, v, this)));
         }
         for (JsonNode node : l) {
@@ -560,10 +564,10 @@ public class JsonObject extends JsonElement {
             endOnComment.set(e.isComment());
             builder.append('\n').append(indentation).append(indentIncrement);
             if (!e.isComment()) {
-                char c = parseOptions.keyQuoteChar();
+                char c = options.keyQuoteChar();
                 builder.append(String.format("%c%s%c: ", c, k, c));
             }
-            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
+            builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (index.get() < size() &! e.isComment()) {
                 lastComma.set(builder.length());
                 builder.append(", ");

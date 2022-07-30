@@ -2,6 +2,7 @@ package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError;
 import com.nerjal.json.parser.options.NumberParseOptions;
+import com.nerjal.json.parser.options.ParseSet;
 
 /**
  * <p>A JsonElement allowing instantiation of
@@ -185,13 +186,19 @@ public class JsonNumber extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+        NumberParseOptions setOptions = (NumberParseOptions) parseSet.getOptions(this.getClass());
+        NumberParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
         String s;
-        if (this.parseOptions.usesHexadecimal()) s = Double.toHexString(this.value.doubleValue());
-        else if (this.parseOptions.usesScientific())
+        if (options.usesHexadecimal()) {
+            s = options.isFloating() ? Double.toHexString(this.value.doubleValue()) :
+                    Integer.toHexString(this.value.intValue());
+        }
+        else if (options.usesScientific())
             s = NumberParseOptions.sciFormat.format(this.value.doubleValue());
         else if (this.getAsDouble() == this.getAsInt()) {
-            s = this.parseOptions.isInteger() ?
+            s = options.isInteger() ?
                         Integer.toString(this.value.intValue()) : Double.toString(this.value.doubleValue());
         } else s = Double.toString(this.value.doubleValue());
         return s;

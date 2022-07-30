@@ -1,6 +1,7 @@
 package com.nerjal.json.elements;
 
 import com.nerjal.json.JsonError;
+import com.nerjal.json.parser.options.ParseSet;
 import com.nerjal.json.parser.options.StringParseOptions;
 
 /**
@@ -112,8 +113,11 @@ public class JsonString extends JsonElement {
     }
 
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack) {
-        char c = this.parseOptions.usesDoubleQuotes() ? '"' : '\'';
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+        StringParseOptions setOptions = (StringParseOptions) parseSet.getOptions(this.getClass());
+        StringParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
+        char c = options.usesDoubleQuotes() ? '"' : '\'';
         return this.value != null ? String.format("%c%s%c",c,this.value,c) : "null";
     }
 }

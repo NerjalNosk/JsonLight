@@ -3,6 +3,7 @@ package com.nerjal.json.elements;
 import com.nerjal.json.JsonError;
 import com.nerjal.json.JsonError.RecursiveJsonElementException;
 import com.nerjal.json.parser.options.ArrayParseOptions;
+import com.nerjal.json.parser.options.ParseSet;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -485,8 +486,12 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return this;
     }
     @Override
-    public String stringify(String indentation, String indentIncrement, JsonStringifyStack stack)
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
             throws RecursiveJsonElementException {
+        if (parseSet == null) parseSet = new ParseSet();
+        ArrayParseOptions setOptions = (ArrayParseOptions) parseSet.getOptions(this.getClass());
+        ArrayParseOptions options = parseOptions.isChanged() ? parseOptions :
+                setOptions == null ? parseOptions : setOptions;
         if (this.list.size() == 0) return "[]";
         if (stack == null) stack = new JsonStringifyStack(this);
         StringBuilder builder = new StringBuilder("[");
@@ -494,10 +499,10 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         int index = 0;
         int lastComma = 0;
         boolean endOnComment = false;
-        long maxLine = parseOptions.getNumPerLine();
+        long maxLine = options.getNumPerLine();
         for (JsonElement e : this.list) {
             if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
-            if ((!parseOptions.isAllInOneLine() && (count >= maxLine || index == 0)) || e.isComment() ||
+            if ((!options.isAllInOneLine() && (count >= maxLine || index == 0)) || e.isComment() ||
                     (index > 0 && list.get(index-1).isComment())) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
@@ -505,7 +510,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
             if (count == maxLine || e.isComment()) count = 0;
             index++;
             endOnComment = e.isComment();
-            builder.append(e.stringify(String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
+            builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (!e.isComment()) {
                 count++;
                 if (index < size()){

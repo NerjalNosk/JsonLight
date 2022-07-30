@@ -3,6 +3,7 @@ package com.nerjal.json;
 import com.nerjal.json.elements.JsonElement;
 import com.nerjal.json.parser.FileParser;
 import com.nerjal.json.parser.StringParser;
+import com.nerjal.json.parser.options.ParseSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,17 @@ public abstract class JsonParser {
      * @return String: the string version of the JsonElement
      */
     public static String stringify(JsonElement json) throws RecursiveJsonElementException {
-        return stringify(json, 0, 2, ' ');
+        return stringify(json, new ParseSet(), 0, 2, ' ');
+    }
+
+    /**
+     * Allows to get a String version of the given JsonElement
+     * (automatically calls for the value's toString method if primitive)
+     * @param json the JsonElement to parse to String
+     * @return String: the string version of the JsonElement
+     */
+    public static String stringify(JsonElement json, ParseSet parseSet) throws RecursiveJsonElementException {
+        return stringify(json, parseSet, 0, 2, ' ');
     }
 
     /**
@@ -64,7 +75,19 @@ public abstract class JsonParser {
      * @return String: the string version of the JsonElement
      */
     public static String stringify(JsonElement json, int space) throws RecursiveJsonElementException {
-        return stringify(json, space, 2, ' ');
+        return stringify(json, new ParseSet(), space, 2, ' ');
+    }
+
+    /**
+     * Allows to get a String version of the given JsonElement
+     * (automatically calls for the value's toString method if primitive)
+     * @param json the JsonElement to parse to String
+     * @param space the indentation level (for recursive parsing, uses 0 by default)
+     * @return String: the string version of the JsonElement
+     */
+    public static String stringify(JsonElement json, ParseSet parseSet, int space)
+            throws RecursiveJsonElementException {
+        return stringify(json, parseSet, space, 2, ' ');
     }
 
     /**
@@ -76,11 +99,11 @@ public abstract class JsonParser {
      * @param tabChar the character ti use for indentations
      * @return String: the string version of the JsonElement
      */
-    public static String stringify(JsonElement json, int space, int tabulation, char tabChar)
+    public static String stringify(JsonElement json, ParseSet parseSet, int space, int tabulation, char tabChar)
             throws RecursiveJsonElementException {
         String tab = string_repeat(String.format("%c",tabChar),tabulation);
         String indentation = string_repeat(tab,space);
-        return json.stringify(indentation,tab);
+        return json.stringify(parseSet, indentation, tab);
     }
 
     /**
