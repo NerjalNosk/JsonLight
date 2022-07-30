@@ -1,5 +1,7 @@
 package com.nerjal.json.parser.options;
 
+import com.nerjal.json.elements.JsonNumber;
+
 import java.text.DecimalFormat;
 
 /**
@@ -16,7 +18,7 @@ import java.text.DecimalFormat;
  * integer value. This won't force the parsed value to change.
  * @author Nerjal Nosk
  */
-public class NumberParseOptions {
+public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     private NumberFormat format;
     private boolean floating;
 
@@ -33,6 +35,7 @@ public class NumberParseOptions {
     public NumberParseOptions(boolean floating, NumberFormat format) {
         this.floating = floating;
         this.format = format;
+        ping();
     }
 
     /**
@@ -60,7 +63,8 @@ public class NumberParseOptions {
      * option set with default Integer and DECIMAL format settings.
      */
     public NumberParseOptions() {
-        this(false);
+        this.floating = false;
+        this.format = NumberFormat.DECIMAL;
     }
 
     /**
@@ -84,6 +88,7 @@ public class NumberParseOptions {
      */
     public void setFloating() {
         this.floating = true;
+        ping();
     }
 
     /**
@@ -91,6 +96,7 @@ public class NumberParseOptions {
      */
     public void setInteger() {
         this.floating = false;
+        ping();
     }
 
     /**
@@ -122,6 +128,7 @@ public class NumberParseOptions {
      */
     public void setFormat(NumberFormat format) {
         this.format = format;
+        ping();
     }
 
     /**

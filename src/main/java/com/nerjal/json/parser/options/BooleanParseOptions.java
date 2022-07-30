@@ -23,7 +23,7 @@ import com.nerjal.json.elements.JsonBoolean;
  * English name.</p>
  * @author Nerjal Nosk
  */
-public class BooleanParseOptions {
+public class BooleanParseOptions extends AbstractParseOptions<JsonBoolean> {
     private BooleanFormat format;
 
     /**
@@ -36,6 +36,7 @@ public class BooleanParseOptions {
      */
     public BooleanParseOptions(BooleanFormat format) {
         this.format = format;
+        ping();
     }
 
     /**
@@ -44,7 +45,7 @@ public class BooleanParseOptions {
      * default all lowercase format.
      */
     public BooleanParseOptions() {
-        this(BooleanFormat.ALL_LOWERCASE);
+        this.format = BooleanFormat.ALL_LOWERCASE;
     }
 
     /**
@@ -55,6 +56,7 @@ public class BooleanParseOptions {
      */
     public void setFormat(BooleanFormat format) {
         this.format = format;
+        ping();
     }
 
     /**

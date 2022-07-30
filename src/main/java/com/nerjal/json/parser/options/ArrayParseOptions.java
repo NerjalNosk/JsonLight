@@ -25,7 +25,7 @@ import static com.nerjal.json.JsonError.*;
  * followed by one.
  * @author Nerjal Nosk
  */
-public class ArrayParseOptions {
+public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
     private long numPerLine;
     private ArrayFormat format;
 
@@ -49,6 +49,7 @@ public class ArrayParseOptions {
             throw new IllegalArgumentException(
                     "Unhandled negative number for array stringification options");
         this.numPerLine = numPerLine;
+        ping();
     }
 
     /**
@@ -61,6 +62,7 @@ public class ArrayParseOptions {
      */
     public ArrayParseOptions(ArrayFormat format) {
         this(format, format == ArrayFormat.MULTIPLE_PER_LINE ? 2 : 0);
+        ping();
     }
 
     /**
@@ -69,7 +71,8 @@ public class ArrayParseOptions {
      * format.
      */
     public ArrayParseOptions() {
-        this(ArrayFormat.ONE_PER_LINE);
+        this.format = ArrayFormat.ONE_PER_LINE;
+        this.numPerLine = 0;
     }
 
     /**
@@ -79,6 +82,7 @@ public class ArrayParseOptions {
      *              options' new format
      */
     public void setFormat(ArrayFormat format) {
+        ping();
         this.format = format;
     }
 
@@ -101,6 +105,7 @@ public class ArrayParseOptions {
      *         is negative
      */
     public void  setNumPerLine(long i) throws IllegalLineElementsNumberException {
+        ping();
         if (i < 0) throw new IllegalLineElementsNumberException(
                 "Cannot parse a JsonArray with less than one element per line");
         if (i == 1) this.format = ArrayFormat.ONE_PER_LINE;

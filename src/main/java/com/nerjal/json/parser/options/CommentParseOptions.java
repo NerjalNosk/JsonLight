@@ -22,7 +22,7 @@ import com.nerjal.json.elements.JsonComment;
  * said properties.</p>
  * @author Nerjal Nosk
  */
-public class CommentParseOptions {
+public class CommentParseOptions extends AbstractParseOptions<JsonComment> {
     private boolean indent;
     private boolean newlineAsterisk;
     private final CommentType type;
@@ -52,6 +52,7 @@ public class CommentParseOptions {
         this.indent = indent;
         this.newlineAsterisk = newlineasterisk;
         this.type = type;
+        ping();
     }
 
     /**
@@ -83,7 +84,14 @@ public class CommentParseOptions {
      * comments are set to {@code true}.
      */
     public CommentParseOptions() {
-        this(true, true, CommentType.LINE);
+        this.indent = true;
+        this.newlineAsterisk = true;
+        this.type = CommentType.LINE;
+    }
+
+    public CommentParseOptions(CommentType type) {
+        this.indent = this.newlineAsterisk = type == CommentType.BLOCK;
+        this.type = type;
     }
 
     /**
@@ -96,6 +104,7 @@ public class CommentParseOptions {
      */
     public void setUseIndent(boolean b) {
         this.indent = b;
+        ping();
     }
 
     /**
@@ -108,6 +117,7 @@ public class CommentParseOptions {
      */
     public void setDoesNewlineAsterisk(boolean b) {
         this.newlineAsterisk = b;
+        ping();
     }
 
     /**

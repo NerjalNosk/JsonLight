@@ -23,7 +23,7 @@ import com.nerjal.json.elements.JsonString;
  * compatibility.
  * @author Nerjal Nosk
  */
-public class StringParseOptions {
+public class StringParseOptions extends AbstractParseOptions<JsonString> {
     private QuoteFormat format;
 
     /**
@@ -38,6 +38,7 @@ public class StringParseOptions {
      */
     public StringParseOptions(QuoteFormat format) {
         this.format = format;
+        ping();
     }
 
     /**
@@ -46,7 +47,7 @@ public class StringParseOptions {
      * stringification options.
      */
     public StringParseOptions() {
-        this(QuoteFormat.DOUBLE_QUOTES);
+        this.format = QuoteFormat.DOUBLE_QUOTES;
     }
 
     /**
@@ -83,6 +84,7 @@ public class StringParseOptions {
      */
     public void setUseSingleQuotes() {
         this.format = QuoteFormat.SINGLE_QUOTES;
+        ping();
     }
 
     /**
@@ -91,6 +93,7 @@ public class StringParseOptions {
      */
     public void setUseDoubleQuotes() {
         this.format = QuoteFormat.DOUBLE_QUOTES;
+        ping();
     }
 
     /**

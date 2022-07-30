@@ -22,7 +22,7 @@ import com.nerjal.json.elements.JsonObject;
  * compatibility.
  * @author Nerjal Nosk
  */
-public class ObjectParseOptions {
+public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
     private ObjectFormat format;
     private boolean ordered;
 
@@ -33,7 +33,8 @@ public class ObjectParseOptions {
      * stringification options.
      */
     public ObjectParseOptions() {
-        this(ObjectFormat.DOUBLE_QUOTED_KEYS, false);
+        this.format = ObjectFormat.DOUBLE_QUOTED_KEYS;
+        this.ordered = false;
     }
 
     /**
@@ -94,6 +95,7 @@ public class ObjectParseOptions {
     public ObjectParseOptions(ObjectFormat format, boolean ordered) {
         this.format = format;
         this.ordered = ordered;
+        ping();
     }
 
     /**
@@ -107,6 +109,7 @@ public class ObjectParseOptions {
      */
     public void setFormat(ObjectFormat format) {
         this.format = format;
+        ping();
     }
 
     /**
@@ -121,6 +124,7 @@ public class ObjectParseOptions {
      */
     public void setOrdering(boolean ordered) {
         this.ordered = ordered;
+        ping();
     }
 
     /**
