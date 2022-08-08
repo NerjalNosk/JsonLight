@@ -72,7 +72,7 @@ your own project
         <dependency>
             <groupId>com.github.NerjalNosk</groupId>
             <artifactId>JsonLight</artifactId>
-            <version>1.1.4</version>
+            <version>1.3.2</version>
         </dependency>
     </dependencies>
 </project>
