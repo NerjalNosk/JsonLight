@@ -190,17 +190,20 @@ public class JsonNumber extends JsonElement {
         NumberParseOptions setOptions = (NumberParseOptions) parseSet.getOptions(this.getClass());
         NumberParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
+        int i = (int) Math.pow(10,options.getDecimals());
         String s;
         if (options.usesHexadecimal()) {
-            s = options.isFloating() ? Double.toHexString(this.value.doubleValue()) :
+            s = options.isFloating() ?
+                    Double.toHexString(((double)((int)(this.value.doubleValue()*i)))/i) :
                     Integer.toHexString(this.value.intValue());
         }
         else if (options.usesScientific())
             s = NumberParseOptions.sciFormat.format(this.value.doubleValue());
         else if (this.getAsDouble() == this.getAsInt()) {
             s = options.isInteger() ?
-                        Integer.toString(this.value.intValue()) : Double.toString(this.value.doubleValue());
-        } else s = Double.toString(this.value.doubleValue());
+                    Integer.toString(this.value.intValue()) :
+                    Double.toString(((double)((int)(this.value.doubleValue()*i))/i));
+        } else s = Double.toString(((double)((int)(this.value.doubleValue()*i))/i));
         return s;
     }
 }

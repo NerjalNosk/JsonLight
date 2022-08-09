@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     private NumberFormat format;
     private boolean floating;
+    private int decimals;
 
     public static final DecimalFormat sciFormat = new DecimalFormat("0.######E0");
 
@@ -31,21 +32,37 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
      *                 an integer or floating number
      * @param format whether the concerned number shall be stringified as a
      *               decimal number, with scientific notation, or to hex
+     * @param decimals the number of decimals to be stringified for floating
+     *                 numbers
      */
-    public NumberParseOptions(boolean floating, NumberFormat format) {
+    public NumberParseOptions(boolean floating, NumberFormat format, int decimals) {
         this.floating = floating;
         this.format = format;
+        this.decimals = decimals;
         ping();
     }
 
     /**
      * Constructs a {@link com.nerjal.json.elements.JsonNumber} parsing
+     * option set with the given settings.
+     * @param floating whether the concerned number shall be stringified as
+     *                 an integer or floating number
+     * @param format whether the concerned number shall be stringified as a
+     *               decimal number, with scientific notation, or to hex
+     */
+    public NumberParseOptions(boolean floating, NumberFormat format) {
+        this(floating, format, 6);
+    }
+
+    /**
+     * Constructs a {@link com.nerjal.json.elements.JsonNumber} parsing
      * option set with the given setting and a default DECIMAL format.
+     * By default, stringification will only keep the 6 first decimal points.
      * @param floating whether the concerned number shall be stringified as
      *                 an integer or floating number
      */
     public NumberParseOptions(boolean floating) {
-        this(floating, NumberFormat.DECIMAL);
+        this(floating, NumberFormat.DECIMAL, 6);
     }
 
     /**
@@ -55,7 +72,18 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
      *               decimal number, with scientific notation, or to hex
      */
     public NumberParseOptions(NumberFormat format) {
-        this(false, format);
+        this(false, format, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Constructs a {@link com.nerjal.json.elements.JsonNumber} parsing
+     * option for a default floating DECIMAL format with the specified
+     * number of decimals.
+     * @param decimals the number of decimals to be stringified for floating
+     *                 numbers
+     */
+    public NumberParseOptions(int decimals) {
+        this(true, NumberFormat.DECIMAL, decimals);
     }
 
     /**
@@ -65,6 +93,7 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     public NumberParseOptions() {
         this.floating = false;
         this.format = NumberFormat.DECIMAL;
+        this.decimals = 6;
     }
 
     /**
@@ -84,6 +113,14 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     }
 
     /**
+     * Returns the number of decimal to be stringified if set as floating.
+     * @return the number of decimal to be stringified if set as floating.
+     */
+    public int getDecimals() {
+        return decimals;
+    }
+
+    /**
      * Sets the option set to parse to float
      */
     public void setFloating() {
@@ -96,6 +133,15 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
      */
     public void setInteger() {
         this.floating = false;
+        ping();
+    }
+
+    /**
+     * Sets the number of decimal to be stringified if set as floating.
+     * @param i the number of decimal to be stringified if set as floating.
+     */
+    public void setDecimals(int i) {
+        this.decimals = i;
         ping();
     }
 
