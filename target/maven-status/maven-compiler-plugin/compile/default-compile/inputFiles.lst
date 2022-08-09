@@ -3,6 +3,7 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonNode.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/ArrayParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/NumberParseOptions.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/ParseSet.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/FileParser.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonSkipSuperclass.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/ParserState.java
@@ -18,6 +19,7 @@
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/ApiTests.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/mapper/annotations/JsonEnumDefault.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/JsonError.java
+/home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/AbstractParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/options/ObjectParseOptions.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/elements/JsonStringifyStack.java
 /home/nerjal/IdeaProjects/JsonLight/src/main/java/com/nerjal/json/parser/EmptyState.java

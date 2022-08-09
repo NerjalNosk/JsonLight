@@ -5,6 +5,7 @@ com/nerjal/json/parser/FileParser.class
 com/nerjal/json/ApiTests$JsonClass.class
 com/nerjal/json/parser/options/NumberParseOptions$NumberFormat.class
 com/nerjal/json/parser/options/BooleanParseOptions$BooleanFormat.class
+com/nerjal/json/parser/options/AbstractParseOptions.class
 com/nerjal/json/elements/JsonObject$JsonNode.class
 com/nerjal/json/mapper/errors/JsonValueError.class
 com/nerjal/json/mapper/errors/JsonMapperFieldRequiredError.class
@@ -48,6 +49,7 @@ com/nerjal/json/JsonError$FileNotFoundException.class
 com/nerjal/json/JsonError$JsonElementTypeException.class
 com/nerjal/json/elements/JsonBoolean.class
 com/nerjal/json/mapper/annotations/JsonNode.class
+com/nerjal/json/parser/options/ParseSet.class
 com/nerjal/json/JsonParser.class
 com/nerjal/json/elements/JsonArray$1.class
 com/nerjal/json/parser/ObjectState.class
