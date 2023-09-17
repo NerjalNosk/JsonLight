@@ -13,7 +13,7 @@ import java.util.List;
  * hash.
  * @author nerjal
  */
-class JsonStringifyStack {
+public class JsonStringifyStack {
     private final List<Integer> stack = new ArrayList<>();
 
     /**
@@ -22,7 +22,7 @@ class JsonStringifyStack {
      * @param e the first element to add
      *          to the stack.
      */
-    public JsonStringifyStack(JsonElement e) {
+    JsonStringifyStack(JsonElement e) {
         this.stack.add(e.hashCode());
     }
 
