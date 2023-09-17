@@ -174,7 +174,7 @@ public final class JsonComment extends JsonElement {
         if (!this.isBlock) return "//"+this.value;
         StringBuilder b = new StringBuilder("/*");
         for (String s : this.getSplitValue()) {
-            if (s.length() == 0) continue;
+            if (s.isEmpty()) continue;
             if (options.usesIndent()) b.append('\n').append(indentation);
             if (options.doesNewlineAsterisk()) b.append("* ");
             b.append(s);

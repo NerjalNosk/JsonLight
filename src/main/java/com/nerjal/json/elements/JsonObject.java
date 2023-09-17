@@ -545,7 +545,7 @@ public class JsonObject extends JsonElement {
         ObjectParseOptions setOptions = (ObjectParseOptions) parseSet.getOptions(this.getClass());
         ObjectParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
-        if (this.map.size() == 0) return "{}";
+        if (this.map.isEmpty()) return "{}";
         StringBuilder builder = new StringBuilder("{");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();

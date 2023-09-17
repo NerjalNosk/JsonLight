@@ -492,7 +492,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         ArrayParseOptions setOptions = (ArrayParseOptions) parseSet.getOptions(this.getClass());
         ArrayParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
-        if (this.list.size() == 0) return "[]";
+        if (this.list.isEmpty()) return "[]";
         if (stack == null) stack = new JsonStringifyStack(this);
         StringBuilder builder = new StringBuilder("[");
         int count = 0;
