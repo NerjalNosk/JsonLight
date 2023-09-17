@@ -49,7 +49,7 @@ public class ObjectState extends AbstractState {
      * ( {@code ':'} )
      */
     private void readKey() {
-        if (!this.lookForKey) this.error(String.format("unexpected character %c",this.parser.getActual()));
+        if (!this.lookForKey) this.unexpectedCharError(this.parser.getActual());
         StringBuilder s = new StringBuilder(String.valueOf(this.parser.getActual()));
         while (true) {
             char c = this.parser.getNext();
@@ -68,7 +68,7 @@ public class ObjectState extends AbstractState {
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
         else if (this.lookForKey) this.error("unexpected object key type");
-        else this.error("unexpected '{' character");
+        else this.unexpectedCharError('{');
     }
 
     @Override
@@ -98,20 +98,15 @@ public class ObjectState extends AbstractState {
     public void openNum() {
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
-        else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
+        else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
     public void read(char c) {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
+        if (Character.isWhitespace(c)) return;
 
         switch (c) {
-            case ' ':
-            case '\n':
-            case '\t':
-            case '\r':
-            case '\f':
-                return;
             case ',':
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
@@ -177,7 +172,7 @@ public class ObjectState extends AbstractState {
                 break;
             default:
                 if (this.lookForKey) this.readKey();
-                else this.error(String.format("unexpected character %c",c));
+                else this.unexpectedCharError(c);
         }
     }
 

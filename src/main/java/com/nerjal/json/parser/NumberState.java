@@ -37,7 +37,7 @@ public class NumberState extends AbstractState {
      */
     private void foundX() {
         if (this.charCount > 0 || this.parser.getPrecedent() != '0')
-            this.error(String.format("unexpected character %c", this.parser.getActual()));
+            this.unexpectedCharError(this.parser.getActual());
         else {
             this.isHex = true;
         }
@@ -90,7 +90,7 @@ public class NumberState extends AbstractState {
             this.parser.forward();
             this.olderState.addSubElement(new JsonNumber(Float.NaN));
             this.parser.switchState(this.olderState);
-        } else this.error(String.format("unexpected character %c", this.parser.getActual()));
+        } else this.unexpectedCharError(this.parser.getActual());
     }
 
     /**
@@ -105,7 +105,7 @@ public class NumberState extends AbstractState {
      */
     private void readInfinity() {
         if (this.charCount != 0) {
-            this.parser.error(String.format("unexpected character %c", this.parser.getActual()));
+            this.unexpectedCharError(this.parser.getActual());
             return;
         }
         boolean negative = false;
@@ -116,24 +116,24 @@ public class NumberState extends AbstractState {
                 if (this.parser.getPrecedent() == '-') negative = true;
                 else if (this.parser.getPrecedent() == '+') break;
                 else {
-                    this.error(String.format("unexpected character %c", c));
+                    this.unexpectedCharError(c);
                     return;
                 }
                 break;
             case 'n':
             case 'N':
                 if (this.parser.getPrecedent() != 'i' && this.parser.getPrecedent() != 'I') {
-                    this.error(String.format("unexpected character %c", c));
+                    this.unexpectedCharError(c);
                 }
                 break;
             default:
-                this.error(String.format("unexpected character %c", c));
+                this.unexpectedCharError(c);
                 return;
         }
         if (negative &! String.valueOf(this.parser.getNext(7)).equalsIgnoreCase("nfinity")) {
-            this.error(String.format("unexpected character %c", this.parser.getActual()));
+            this.unexpectedCharError(this.parser.getActual());
         } else if (!String.valueOf(this.parser.getNext(6)).equalsIgnoreCase("finity")) {
-            this.error(String.format("unexpected character %c", this.parser.getActual()));
+            this.unexpectedCharError(this.parser.getActual());
         } else {
             this.parser.forward(negative ? 7 : 6);
             this.olderState.addSubElement(new JsonNumber(negative ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY));
@@ -180,7 +180,7 @@ public class NumberState extends AbstractState {
             case 'A':
                 if (this.isHex) break;
                 else if (this.charCount == 0) this.readNaN();
-                else this.error(String.format("unexpected character %c", c));
+                else this.unexpectedCharError(c);
                 break;
             case 'b':
             case 'B':
@@ -190,14 +190,14 @@ public class NumberState extends AbstractState {
             case 'D':
             case 'f':
             case 'F':
-                if (!this.isHex) this.error(String.format("unexpected character %c",c));
+                if (!this.isHex) this.unexpectedCharError(c);
                 break;
             case 'i':
             case 'I':
             case 'n':
             case 'N':
                 if (this.charCount < 2) this.readInfinity();
-                else this.error(String.format("unexpected character %c", c));
+                else this.unexpectedCharError(c);
                 break;
             case '-':
             case '+':

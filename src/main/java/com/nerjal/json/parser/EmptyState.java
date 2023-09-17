@@ -27,13 +27,13 @@ public class EmptyState extends AbstractState {
     @Override
     public void openObject() {
         if (this.element == null) this.parser.switchState(new ObjectState(this.parser, this));
-        else this.error("unexpected character '{'");
+        else this.unexpectedCharError('{');
     }
 
     @Override
     public void openArray() {
         if (this.element == null) this.parser.switchState(new ArrayState(this.parser, this));
-        else this.error("unexpected character '['");
+        else this.unexpectedCharError('[');
     }
 
     @Override

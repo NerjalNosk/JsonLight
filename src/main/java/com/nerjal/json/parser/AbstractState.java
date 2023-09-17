@@ -20,6 +20,10 @@ public abstract class AbstractState implements ParserState {
     protected StringParser parser;
     protected ParserState olderState;
 
+    protected final void unexpectedCharError(char c) {
+        this.error(String.format("unexpected character '%c'", c));
+    }
+
     /**
      * Instantiates a new
      * {@link StringParser} state.
@@ -29,7 +33,7 @@ public abstract class AbstractState implements ParserState {
      * @param olderState the parser's
      *                   older state
      */
-    public AbstractState(StringParser stringParser, ParserState olderState) {
+    protected AbstractState(StringParser stringParser, ParserState olderState) {
         this.parser = stringParser;
         this.olderState = olderState;
     }
@@ -86,7 +90,7 @@ public abstract class AbstractState implements ParserState {
                 this.parser.switchState(new CommentState(this.parser, this, true));
                 break;
             }
-            default: this.error("unexpected character '/'");
+            default: this.unexpectedCharError('/');
         }
     }
 
@@ -103,14 +107,17 @@ public abstract class AbstractState implements ParserState {
                 if (String.valueOf(this.parser.getNext(3)).equalsIgnoreCase("rue")) {
                     this.parser.forward(3);
                     this.addSubElement(new JsonBoolean(true));
-                } else this.error(String.format("unexpected character '%c'",c));
+                } else this.unexpectedCharError(c);
                 break;
             case 'f':
             case 'F':
                 if (String.valueOf(this.parser.getNext(4)).equalsIgnoreCase("alse")) {
                     this.parser.forward(4);
                     this.addSubElement(new JsonBoolean(false));
-                } else this.error(String.format("unexpected character '%c'", c));
+                } else this.unexpectedCharError(c);
+                break;
+            default:
+                //
         }
     }
 

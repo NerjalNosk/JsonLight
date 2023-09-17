@@ -67,14 +67,9 @@ public class ArrayState extends AbstractState {
     @Override
     public void read(char c) {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
+        if (Character.isWhitespace(c)) return;
 
         switch (c) {
-            case ' ':
-            case '\n':
-            case '\t':
-            case '\r':
-            case '\f':
-                return;
             case ',':
                 if (this.requiresIterator) {
                     this.requiresIterator = false;
