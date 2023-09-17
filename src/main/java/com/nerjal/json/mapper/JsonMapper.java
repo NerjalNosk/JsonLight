@@ -132,7 +132,7 @@ public class JsonMapper {
             if (!element.isJsonArray())
                 throw new JsonCastingError(element, target);
             Class<?> subType = target.getComponentType();
-            ArrayList arr = new ArrayList<>();
+            ArrayList<Object> arr = new ArrayList<>();
             for (JsonElement elem : element.getAsJsonArray()) {
                 arr.add(map(elem, subType,stack));
             }
@@ -193,8 +193,8 @@ public class JsonMapper {
 
                     Type t = field.getGenericType();
 
-                    Class type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                    List arr = new ArrayList<>();
+                    Class<?> type = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                    List<Object> arr = new ArrayList<>();
                     for (JsonElement elem : element.getAsJsonObject().get(name).getAsJsonArray()) {
                         arr.add(map(elem, type, stack));
                     }
@@ -205,13 +205,13 @@ public class JsonMapper {
 
                     Type t = field.getGenericType();
 
-                    Class keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                    Class valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
+                    Class<?> keyType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                    Class<?> valueType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[1];
 
                     if (keyType != String.class)
                         throw new JsonCastingError(element, keyType);
 
-                    Map map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
 
                     for (JsonObject.JsonNode node : element.getAsJsonObject().get(name).getAsJsonObject().entrySet()) {
                         map.put(
