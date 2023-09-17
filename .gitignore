@@ -120,8 +120,7 @@ bin/
 
 # Maven
 
-!target
-!target/**.jar
+target
 
 # javadoc
 **.html
