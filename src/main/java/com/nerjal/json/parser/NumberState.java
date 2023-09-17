@@ -130,7 +130,7 @@ public class NumberState extends AbstractState {
                 this.unexpectedCharError(c);
                 return;
         }
-        if (negative &! String.valueOf(this.parser.getNext(7)).equalsIgnoreCase("nfinity")) {
+        if (negative && !String.valueOf(this.parser.getNext(7)).equalsIgnoreCase("nfinity")) {
             this.unexpectedCharError(this.parser.getActual());
         } else if (!String.valueOf(this.parser.getNext(6)).equalsIgnoreCase("finity")) {
             this.unexpectedCharError(this.parser.getActual());
