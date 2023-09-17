@@ -5,6 +5,7 @@ import com.nerjal.json.elements.JsonElement;
 
 import java.io.*;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 import static com.nerjal.json.JsonError.*;
 
@@ -48,21 +49,21 @@ public class FileParser extends StringParser {
      */
     private void readFileToIndex() {
         try {
-            while (readIndex >= str.length()-1 &! reachFileEnd) {
+            while (readIndex >= str.length()-1 && !reachFileEnd) {
                 char c = (char)reader.read();
                 if (c == '\uFFFF') reachFileEnd = true;
                 else str.append(c);
             }
             act = str.charAt(readIndex);
         } catch (IOException|IndexOutOfBoundsException e) {
-            e.printStackTrace();
+            Arrays.stream(e.getStackTrace()).forEach(this::log);
             reachFileEnd = true;
         }
         if (reachFileEnd) {
             try {
                 reader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Arrays.stream(e.getStackTrace()).forEach(this::log);
             }
         }
     }

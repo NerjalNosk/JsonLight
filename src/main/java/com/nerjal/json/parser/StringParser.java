@@ -3,6 +3,8 @@ package com.nerjal.json.parser;
 import static com.nerjal.json.JsonError.*;
 import com.nerjal.json.elements.JsonElement;
 
+import java.util.function.Consumer;
+
 /**
  * <p>A parser to get a JSON5 structure from a
  * string
@@ -28,6 +30,7 @@ public class StringParser {
     protected boolean stop = false;
     protected boolean isErrored = false;
     private String errMessage = null;
+    private Consumer<String> logReceiver = System.err::println;
 
     /**
      * Empty StringParser.<br>
@@ -45,6 +48,18 @@ public class StringParser {
     public StringParser(String s) {
         this.readStr = s;
         this.state = new EmptyState(this,null);
+    }
+
+    protected final void log(Object o) {
+        this.log(o.toString());
+    }
+
+    protected final void log(String s) {
+        this.logReceiver.accept(s);
+    }
+
+    public final void setLogReceiver(Consumer<String> receiver) {
+        this.logReceiver = receiver;
     }
 
     /**
