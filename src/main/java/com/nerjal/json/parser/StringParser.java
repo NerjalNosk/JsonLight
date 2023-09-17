@@ -119,7 +119,7 @@ public class StringParser {
      * and returns it.<br>
      * All parsing exceptions are passed to
      * the caller.
-     * @return the instance's string'
+     * @return the instance's string's
      *         corresponding
      *         {@link JsonElement}
      * @throws JsonParseException if any
@@ -203,7 +203,7 @@ public class StringParser {
     /**
      * Moves the parser's cursor of the specified
      * index change if it is already running.<br>
-     * Eg.  {@code #formard(-4)} ->
+     * E.g.  {@code #formard(-4)} ->
      * {@code cursor -= 4}
      * @param i the cursor position move factor
      *          (positive being forward)

@@ -144,7 +144,7 @@ public interface ParserState {
      * depending on the specified char.
      * @param c the char at the affiliated
      *          {@link StringParser}'s
-     *          cursor' current position,
+     *          cursor's current position,
      *          to be read by the state.
      */
     void read(char c);
@@ -159,7 +159,7 @@ public interface ParserState {
 
     /**
      * Adds the specified JSON element to
-     * the state's element' inner elements,
+     * the state's element's inner elements,
      * if the state allow it.
      * @param element the element to add to
      *                the result element.

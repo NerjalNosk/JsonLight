@@ -71,8 +71,8 @@ public class JsonMapper {
      * @throws InvocationTargetException if fails to invoke target
      * @throws InstantiationException if fails to instance target
      * @throws NoSuchMethodException if target has no constructor
-     * @throws IllegalAccessException if can't access a field or the constructor
-     * @throws JsonElementTypeException if can't get element's type
+     * @throws IllegalAccessException if method cannot access a field or the constructor
+     * @throws JsonElementTypeException if cannot get element's type
      * @throws JsonCastingError if can't map element onto target
      * @throws JsonMapperFieldRequiredError if a required field is not present in structure
      */

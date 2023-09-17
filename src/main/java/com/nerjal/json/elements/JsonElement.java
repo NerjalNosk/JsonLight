@@ -69,35 +69,35 @@ public abstract class JsonElement implements Serializable {
     }
 
     /**
-     * @return whether or not the element is a {@link JsonObject}
+     * @return whether the element is a {@link JsonObject}
      */
     public boolean isJsonObject() {
         return false;
     }
 
     /**
-     * @return whether or not the element is a {@link JsonArray}
+     * @return whether the element is a {@link JsonArray}
      */
     public boolean isJsonArray() {
         return false;
     }
 
     /**
-     * @return whether or not the element is a {@link JsonString}
+     * @return whether the element is a {@link JsonString}
      */
     public boolean isString() {
         return false;
     }
 
     /**
-     * @return whether or not the element is a {@link JsonNumber}
+     * @return whether the element is a {@link JsonNumber}
      */
     public boolean isNumber() {
         return false;
     }
 
     /**
-     * @return whether or not the element is a {@link JsonBoolean}
+     * @return whether the element is a {@link JsonBoolean}
      */
     public boolean isBoolean() {
         return false;
@@ -105,7 +105,7 @@ public abstract class JsonElement implements Serializable {
 
 
     /**
-     * @return whether or not the element is a {@link JsonString},
+     * @return whether the element is a {@link JsonString},
      *         a {@link JsonNumber} or a {@link JsonBoolean}
      */
     public boolean isPrimitive() {
@@ -113,7 +113,7 @@ public abstract class JsonElement implements Serializable {
     }
 
     /**
-     * @return whether or not the element is a {@link JsonComment}
+     * @return whether the element is a {@link JsonComment}
      */
     public boolean isComment() {
         return false;

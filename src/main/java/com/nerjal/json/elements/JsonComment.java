@@ -98,10 +98,10 @@ public final class JsonComment extends JsonElement {
     }
 
     /**
-     * Sets whether the comment shall be block
+     * Sets whether the comment shall be blocked
      * or not (in-line).
      * @param block whether the comment shall
-     *              be block or not
+     *              be blocked or not
      * @throws UnsupportedOperationException if
      *         the new comment is specified to
      *         be in-line but the value is

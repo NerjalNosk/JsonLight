@@ -18,7 +18,7 @@ import static com.nerjal.json.parser.options.StringParseOptions.QuoteFormat.*;
  * @author nerjal
  */
 public class StringState extends AbstractState {
-    private boolean precIsBackslash = false;
+    private boolean preIsBackslash = false;
     private final boolean isSingleQuoteString;
     private final StringBuilder val = new StringBuilder();
 
@@ -35,13 +35,13 @@ public class StringState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n' &! this.precIsBackslash) this.parser.error("unexpected newline");
+        if (c == '\n' &! this.preIsBackslash) this.parser.error("unexpected newline");
         if (c == '\\') {
-            if (this.precIsBackslash) this.val.append('\\');
-            this.precIsBackslash = !this.precIsBackslash;
-        } else if (c == '"' && !this.precIsBackslash && !this.isSingleQuoteString) this.closeString();
-        else if (c == '\'' && !this.precIsBackslash && this.isSingleQuoteString) this.closeString();
-        else if (this.precIsBackslash) {
+            if (this.preIsBackslash) this.val.append('\\');
+            this.preIsBackslash = !this.preIsBackslash;
+        } else if (c == '"' && !this.preIsBackslash && !this.isSingleQuoteString) this.closeString();
+        else if (c == '\'' && !this.preIsBackslash && this.isSingleQuoteString) this.closeString();
+        else if (this.preIsBackslash) {
             switch (c) {
                 case 'b': {
                     this.val.append('\b'); // backspace
@@ -65,7 +65,7 @@ public class StringState extends AbstractState {
                     break;}
                 default: this.val.append('\\').append(c);
             }
-            this.precIsBackslash = false;
+            this.preIsBackslash = false;
         } else this.val.append(c);
     }
 

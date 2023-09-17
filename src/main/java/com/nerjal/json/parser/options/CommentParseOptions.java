@@ -37,7 +37,7 @@ public class CommentParseOptions extends AbstractParseOptions<JsonComment> {
      *               indent new lines to the
      *               same level as
      *               stringification
-     * @param newlineasterisk whether
+     * @param newlineAsterisk whether
      *                        stringification
      *                        of a block
      *                        comment should
@@ -48,9 +48,9 @@ public class CommentParseOptions extends AbstractParseOptions<JsonComment> {
      * @param type the type of comment these
      *             options should stringify
      */
-    public CommentParseOptions(boolean indent, boolean newlineasterisk, CommentType type) {
+    public CommentParseOptions(boolean indent, boolean newlineAsterisk, CommentType type) {
         this.indent = indent;
-        this.newlineAsterisk = newlineasterisk;
+        this.newlineAsterisk = newlineAsterisk;
         this.type = type;
         ping();
     }
@@ -170,7 +170,7 @@ public class CommentParseOptions extends AbstractParseOptions<JsonComment> {
      * @return whether the options
      *         are set to stringify
      *         a comment as a block
-     *         coment
+     *         comment
      */
     public boolean isBlockComment() {
         return this.type == CommentType.BLOCK;
