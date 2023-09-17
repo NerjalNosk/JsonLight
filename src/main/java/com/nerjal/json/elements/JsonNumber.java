@@ -1,6 +1,5 @@
 package com.nerjal.json.elements;
 
-import com.nerjal.json.JsonError;
 import com.nerjal.json.parser.options.NumberParseOptions;
 import com.nerjal.json.parser.options.ParseSet;
 
