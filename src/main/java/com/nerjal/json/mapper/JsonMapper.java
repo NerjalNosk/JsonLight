@@ -40,11 +40,11 @@ public class JsonMapper {
     private static <E> E arrayListToArray(ArrayList<?> arrayList, Class<E> target) {
         if (!target.isArray()) return null;
         Class<?> subType = target.getComponentType();
-        Object out = target.cast(Array.newInstance(subType, arrayList.size()));
+        E out = target.cast(Array.newInstance(subType, arrayList.size()));
         for (int i = 0; i < arrayList.size(); i++) {
             Array.set(out, i, arrayList.get(i));
         }
-        return (E)out;
+        return out;
     }
 
     /**
@@ -94,37 +94,37 @@ public class JsonMapper {
         if (target == Integer.class || target == int.class) {
             if (!element.isNumber())
                 throw new JsonCastingError(element, target);
-            return (T) Integer.valueOf(element.getAsInt());
+            return target.cast(Integer.valueOf(element.getAsInt()));
         } else if (target == Long.class || target == long.class) {
             if (!element.isNumber())
                 throw new JsonCastingError(element, target);
-            return (T) Long.valueOf(element.getAsLong());
-
+            return target.cast(Long.valueOf(element.getAsLong()));
         } else if (target == Float.class || target == float.class) {
             if (!element.isNumber())
                 throw new JsonCastingError(element, target);
-            return (T) Float.valueOf(element.getAsFloat());
+            return target.cast(Float.valueOf(element.getAsFloat()));
         } else if (target == Double.class || target == double.class) {
             if (!element.isNumber())
                 throw new JsonCastingError(element, target);
-            return (T) Double.valueOf(element.getAsDouble());
+            return target.cast(Double.valueOf(element.getAsDouble()));
 
         } else if (target == Boolean.class || target == boolean.class) {
             if (!element.isBoolean())
                 throw new JsonCastingError(element, target);
-            return (T) Boolean.valueOf(element.getAsBoolean());
+            return target.cast(element.getAsBoolean());
 
         } else if (target == String.class) {
             if (!element.isString())
                 throw new JsonCastingError(element, target);
-            return (T) element.getAsString();
+            return target.cast(element.getAsString());
 
         } else if (target.isEnum()) {
             if (!element.isString())
                 throw new JsonCastingError( element, target);
             for (Field field : target.getFields()) {
                 if (field.getName().equalsIgnoreCase(element.getAsString()))
-                    return (T) Enum.valueOf((Class) target, field.getName());
+                    //noinspection rawtypes,unchecked
+                    return target.cast(Enum.valueOf((Class)target, field.getName()));
             }
             throw new JsonValueError((JsonString) element, target);
 
@@ -139,7 +139,7 @@ public class JsonMapper {
             if (isPrimitive(subType)) {
                 return arrayListToArray(arr, target);
             }
-            return (T) arr.toArray();
+            return target.cast(arr.toArray());
 
         } else if (Collection.class.isAssignableFrom(target) || Map.class.isAssignableFrom(target)) {
             // not supposed to be passed as target!
