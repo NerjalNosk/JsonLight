@@ -31,15 +31,15 @@ public class JsonUnmapper {
 
         if (object == null) return new JsonString((String) null);
         Class<?> target = object.getClass();
-        if (target == Integer.class || target == int.class)
+        if (target == Integer.class)
             return new JsonNumber((Integer)object);
-        if (target == Long.class || target == long.class)
+        if (target == Long.class)
             return new JsonNumber((Long)object);
-        if (target == Double.class || target == double.class)
+        if (target == Double.class)
             return new JsonNumber((Double)object, new NumberParseOptions(true, SCIENTIFIC));
-        if (target == Float.class || target == float.class)
+        if (target == Float.class)
             return new JsonNumber((Float)object, new NumberParseOptions(true));
-        if (target == Boolean.class || target == boolean.class)
+        if (target == Boolean.class)
             return new JsonBoolean((Boolean) object);
         if (target == String.class)
             return new JsonString((String) object);
@@ -62,18 +62,18 @@ public class JsonUnmapper {
             return array;
         }
         if (Collection.class.isAssignableFrom(target)) {
-            Class c = target.getSuperclass();
+            Class<?> c = target.getSuperclass();
             while (c != null) {
                 if (c == JsonElement.class) return (JsonElement) object;
                 c = c.getSuperclass();
             }
             JsonArray array = new JsonArray();
-            ((Collection)object).forEach(o -> array.add(serialize(o, stack)));
+            ((Collection<?>)object).forEach(o -> array.add(serialize(o, stack)));
             return array;
         }
         if (Map.class.isAssignableFrom(target)) {
             JsonObject obj = new JsonObject();
-            ((Map)object).forEach((key, value) -> {
+            ((Map<?,?>)object).forEach((key, value) -> {
                 if (!(key instanceof String)) return;
                 obj.put((String) key, serialize(value, stack));
             });
