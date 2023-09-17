@@ -124,7 +124,7 @@ public class JsonMapper {
             for (Field field : target.getFields()) {
                 if (field.getName().equalsIgnoreCase(element.getAsString()))
                     //noinspection rawtypes,unchecked
-                    return target.cast(Enum.valueOf((Class)target, field.getName()));
+                    return target.cast((Object) Enum.valueOf((Class)target, field.getName()));
             }
             throw new JsonValueError((JsonString) element, target);
 
