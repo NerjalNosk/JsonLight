@@ -17,8 +17,8 @@ import com.nerjal.json.elements.JsonString;
  * @author nerjal
  */
 public abstract class AbstractState implements ParserState {
-    protected StringParser parser;
-    protected ParserState olderState;
+    protected final StringParser parser;
+    protected final ParserState olderState;
 
     protected final void unexpectedCharError(char c) {
         this.error(String.format("unexpected character '%c'", c));
