@@ -12,10 +12,12 @@ and such in your projects.
 ### Example
 
 ```java
-import com.nerjal.json.elements.*;
-import com.nerjal.json.JsonParser;
+import com.github.nerjalnosk.jsonlight.elements.JsonComment;
+import com.github.nerjalnosk.jsonlight.elements.JsonNumber;
+import com.github.nerjalnosk.jsonlight.elements.JsonObject;
+import com.github.nerjalnosk.jsonlight.JsonParser;
 
-import static com.nerjal.json.JsonError.*;
+import static com.github.nerjalnosk.jsonlight.JsonError.*;
 
 public abstract class Main {
     /**
