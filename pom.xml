@@ -42,7 +42,7 @@
 
     <groupId>com.nerjal.json</groupId>
     <artifactId>JsonLight</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <build>
         <pluginManagement>
