@@ -45,3 +45,86 @@ public abstract class Main {
 ### Import
 
 _awaiting Sonatype validation for MavenCentral hosting_
+
+Now in Maven Central
+
+#### With Maven
+
+```xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>...</groupId>
+    <artifactId>...</artifactId>
+    <version>...</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.nerjalnosk</groupId>
+            <artifactId>JsonLight</artifactId>
+            <version>${jsonlight.version}</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+#### With Gradle
+
+```groovy
+dependencies {
+    implementation "io.github.nerjalnosk:jsonlight:${jsonligh_version}"
+}
+```
+
+#### Older versions
+
+For versions before 2.0, please use [Jitpack](https://jitpack.io) in
+order to import the library in your own project.
+
+_With Maven_
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>...</groupId>
+    <artifactId>...</artifactId>
+    <version>...</version>
+    
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.github.NerjalNosk</groupId>
+            <artifactId>JsonLight</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+_With Gradle_
+
+```groovy
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation "com.github.NerjalNosk:JsonLight:1.4.0"
+}
+```
