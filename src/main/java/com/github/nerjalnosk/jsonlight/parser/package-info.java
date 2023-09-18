@@ -7,7 +7,7 @@
  * All of this package's functionalities can also be used easily
  * with the {@link com.github.nerjalnosk.jsonlight.JsonParser} class' methods.
  * <p>
- * See the {@link com.nerjal.json.parser.options} package for more
+ * See the {@link com.github.nerjalnosk.jsonlight.parser.options} package for more
  * info about stringification options.
  */
 package com.github.nerjalnosk.jsonlight.parser;

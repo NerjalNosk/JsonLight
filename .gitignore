@@ -121,11 +121,3 @@ bin/
 # Maven
 
 target
-
-# javadoc
-**.html
-**.css
-**.js
-target/apidocs
-
-bin

@@ -1,6 +1,6 @@
 /**
  * This package holds all the stringification options classes
- * for all the {@link com.nerjal.json.elements}' element classes.
+ * for all the {@link com.github.nerjalnosk.jsonlight.elements}' element classes.
  * <br>
  * The base class {@link com.github.nerjalnosk.jsonlight.parser.options.AbstractParseOptions}
  * shall be registered as superclass for all custom
