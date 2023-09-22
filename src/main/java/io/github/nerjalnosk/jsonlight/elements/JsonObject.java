@@ -30,10 +30,10 @@ import java.util.function.UnaryOperator;
  */
 public class JsonObject extends JsonElement {
     private final Map<String,JsonElement> map;
-    private final Set<JsonNode> nodeSet;
+    private final transient Set<JsonNode> nodeSet;
     private final Set<JsonComment> commentSet;
-    private final List<JsonNode> orderList;
-    private ObjectParseOptions parseOptions;
+    private final transient List<JsonNode> orderList;
+    private transient ObjectParseOptions parseOptions;
 
     /**
      * An empty JsonObject with default stringification options
@@ -354,9 +354,11 @@ public class JsonObject extends JsonElement {
                 removed.add(e);
                 nodeSet.remove(new JsonNode(key, e, this));
                 if (e.isComment())
-                    commentSet.remove((JsonComment) e);
+                    commentSet.remove(e);
                 orderList.removeIf(node -> node.key.equals(key));
-            } catch (JsonError.ChildNotFoundException ignored) {}
+            } catch (JsonError.ChildNotFoundException ignored) {
+                // ignored
+            }
         }
         return removed;
     }
@@ -569,7 +571,7 @@ public class JsonObject extends JsonElement {
                 builder.append(String.format("%c%s%c: ", c, k, c));
             }
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
-            if (index.get() < size() &! e.isComment()) {
+            if (index.get() < size() && !e.isComment()) {
                 lastComma.set(builder.length());
                 builder.append(", ");
             }

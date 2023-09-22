@@ -24,7 +24,7 @@ import io.github.nerjalnosk.jsonlight.parser.options.StringParseOptions;
  */
 public class JsonString extends JsonElement {
     private String value;
-    private StringParseOptions parseOptions;
+    private transient StringParseOptions parseOptions;
 
     /**
      * Instantiates a new JsonString with the

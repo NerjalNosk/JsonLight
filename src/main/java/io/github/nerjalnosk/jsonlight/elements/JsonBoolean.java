@@ -22,7 +22,7 @@ import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
  */
 public class JsonBoolean extends JsonElement {
     private boolean value;
-    private BooleanParseOptions parseOptions;
+    private transient BooleanParseOptions parseOptions;
 
     /**
      * Instantiates a new {@code false}
@@ -95,7 +95,7 @@ public class JsonBoolean extends JsonElement {
     }
 
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
         if (parseSet == null) parseSet = new ParseSet();
         BooleanParseOptions setOptions = (BooleanParseOptions) parseSet.getOptions(this.getClass());
         BooleanParseOptions options = parseOptions.isChanged() ? parseOptions :

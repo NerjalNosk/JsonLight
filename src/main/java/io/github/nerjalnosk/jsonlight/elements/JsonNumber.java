@@ -24,7 +24,7 @@ import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
  */
 public class JsonNumber extends JsonElement {
     private Number value;
-    private NumberParseOptions parseOptions;
+    private transient NumberParseOptions parseOptions;
 
     /**
      * A new JsonNumber with a null value (0)

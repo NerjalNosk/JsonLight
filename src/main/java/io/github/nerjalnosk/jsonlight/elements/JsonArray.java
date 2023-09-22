@@ -47,7 +47,7 @@ import java.util.function.UnaryOperator;
 public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     private final List<JsonElement> list;
     private final Set<JsonComment> commentSet;
-    private ArrayParseOptions parseOptions;
+    private transient ArrayParseOptions parseOptions;
     protected transient int modCount = 0;
 
     /**
@@ -267,7 +267,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         if (b) {
             modCount++;
             if (element.isComment())
-                commentSet.remove((JsonComment) element);
+                commentSet.remove(element);
         }
         return b;
     }
@@ -289,7 +289,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         JsonElement e = this.list.remove(index);
         modCount++;
         if (e.isComment())
-            commentSet.remove((JsonComment) e);
+            commentSet.remove(e);
         return e;
     }
 
@@ -314,7 +314,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
             if (list.remove(e)) {
                 returnList.add(e);
                 if (e.isComment())
-                    commentSet.remove((JsonComment) e);
+                    commentSet.remove(e);
             }
         });
         modCount++;
@@ -660,6 +660,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         }
 
 
+        @Override
         public void remove() {
             if (lastRet < 0)
                 throw new IllegalStateException();

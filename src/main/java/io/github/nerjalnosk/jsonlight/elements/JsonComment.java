@@ -23,7 +23,7 @@ public final class JsonComment extends JsonElement {
     private String value;
     private boolean isBlock;
     private boolean lockBlock = false;
-    private CommentParseOptions parseOptions = new CommentParseOptions();
+    private transient CommentParseOptions parseOptions = new CommentParseOptions();
 
     /**
      * Instantiates a new in-line JsonComment
