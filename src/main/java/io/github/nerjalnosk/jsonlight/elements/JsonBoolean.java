@@ -95,7 +95,7 @@ public class JsonBoolean extends JsonElement {
     }
 
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
         if (parseSet == null) parseSet = new ParseSet();
         BooleanParseOptions setOptions = (BooleanParseOptions) parseSet.getOptions(this.getClass());
         BooleanParseOptions options = parseOptions.isChanged() ? parseOptions :

@@ -164,7 +164,8 @@ public final class JsonComment extends JsonElement {
     }
 
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
+        if (parseSet == null) parseSet = new ParseSet();
         CommentParseOptions setOptions = (CommentParseOptions) parseSet.getOptions(this.getClass());
         CommentParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;

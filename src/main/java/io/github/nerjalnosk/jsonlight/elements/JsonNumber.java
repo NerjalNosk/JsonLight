@@ -185,7 +185,7 @@ public class JsonNumber extends JsonElement {
     }
 
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
         NumberParseOptions setOptions = (NumberParseOptions) parseSet.getOptions(this.getClass());
         NumberParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;

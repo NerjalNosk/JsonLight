@@ -486,14 +486,17 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         return this;
     }
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack)
             throws RecursiveJsonElementException {
+        Objects.requireNonNull(stack);
         if (parseSet == null) parseSet = new ParseSet();
         ArrayParseOptions setOptions = (ArrayParseOptions) parseSet.getOptions(this.getClass());
         ArrayParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
         if (this.list.isEmpty()) return "[]";
-        if (stack == null) stack = new JsonStringifyStack(this);
+        if (stack.stack(this.hashCode())) {
+            //TODO: handle circular
+        }
         StringBuilder builder = new StringBuilder("[");
         int count = 0;
         int index = 0;
@@ -501,7 +504,6 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         boolean endOnComment = false;
         long maxLine = options.getNumPerLine();
         for (JsonElement e : this.list) {
-            if (stack.hasOrAdd(e)) throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
             if ((!options.isAllInOneLine() && (count >= maxLine || index == 0)) || e.isComment() ||
                     (index > 0 && list.get(index-1).isComment())) {
                 builder.append('\n');
@@ -518,14 +520,26 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
                     builder.append(", ");
                 }
             }
-            stack.rem(e);
         }
         if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
         if (!parseOptions.isAllInOneLine()) builder.append('\n').append(indentation);
         builder.append(']');
+        stack.unstack(this.hashCode());
         return builder.toString();
     }
 
+    @Override
+    protected ExplorationStack explore(ExplorationStack stack) {
+        Objects.requireNonNull(stack);
+        boolean b = stack.add(this);
+        if (b) {
+            this.withId(this.hashCode());
+        }
+        final ExplorationStack fStack = stack;
+        this.forEach(e -> e.explore(fStack));
+        stack.remove(this);
+        return stack;
+    }
 
     /* ITERATION */
 

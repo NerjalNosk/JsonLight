@@ -538,13 +538,16 @@ public class JsonObject extends JsonElement {
         return this;
     }
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack)
             throws JsonError.RecursiveJsonElementException {
-        if (stack == null) stack = new JsonStringifyStack(this);
+        Objects.requireNonNull(stack);
         ObjectParseOptions setOptions = (ObjectParseOptions) parseSet.getOptions(this.getClass());
         ObjectParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
         if (this.map.isEmpty()) return "{}";
+        if (stack.stack(this.hashCode())) {
+            //TODO: handle circular
+        }
         StringBuilder builder = new StringBuilder("{");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();
@@ -557,7 +560,6 @@ public class JsonObject extends JsonElement {
         for (JsonNode node : l) {
             String k = node.key;
             JsonElement e = node.value;
-            if (stack.hasOrAdd(e)) throw new JsonError.RecursiveJsonElementException("Recursive JSON structure in JsonObject");
             count.getAndIncrement();
             index.getAndIncrement();
             endOnComment.set(e.isComment());
@@ -571,12 +573,25 @@ public class JsonObject extends JsonElement {
                 lastComma.set(builder.length());
                 builder.append(", ");
             }
-            stack.rem(e);
         }
         if (endOnComment.get() && lastComma.get() != 0) builder.deleteCharAt(lastComma.get());
         builder.append('\n').append(indentation);
         builder.append('}');
+        stack.unstack(this.hashCode());
         return builder.toString();
+    }
+
+    @Override
+    protected ExplorationStack explore(ExplorationStack stack) {
+        boolean b = stack.add(this);
+        if (b) {
+            this.withId(this.hashCode());
+        }
+        for (JsonNode node : this.nodeSet) {
+            node.value.explore(stack);
+        }
+        stack.remove(this);
+        return stack;
     }
 
     // iteration

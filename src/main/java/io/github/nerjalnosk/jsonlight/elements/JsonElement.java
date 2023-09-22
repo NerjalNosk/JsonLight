@@ -6,6 +6,8 @@ import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This is the base class for all possible JSON element
@@ -17,6 +19,32 @@ import java.util.Arrays;
  */
 public abstract class JsonElement implements Serializable {
     private JsonComment[] comments = new JsonComment[]{};
+    private Long id;
+
+    protected JsonElement() {}
+
+    protected JsonElement(long id) {
+        this.id = id;
+    }
+
+    /**
+     * Returns the element's reference ID.
+     * @return the element's reference ID.
+     */
+    public final Optional<Long> getId() {
+        return Optional.of(this.id);
+    }
+
+    /**
+     * Sets the element's ID if it doesn't already have one.
+     * @param l The theoretical element's new reference ID.
+     *          Must be strictly positive.
+     */
+    public final void withId(long l) {
+        if (this.id == null && l > 0) {
+            this.id = l;
+        }
+    }
 
     /**
      * For a cleaner exception code
@@ -274,7 +302,7 @@ public abstract class JsonElement implements Serializable {
      *         children contains an element already in the stack or
      *         one of themselves, which would end up in loop parsing.
      */
-    abstract String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack)
+    protected abstract String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack)
             throws RecursiveJsonElementException;
 
     /**
@@ -295,7 +323,7 @@ public abstract class JsonElement implements Serializable {
      */
     public final String stringify(ParseSet parseSet, String indentation, String indentIncrement)
             throws RecursiveJsonElementException {
-        return this.stringify(parseSet, indentation, indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(parseSet, indentation, indentIncrement, this.explore());
     }
 
     /**
@@ -313,7 +341,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(String indentation, String indentIncrement) throws RecursiveJsonElementException {
-        return this.stringify(new ParseSet(), indentation, indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), indentation, indentIncrement, this.explore());
     }
 
     /**
@@ -330,7 +358,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(ParseSet parseSet, String indentation) throws RecursiveJsonElementException {
-        return this.stringify(parseSet, indentation, "  ", new JsonStringifyStack(this));
+        return this.stringify(parseSet, indentation, "  ", this.explore());
     }
 
     /**
@@ -345,7 +373,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(ParseSet parseSet) throws RecursiveJsonElementException {
-        return this.stringify(parseSet, "", "  ", new JsonStringifyStack(this));
+        return this.stringify(parseSet, "", "  ", this.explore());
     }
 
     /**
@@ -360,7 +388,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify(String indentation) throws RecursiveJsonElementException {
-        return this.stringify(new ParseSet(), indentation, "  ", new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), indentation, "  ", this.explore());
     }
 
     /**
@@ -378,7 +406,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringifyRoot(ParseSet parseSet, String indentIncrement) throws RecursiveJsonElementException {
-        return this.stringify(parseSet, "", indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(parseSet, "", indentIncrement, this.explore());
     }
 
     /**
@@ -394,7 +422,7 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringifyRoot(String indentIncrement) throws RecursiveJsonElementException {
-        return this.stringify(new ParseSet(), "", indentIncrement, new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(), "", indentIncrement, this.explore());
     }
 
     /**
@@ -407,6 +435,184 @@ public abstract class JsonElement implements Serializable {
      *         one of themselves, which would end up in loop parsing.
      */
     public final String stringify() throws RecursiveJsonElementException {
-        return this.stringify(new ParseSet(),"", "  ", new JsonStringifyStack(this));
+        return this.stringify(new ParseSet(),"", "  ", this.explore());
+    }
+
+    /**
+     * Element exploration stack, allows to explore for circular
+     * structure detection.
+     */
+    protected static final class ExplorationStack {
+        private ExplorationStack() {
+            this.elements = new JsonElement[0];
+            this.stringificationIds = new int[0];
+        }
+
+        /**
+         * Not using an object, for the sake of performance.
+         * Sorted by hashcode.
+         */
+        private JsonElement[] elements;
+        private int[] stringificationIds;
+
+        /**
+         * Adds the provided element to the stack, if absent.
+         * @param e The element to add to the stack.
+         * @return Whether the element could be added to the stack. Only
+         *         returns {@code false} if it was already present,
+         *         returns {@code true} otherwise.
+         */
+        public boolean add(JsonElement e) {
+            Objects.requireNonNull(e);
+            int hash = e.hashCode();
+            int i = 0;
+            boolean add = false;
+            // TODO: optimize finding element/placement
+            while (i < this.elements.length) {
+                int j = this.elements[i].hashCode();
+                if (j < hash) i++;
+                else {
+                    if (j > hash) add = true;
+                    break;
+                }
+            }
+            if (add) {
+                int l = this.elements.length;
+                JsonElement[] arr = Arrays.copyOf(Arrays.copyOfRange(this.elements, 0, i), l+1);
+                arr [i] = e;
+                while (i < l) {
+                    arr[i+1] = this.elements[i];
+                    i++;
+                }
+                this.elements = arr;
+            }
+            return add;
+        }
+
+        /**
+         * Removes the provided element from the stack, if present.
+         * @param e The element to remove from the stack.
+         */
+        public void remove(JsonElement e) {
+            Objects.requireNonNull(e);
+            int hash = e.hashCode();
+            int i = 0;
+            boolean slice = false;
+            while (i < this.elements.length) {
+                int j = this.elements[i].hashCode();
+                if (j < hash) i++;
+                else {
+                    if (j == hash) slice = true;
+                    break;
+                }
+            }
+            if (slice) {
+                int l = this.elements.length-1;
+                JsonElement[] arr = Arrays.copyOf(Arrays.copyOfRange(this.elements, 0, i-1), l);
+                while (i < l) {
+                    arr[i] = this.elements[i+1];
+                    i++;
+                }
+                this.elements = arr;
+            }
+        }
+
+        /**
+         * Returns whether the provided hash is already in the stack.
+         * @param hash The hash to look for in the stack.
+         * @return Whether the provided hash is already in the stack.
+         */
+        boolean has(int hash) {
+            int i = 0;
+            do {
+                int h = this.elements[i].hashCode();
+                if (h == hash) return true;
+                if (h > hash) return false;
+                i++;
+            } while (i < this.elements.length);
+            return false;
+        }
+
+        /**
+         * Returns whether the provided element is already in the stack.
+         * @param e The element to look for in the stack.
+         * @return Whether the provided element is already in the stack.
+         */
+        public boolean has(JsonElement e) {
+            Objects.requireNonNull(e);
+            return has(e.hashCode());
+        }
+
+        @SuppressWarnings("DuplicatedCode")
+        public boolean stack(int i) {
+            final int h = this.stringificationIds.length;
+            // if extremes = target
+            if (this.stringificationIds[0] == i || this.stringificationIds[h-1] == i) return true;
+            // if lower end over target
+            if (this.stringificationIds[0] > i) {
+                int[] arr = new int[h+1];
+                arr[0] = i;
+                System.arraycopy(this.stringificationIds, 0, arr, 1, h);
+                this.stringificationIds = arr;
+                return false;
+            }
+            // if higher end below target
+            if (this.stringificationIds[h-1] < i) {
+                int[] arr = Arrays.copyOf(this.stringificationIds, h+1);
+                arr[h] = i;
+                this.stringificationIds = arr;
+                return false;
+            }
+            int k = h/2;
+            int d = k;
+            int p = 0;
+            // bubble search for target/pos
+            while (d >= 1) {
+                int n = this.stringificationIds[k];
+                if (n == i) return true;
+                int t = k;
+                if (n < i) k += Math.abs(k-p)/2;
+                else k -= Math.abs(k-p)/2;
+                d = Math.abs(t-k);
+                p = t;
+            }
+            int[] arr = Arrays.copyOf(Arrays.copyOfRange(this.stringificationIds, 0, k), h+1);
+            arr[k] = i;
+            System.arraycopy(this.stringificationIds, k, arr, k+1, h-k);
+            this.stringificationIds = arr;
+            return false;
+        }
+
+        @SuppressWarnings("DuplicatedCode")
+        public void unstack(int i) {
+            final int h = this.stringificationIds.length;
+            if (this.stringificationIds[0] > i || this.stringificationIds[h-1] < i) return;
+            // bubble search
+            int k = h/2;
+            int d = k;
+            int p = 0;
+            while (d >= 1) {
+                int n = this.stringificationIds[k];
+                if (n == i) {
+                    int[] arr = Arrays.copyOf(Arrays.copyOfRange(this.stringificationIds, 0, k), h-1);
+                    System.arraycopy(this.stringificationIds, k+1, arr, k, h-k-1);
+                    this.stringificationIds = arr;
+                    return;
+                }
+                int t = k;
+                if (n < i) k += Math.abs(k-p)/2;
+                else k -= Math.abs(k-p)/2;
+                d = Math.abs(t-k);
+                p = t;
+            }
+        }
+    }
+
+    protected final ExplorationStack explore() {
+        return this.explore(new ExplorationStack());
+    }
+
+    protected ExplorationStack explore(ExplorationStack stack) {
+        return null;
     }
 }

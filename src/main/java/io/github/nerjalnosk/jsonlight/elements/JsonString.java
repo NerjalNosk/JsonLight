@@ -112,7 +112,7 @@ public class JsonString extends JsonElement {
     }
 
     @Override
-    public String stringify(ParseSet parseSet, String indentation, String indentIncrement, JsonStringifyStack stack) {
+    protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
         StringParseOptions setOptions = (StringParseOptions) parseSet.getOptions(this.getClass());
         StringParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
