@@ -621,6 +621,7 @@ public abstract class JsonElement implements Serializable {
     }
 
     protected ExplorationStack explore(ExplorationStack stack) {
-        return null;
+        Objects.requireNonNull(stack);
+        return stack;
     }
 }
