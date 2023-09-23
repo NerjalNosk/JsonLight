@@ -608,6 +608,14 @@ public abstract class JsonElement implements Serializable {
         }
     }
 
+    protected final String stringifiedId() {
+        return String.format("<@%d>",this.id);
+    }
+
+    protected final String asRef() {
+        return String.format("<#%d>",this.id);
+    }
+
     protected final ExplorationStack explore() {
         return this.explore(new ExplorationStack());
     }

@@ -495,9 +495,14 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
                 setOptions == null ? parseOptions : setOptions;
         if (this.list.isEmpty()) return "[]";
         if (stack.stack(this.hashCode())) {
-            //TODO: handle circular
+            return this.asRef();
         }
-        StringBuilder builder = new StringBuilder("[");
+        StringBuilder builder = new StringBuilder();
+        if (this.getId().isPresent()) {
+            //TODO: ParseOptions circular handling settings
+            builder.append(this.stringifiedId()).append(" ");
+        }
+        builder.append("[");
         int count = 0;
         int index = 0;
         int lastComma = 0;

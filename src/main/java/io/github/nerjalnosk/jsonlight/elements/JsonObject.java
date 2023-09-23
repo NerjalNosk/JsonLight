@@ -548,9 +548,13 @@ public class JsonObject extends JsonElement {
                 setOptions == null ? parseOptions : setOptions;
         if (this.map.isEmpty()) return "{}";
         if (stack.stack(this.hashCode())) {
-            //TODO: handle circular
+            return this.asRef();
         }
-        StringBuilder builder = new StringBuilder("{");
+        StringBuilder builder = new StringBuilder();
+        if (this.getId().isPresent()) {
+            builder.append(this.stringifiedId()).append(" ");
+        }
+        builder.append("{");
         AtomicInteger count = new AtomicInteger();
         AtomicInteger index = new AtomicInteger();
         AtomicInteger lastComma = new AtomicInteger();
