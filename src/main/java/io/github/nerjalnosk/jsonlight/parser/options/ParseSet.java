@@ -11,9 +11,8 @@ import java.util.HashMap;
  * default stringification options when
  * parsing an element to string
  */
-@SuppressWarnings("rawtypes")
 public final class ParseSet {
-    private final HashMap<Class<? extends JsonElement>, AbstractParseOptions> map = new HashMap<>();
+    private final HashMap<Class<? extends JsonElement>, AbstractParseOptions<?>> map = new HashMap<>();
 
     /**
      * Adds the default parseOptions for the specified
@@ -33,8 +32,9 @@ public final class ParseSet {
         return true;
     }
 
-    public <T extends JsonElement> AbstractParseOptions getOptions(Class<T> elementClass) {
+    @SuppressWarnings("unchecked")
+    public <T extends JsonElement> AbstractParseOptions<T> getOptions(Class<T> elementClass) {
         if (!map.containsKey(elementClass)) return null;
-        return map.get(elementClass);
+        return (AbstractParseOptions<T>) map.get(elementClass);
     }
 }
