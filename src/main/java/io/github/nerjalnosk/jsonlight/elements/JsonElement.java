@@ -32,7 +32,7 @@ public abstract class JsonElement implements Serializable {
      * @return the element's reference ID.
      */
     public final Optional<Long> getId() {
-        return Optional.of(this.id);
+        return Optional.ofNullable(this.id);
     }
 
     /**
