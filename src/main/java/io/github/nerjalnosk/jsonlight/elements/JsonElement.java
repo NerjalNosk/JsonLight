@@ -546,6 +546,11 @@ public abstract class JsonElement implements Serializable {
         @SuppressWarnings("DuplicatedCode")
         public boolean stack(int i) {
             final int h = this.stringificationIds.length;
+            // if empty
+            if (this.stringificationIds.length == 0) {
+                this.stringificationIds = new int[]{i};
+                return false;
+            }
             // if extremes = target
             if (this.stringificationIds[0] == i || this.stringificationIds[h-1] == i) return true;
             // if lower end over target
