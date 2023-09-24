@@ -577,7 +577,8 @@ public class JsonObject extends JsonElement {
             builder.append('\n').append(indentation).append(indentIncrement);
             if (!e.isComment()) {
                 char c = options.keyQuoteChar();
-                builder.append(String.format("%c%s%c: ", c, k, c));
+                String s = c == 0 ? "%s: " : "%2$c%s%2$c: ";
+                builder.append(String.format(s, k, c));
             }
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
             if (index.get() < size() && !e.isComment()) {
