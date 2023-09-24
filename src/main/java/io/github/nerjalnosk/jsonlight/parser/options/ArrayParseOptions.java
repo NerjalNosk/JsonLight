@@ -28,6 +28,33 @@ import static io.github.nerjalnosk.jsonlight.JsonError.*;
 public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
     private long numPerLine;
     private ArrayFormat format;
+    private boolean circular;
+
+    /**
+     * Instantiates new array stringification
+     * options with the specified format,
+     * number of elements per line (only used
+     * with
+     * {@link ArrayFormat#MULTIPLE_PER_LINE})
+     * and circularisation.
+     * @param format the stringification
+     *               format to use
+     * @param numPerLine the number of
+     *                   element per line if
+     *                   multiple
+     * @param doCircular whether arrays using
+     *                   these options should
+     *                   resolve circularity
+     */
+    public ArrayParseOptions(ArrayFormat format, int numPerLine, boolean doCircular) {
+        this.format = format;
+        if (numPerLine < 0)
+            throw new IllegalArgumentException(
+                    "Unhandled negative number for array stringification options");
+        this.numPerLine = numPerLine;
+        this.circular = doCircular;
+        ping();
+    }
 
     /**
      * Instantiates new array stringification
@@ -35,6 +62,9 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      * number of elements per line (only used
      * with
      * {@link ArrayFormat#MULTIPLE_PER_LINE})
+     * <p>
+     * Circularisation is {@code false} by
+     * default
      * @param format the stringification
      *               format to use
      * @param numPerLine the number of
@@ -44,12 +74,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      *         numPerLine is negative
      */
     public ArrayParseOptions(ArrayFormat format, int numPerLine) {
-        this.format = format;
-        if (numPerLine < 0)
-            throw new IllegalArgumentException(
-                    "Unhandled negative number for array stringification options");
-        this.numPerLine = numPerLine;
-        ping();
+        this(format, numPerLine, false);
     }
 
     /**
@@ -57,6 +82,9 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      * options with the specified format, and
      * a default number of elements per line
      * of 2 if multiple format, 0 otherwise.
+     * <p>
+     * Circularisation is {@code false} by
+     * default
      * @param format the stringification
      *               format to use
      */
@@ -69,6 +97,9 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      * Instantiates new array stringification
      * options with a default one-per-line
      * format.
+     * <p>
+     * Circularisation is {@code false} by
+     * default
      */
     public ArrayParseOptions() {
         this.format = ArrayFormat.ONE_PER_LINE;
@@ -126,7 +157,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      *         per line
      */
     public long getNumPerLine() {
-        if (this.format == ArrayFormat.INLINE) return Integer.MAX_VALUE;
+        if (this.format == ArrayFormat.INLINE) return Long.MAX_VALUE;
         if (this.format == ArrayFormat.ONE_PER_LINE) return 1;
         return this.numPerLine;
     }
@@ -142,6 +173,29 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      */
     public boolean isAllInOneLine() {
         return this.format == ArrayFormat.INLINE;
+    }
+
+    /**
+     * Sets whether arrays using
+     * these options should resolve
+     * circularity on themselves
+     * upon stringification.
+     * @param b the new circularity
+     *          setting value.
+     */
+    public void doCircular(boolean b) {
+        this.circular = b;
+        ping();
+    }
+
+    /**
+     * Returns whether arrays should resolve
+     * circularity.
+     * @return Whether arrays should resolve
+     *         circularity.
+     */
+    public boolean resolveCircular() {
+        return this.circular;
     }
 
     /**

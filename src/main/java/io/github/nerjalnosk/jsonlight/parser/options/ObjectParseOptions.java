@@ -25,16 +25,21 @@ import io.github.nerjalnosk.jsonlight.elements.JsonObject;
 public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
     private ObjectFormat format;
     private boolean ordered;
+    private boolean circular;
 
     /**
      * Instantiates new
      * double-quoted keys and
      * unordered object
      * stringification options.
+     * <p>
+     * Circularisation is
+     * {@code false} by default
      */
     public ObjectParseOptions() {
         this.format = ObjectFormat.DOUBLE_QUOTED_KEYS;
         this.ordered = false;
+        this.circular = false;
     }
 
     /**
@@ -43,6 +48,9 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      * with the specified keys
      * stringification and
      * unordered format
+     * <p>
+     * Circularisation is
+     * {@code false} by default
      * @param format the keys
      *               stringification
      *               format for
@@ -50,7 +58,7 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      *               options
      */
     public ObjectParseOptions(ObjectFormat format) {
-        this(format, false);
+        this(format, false, false);
     }
 
     /**
@@ -59,6 +67,9 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      * and with the specified
      * ordering object
      * stringification format
+     * <p>
+     * Circularisation is
+     * {@code false} by default
      * @param ordered whether
      *                should the
      *                object be
@@ -69,7 +80,7 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      *                added to it
      */
     public ObjectParseOptions(boolean ordered) {
-        this(ObjectFormat.DOUBLE_QUOTED_KEYS, ordered);
+        this(ObjectFormat.DOUBLE_QUOTED_KEYS, ordered, false);
     }
 
     /**
@@ -78,6 +89,9 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      * with the specified keys
      * format and element
      * ordering.
+     * <p>
+     * Circularisation is
+     * {@code false} by default
      * @param format the keys
      *               stringification
      *               format for
@@ -93,8 +107,40 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
      *                added to it
      */
     public ObjectParseOptions(ObjectFormat format, boolean ordered) {
+        this(format, ordered, false);
+    }
+
+    /**
+     * Instantiates new object
+     * stringification options
+     * with the specified keys
+     * format, element
+     * ordering and
+     * circularisation.
+     * @param format the keys
+     *               stringification
+     *               format for
+     *               the new
+     *               options
+     * @param ordered whether
+     *                should the
+     *                object be
+     *                stringified
+     *                with its
+     *                elements
+     *                ordered as
+     *                added to it
+     * @param doCircular whether
+     *                   the object
+     *                   should resolve
+     *                   circularity
+     *                   upon
+     *                   stringification
+     */
+    public ObjectParseOptions(ObjectFormat format, boolean ordered, boolean doCircular) {
         this.format = format;
         this.ordered = ordered;
+        this.circular = doCircular;
         ping();
     }
 
@@ -167,6 +213,29 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
             default: c = '"';
         }
         return c;
+    }
+
+    /**
+     * Sets whether objects using
+     * these options should resolve
+     * circularity on themselves
+     * upon stringification.
+     * @param b the new circularity
+     *          setting value.
+     */
+    public void doCircular(boolean b) {
+        this.circular = b;
+        ping();
+    }
+
+    /**
+     * Returns whether objects should resolve
+     * circularity.
+     * @return Whether objects should resolve
+     *         circularity.
+     */
+    public boolean resolveCircular() {
+        return this.circular;
     }
 
     /**

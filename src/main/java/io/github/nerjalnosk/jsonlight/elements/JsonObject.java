@@ -544,14 +544,19 @@ public class JsonObject extends JsonElement {
             throws JsonError.RecursiveJsonElementException {
         Objects.requireNonNull(stack);
         ObjectParseOptions setOptions = (ObjectParseOptions) parseSet.getOptions(this.getClass());
-        ObjectParseOptions options = parseOptions.isChanged() ? parseOptions :
-                setOptions == null ? parseOptions : setOptions;
+        if (this.parseOptions.isChanged() || setOptions == null) {
+            setOptions = this.parseOptions;
+        }
+        ObjectParseOptions options = setOptions;
         if (this.map.isEmpty()) return "{}";
         if (stack.stack(this.hashCode())) {
+            if (!options.resolveCircular()) {
+                throw new JsonError.RecursiveJsonElementException("Recursive JSON structure in JsonArray");
+            }
             return this.asRef();
         }
         StringBuilder builder = new StringBuilder();
-        if (this.getId().isPresent()) {
+        if (this.getId().isPresent() && options.resolveCircular()) {
             builder.append(this.stringifiedId()).append(" ");
         }
         builder.append("{");

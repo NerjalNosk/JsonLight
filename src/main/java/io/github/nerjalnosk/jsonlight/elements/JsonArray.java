@@ -491,15 +491,19 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         Objects.requireNonNull(stack);
         if (parseSet == null) parseSet = new ParseSet();
         ArrayParseOptions setOptions = (ArrayParseOptions) parseSet.getOptions(this.getClass());
-        ArrayParseOptions options = parseOptions.isChanged() ? parseOptions :
-                setOptions == null ? parseOptions : setOptions;
+        if (this.parseOptions.isChanged() || setOptions == null) {
+            setOptions = this.parseOptions;
+        }
+        ArrayParseOptions options = setOptions;
         if (this.list.isEmpty()) return "[]";
         if (stack.stack(this.hashCode())) {
+            if (!options.resolveCircular()) {
+                throw new RecursiveJsonElementException("Recursive JSON structure in JsonArray");
+            }
             return this.asRef();
         }
         StringBuilder builder = new StringBuilder();
-        if (this.getId().isPresent()) {
-            //TODO: ParseOptions circular handling settings
+        if (this.getId().isPresent() && options.resolveCircular()) {
             builder.append(this.stringifiedId()).append(" ");
         }
         builder.append("[");
