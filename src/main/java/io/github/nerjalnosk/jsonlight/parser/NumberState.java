@@ -43,6 +43,18 @@ public class NumberState extends AbstractState {
         }
     }
 
+    private void foundP() {
+        if (!this.isHex) {
+            this.unexpectedCharError(this.parser.getActual());
+        }
+        this.parser.forward();
+        if (!Character.isDigit(this.parser.getActual())) {
+            this.unexpectedCharError(this.parser.getActual());
+        }
+        this.charCount++;
+        this.closeNum();
+    }
+
     /**
      * Transforms the specified
      * hex number string to a
@@ -175,6 +187,10 @@ public class NumberState extends AbstractState {
             case 'x':
             case 'X':
                 this.foundX();
+                break;
+            case 'p':
+            case 'P':
+                this.foundP();
                 break;
             case 'a':
             case 'A':
