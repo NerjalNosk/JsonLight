@@ -46,7 +46,8 @@ public abstract class Main {
 
 _awaiting Sonatype validation for MavenCentral hosting_
 
-Now in Maven Central
+Now in Maven Central! Latest available version: 
+[2.0](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/2.0)
 
 #### With Maven
 

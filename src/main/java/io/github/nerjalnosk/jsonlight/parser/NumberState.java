@@ -3,6 +3,7 @@ package io.github.nerjalnosk.jsonlight.parser;
 import io.github.nerjalnosk.jsonlight.elements.JsonNumber;
 import io.github.nerjalnosk.jsonlight.parser.options.NumberParseOptions;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +42,18 @@ public class NumberState extends AbstractState {
         else {
             this.isHex = true;
         }
+    }
+
+    private void foundP() {
+        if (!this.isHex) {
+            this.unexpectedCharError(this.parser.getActual());
+        }
+        this.parser.forward();
+        if (!Character.isDigit(this.parser.getActual())) {
+            this.unexpectedCharError(this.parser.getActual());
+        }
+        this.charCount++;
+        this.closeNum();
     }
 
     /**
@@ -176,6 +189,10 @@ public class NumberState extends AbstractState {
             case 'X':
                 this.foundX();
                 break;
+            case 'p':
+            case 'P':
+                this.foundP();
+                break;
             case 'a':
             case 'A':
                 if (this.isHex) break;
@@ -225,7 +242,7 @@ public class NumberState extends AbstractState {
         }
         if (this.foundE) {
             options.setFormat(NumberParseOptions.NumberFormat.SCIENTIFIC);
-            return new JsonNumber(Double.parseDouble(s), options);
+            return new JsonNumber(new BigDecimal(s).doubleValue(), options);
         } else if (this.foundDecimal) return JsonNumber.fromFloatString(s, options);
         else return JsonNumber.fromIntegerString(s, options);
     }

@@ -85,7 +85,7 @@ public class JsonNumber extends JsonElement {
      *         parsed to an integer
      */
     public static JsonNumber fromIntegerString(String s, NumberParseOptions options) {
-        return new JsonNumber(Integer.parseInt(s), options);
+        return new JsonNumber((int)Float.parseFloat(s), options);
     }
 
     /**
