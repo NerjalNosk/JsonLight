@@ -224,7 +224,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      * @throws IllegalArgumentException from > to
      */
     public JsonElement[] getAll(int from, int to) {
-        return (JsonElement[]) Arrays.copyOfRange(this.list.toArray(), from, to);
+        return Arrays.copyOfRange(this.list.toArray(new JsonElement[0]), from, to);
     }
 
     /**
