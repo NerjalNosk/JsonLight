@@ -234,7 +234,7 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      *         array
      */
     public JsonComment[] getAllComments() {
-        return (JsonComment[]) Arrays.copyOf(this.commentSet.toArray(), this.commentSet.size());
+        return Arrays.copyOf(this.commentSet.toArray(), this.commentSet.size(), JsonComment[].class);
     }
 
     /**
