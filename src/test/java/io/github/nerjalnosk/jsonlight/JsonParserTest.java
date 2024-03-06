@@ -72,9 +72,8 @@ class JsonParserTest {
         assertEquals(arrayOptions, set2.getOptions(JsonArray.class));
         assertEquals(objectOptions, set2.getOptions(JsonObject.class));
         // number
-        number.setValue(65.1234);
-        String s = number.stringify(set1);
-        LOGGER.info(() -> s);
+        number.setValue(65+1/16f);
+        //assertEquals("0x3b.1p0", JsonParser.stringify(number,set1)); // Hex my behated
         // string
         str.setValue("logcat");
         assertEquals("'logcat'", JsonParser.stringify(str, set1));
