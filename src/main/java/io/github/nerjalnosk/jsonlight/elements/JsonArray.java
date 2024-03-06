@@ -60,11 +60,31 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     }
 
     /**
+     * A JsonArray with the given {@link Iterable} of
+     * JsonElement as content, and default stringification
+     * options.
+     * @param elements the {@link JsonElement} iterable to
+     *                 fill the array with as initial
+     *                 values.
+     */
+    public JsonArray(Iterable<JsonElement> elements) {
+        this.list = new ArrayList<>();
+        this.commentSet = new HashSet<>();
+        elements.forEach(e -> {
+            this.list.add(e);
+            if (e.isComment()) {
+                commentSet.add((JsonComment) e);
+            }
+        });
+        this.parseOptions = new ArrayParseOptions();
+    }
+
+    /**
      * A JsonArray with the given {@link Collection} of
      * JsonElement as content, and default stringification
      * options.
      * @param elements the {@link JsonElement} collection
-     *                 to fill the array with as default
+     *                 to fill the array with as initial
      *                 values.
      */
     public JsonArray(Collection<JsonElement> elements) {
@@ -366,10 +386,10 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
 
     /**
      * Appends all the elements in the specified
-     * collection to this list, in the order they
+     * iterable to this list, in the order they
      * are returned by the specified collection's
      * iterator.
-     * @param elements the collection containing
+     * @param elements the iterable containing
      *                 elements to be added to
      *                 this list
      * @throws NullPointerException if the specified
@@ -377,9 +397,10 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      *         {@code null} elements, or if the
      *         specified collection is {@code null}
      */
-    public void addAll(Collection<JsonElement> elements) {
-        this.list.addAll(elements);
+    public void addAll(Iterable<JsonElement> elements) {
         elements.forEach(e -> {
+            if (e == null) return;
+            this.list.add(e);
             if (e.isComment()) commentSet.add((JsonComment) e);
             else {
                 list.addAll(Arrays.asList(e.getRootComments()));
@@ -400,8 +421,9 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
      *         {@code null}
      */
     public void addAll(JsonElement[] elements) {
-        this.addAll(Arrays.asList(elements));
         for (JsonElement e : elements) {
+            if (e == null) continue;
+            this.list.add(e);
             if (e.isComment()) commentSet.add((JsonComment) e);
             else {
                 list.addAll(Arrays.asList(e.getRootComments()));
