@@ -1,6 +1,6 @@
 # JsonLight
 
-### Description
+## Description
 
 This is a minimalist and lightweight Java Json5 library<br>
 Classes and methods names are freely inspired from the Google Gson library
@@ -42,14 +42,52 @@ public abstract class Main {
 }
 ```
 
-### Import
+## Json extension
 
-_awaiting Sonatype validation for MavenCentral hosting_
+### Circular structures
+
+JsonLight includes a JSON5 extension, a Json6 of sorts, which supports circular structures.
+Indeed, it allows to reference an element inside itself, to avoid infinite text transformation
+loops.
+
+This extension works with an ID system (automatically generated), textualized as `<@id>`
+and `<#id>`, respectively the *declaration* and *reference*, where `id` is a number. This ID
+will of course be provided at the "declaration" of the element, as well as the later
+referencing of that element.
+
+#### Example
+
+```
+{
+  "key_1": "value_1",
+  "key_2": <@1234> { // here, the element with ID "1234" is declared. We will remember this ID.
+    "key_2.1": "value_2.1",
+    "key_2.2": [
+      <#1234>, // here, the element with ID "1234" is referenced. We link it to the earlier declaration.
+      {
+        "key_3": "value_3"
+      }
+    ]
+  }
+}
+```
+
+Of course, referencing an undeclared element will result in an error. But upon automated stringification,
+references will only be generated for elements located inside themselves, to whichever level.
+
+Declaring an unused ID, on the contrary, will not cause an issue, but it will not be kept upon
+further stringification.
+
+__Note__ : IDs will most likely change upon each automated parsing/stringification, as they are
+not kept in the processed elements. This also include not being able to recognise an element by
+its ID at runtime.
+
+## Import
 
 Now in Maven Central! Latest available version: 
 [2.0](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/2.0)
 
-#### With Maven
+### With Maven
 
 ```xml
 
@@ -72,7 +110,7 @@ Now in Maven Central! Latest available version:
 </project>
 ```
 
-#### With Gradle
+### With Gradle
 
 ```groovy
 dependencies {

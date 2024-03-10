@@ -443,17 +443,17 @@ public abstract class JsonElement implements Serializable {
      * structure detection.
      */
     protected static final class ExplorationStack {
-        private ExplorationStack() {
-            this.elements = new JsonElement[0];
-            this.stringificationIds = new int[0];
-        }
-
         /**
          * Not using an object, for the sake of performance.
          * Sorted by hashcode.
          */
         private JsonElement[] elements;
         private int[] stringificationIds;
+
+        private ExplorationStack() {
+            this.elements = new JsonElement[0];
+            this.stringificationIds = new int[0];
+        }
 
         /**
          * Adds the provided element to the stack, if absent.
