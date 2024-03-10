@@ -63,7 +63,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
 
-        <gpg.keyname>8C25DF265083BD42CBE43155249BB014A14913F9</gpg.keyname>
+        <gpg.keyname>DF8D863051B65FDCF4A6F9BBC33E948B2D364FBF</gpg.keyname>
     </properties>
     <dependencies>
         <dependency>
