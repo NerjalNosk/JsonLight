@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.nerjalnosk</groupId>
     <artifactId>JsonLight</artifactId>
-    <version>2.1</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
 
     <name>JsonLight</name>
