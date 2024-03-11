@@ -46,13 +46,13 @@ public abstract class Main {
 
 ### Circular structures
 
-JsonLight includes a JSON5 extension, a Json6 of sorts, which supports circular structures.
+Since version 3.0, JsonLight includes a JSON5 extension, a Json6 of sorts, which supports circular structures.
 Indeed, it allows to reference an element inside itself, to avoid infinite text transformation
 loops.
 
 This extension works with an ID system (automatically generated), textualized as `<@id>`
-and `<#id>`, respectively the *declaration* and *reference*, where `id` is a number. This ID
-will of course be provided at the "declaration" of the element, as well as the later
+and `<#id>`, respectively the *declaration* and *reference*, where `id` is an unsigned integer.
+This ID  will of course be provided at the "declaration" of the element, as well as the later
 referencing of that element.
 
 #### Example
@@ -85,7 +85,7 @@ its ID at runtime.
 ## Import
 
 Now in Maven Central! Latest available version: 
-[2.0](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/2.0)
+[2.1](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/2.1)
 
 ### With Maven
 
@@ -99,6 +99,10 @@ Now in Maven Central! Latest available version:
     <groupId>...</groupId>
     <artifactId>...</artifactId>
     <version>...</version>
+    
+    <properties>
+        <jsonLight.version>2.1</jsonLight.version>
+    </properties>
 
     <dependencies>
         <dependency>
