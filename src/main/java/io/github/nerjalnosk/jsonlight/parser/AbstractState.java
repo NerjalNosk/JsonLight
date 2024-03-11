@@ -19,6 +19,7 @@ import io.github.nerjalnosk.jsonlight.elements.JsonString;
 public abstract class AbstractState implements ParserState {
     protected final StringParser parser;
     protected final ParserState olderState;
+    protected Integer storedId = null;
 
     protected final void unexpectedCharError(char c) {
         this.error(String.format("unexpected character '%c'", c));
@@ -40,42 +41,55 @@ public abstract class AbstractState implements ParserState {
 
     @Override
     public void openObject() {
-
     }
 
     @Override
     public void closeObject() {
-
     }
 
     @Override
     public void openArray() {
-
     }
 
     @Override
     public void closeArray() {
-
     }
 
     @Override
     public void openString() {
-
     }
 
     @Override
     public void closeString() {
-
     }
 
     @Override
     public void openNum() {
-
     }
 
     @Override
     public void closeNum() {
+    }
 
+    @Override
+    public void openId() {
+    }
+
+    @Override
+    public void closeId() {
+    }
+
+    protected final void unexpectedIdError() {
+        this.error("unexpected ID declaration");
+    }
+
+    @Override
+    public final void feedId(int id) {
+        if (this.storedId != null) {
+            this.unexpectedIdError();
+        } else {
+            this.storedId = id;
+        }
     }
 
     @Override

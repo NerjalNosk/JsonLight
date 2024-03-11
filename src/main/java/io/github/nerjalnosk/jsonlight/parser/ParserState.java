@@ -99,6 +99,32 @@ public interface ParserState {
     /**
      * Switches the affiliated
      * {@link StringParser} to a new
+     * ID state, if the current
+     * state allows it.
+     */
+    void openId();
+
+    /**
+     * Provides the specified ID
+     * as instantiation for the
+     * upcoming element.
+     * @param id The ID to be set
+     *           for the upcoming
+     *           element.
+     */
+    void feedId(int id);
+
+    /**
+     * Closes a current ID state and
+     * switches back the affiliated
+     * {@link StringParser}
+     * to its precedent state.
+     */
+    void closeId();
+
+    /**
+     * Switches the affiliated
+     * {@link StringParser} to a new
      * Comment state, if the current
      * state allows it.
      */

@@ -33,14 +33,14 @@ public class ArrayState extends AbstractState {
     public void openObject() {
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser, this));
-        else this.error("unexpected '{' character");
+        else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
     public void openArray() {
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
-        else this.error("unexpected '[' character");
+        else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
@@ -54,14 +54,22 @@ public class ArrayState extends AbstractState {
         boolean singleQuote = this.parser.getActual() == '\'';
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this, singleQuote));
-        else this.error("unexpected '\"' character");
+        else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
     public void openNum() {
         if (trailingIterator) this.trailingError();
         else if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
-        else this.error(String.format("unexpected character '%c'", this.parser.getActual()));
+        else this.unexpectedCharError(this.parser.getActual());
+    }
+
+    @Override
+    public void openId() {
+        if (trailingIterator) this.trailingError();
+        else if (this.storedId != null) this.unexpectedIdError();
+        else if (this.lookForValue) this.parser.switchState(new IdState(this.parser, this));
+        else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
@@ -119,11 +127,14 @@ public class ArrayState extends AbstractState {
             case 'F':
                 this.readBool(c);
                 break;
+            case '<':
+                this.openId();
+                break;
             case ']':
                 this.closeArray();
                 break;
             default:
-                this.error(String.format("unexpected character '%c'", c));
+                this.unexpectedCharError(c);
         }
     }
 
@@ -137,5 +148,11 @@ public class ArrayState extends AbstractState {
         this.array.add(element);
         this.lookForValue = false;
         this.requiresIterator = true;
+        if (this.storedId != null && !element.isComment()) {
+            if (this.parser.feedId(this.storedId, element)) {
+                this.error("already mapped ID "+this.storedId);
+            }
+            this.storedId = null;
+        }
     }
 }

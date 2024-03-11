@@ -5,6 +5,9 @@ import static io.github.nerjalnosk.jsonlight.JsonError.*;
 import io.github.nerjalnosk.jsonlight.JsonParser;
 import io.github.nerjalnosk.jsonlight.elements.JsonElement;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -31,8 +34,9 @@ public class StringParser {
     protected boolean run = false;
     protected boolean stop = false;
     protected boolean isErrored = false;
-    private String errMessage = null;
+    protected JsonParseException storedErr = null;
     private Consumer<String> logReceiver = System.err::println;
+    private final Map<Integer, JsonElement> idMap = new HashMap<>();
 
     /**
      * Empty StringParser.<br>
@@ -151,7 +155,7 @@ public class StringParser {
     public void read() throws JsonParseException, NullPointerException {
         this.run = true;
         while (!this.stop) {
-            if (this.isErrored) throw this.buildError();
+            if (this.isErrored) throw this.storedErr;
             this.state.read(this.getActual());
             this.index++;
             this.lineIndex++;
@@ -233,6 +237,24 @@ public class StringParser {
     }
 
     /**
+     * Returns the parser's current cursor line.
+     * @return the parser's current cursor line.
+     */
+    public final int getLine() {
+        return line;
+    }
+
+    /**
+     * Returns the parser's current cursor position
+     * in the current line.
+     * @return the parser's current cursor position
+     *         in the current line.
+     */
+    public final int getLineIndex() {
+        return  this.lineIndex;
+    }
+
+    /**
      * Returns the parser's current cursor position
      * @return the parser's current cursor position
      */
@@ -293,7 +315,43 @@ public class StringParser {
         return this.readStr.substring(this.index-i,this.index).toCharArray();
     }
 
+    // circular processing
+
+    /**
+     * Adds the provided element to the map at
+     * the specified ID if there is none
+     * matching yet, and returns whether
+     * there was already one mapped for said ID.
+     * @param i the ID to which map the provided
+     *          element.
+     * @param e The element to map to the
+     *          specified ID.
+     * @return Whether there already was an
+     *         element mapped for the specified
+     *         ID other than the provided one.
+     */
+    public final boolean feedId(int i, JsonElement e) {
+        JsonElement f = this.idMap.putIfAbsent(i, e);
+        return f != e;
+    }
+
+    /**
+     * Retrieves the mapped element for the
+     * specified ID, if any.
+     * @param i The ID to which should be
+     *          mapped the returned element.
+     * @return The element mapped to the
+     *         specified ID, if any.
+     */
+    public final Optional<JsonElement> retrieveElement(int i) {
+        return Optional.ofNullable(this.idMap.getOrDefault(i, null));
+    }
+
     // errors
+
+    public String getParserDataKey() {
+        return "string";
+    }
 
     /**
      * Sets the parser to throw an error
@@ -307,19 +365,37 @@ public class StringParser {
     public final void error(String s) {
         if (!this.run) throw new UnsupportedOperationException("Cannot set an error on a not running parser");
         this.isErrored = true;
-        this.errMessage = s;
+        this.storedErr = buildError(s);
+    }
+
+    /**
+     * Sets the parser to throw the
+     * specified error upon reading
+     * the next char if it is
+     * already running.
+     * @param e the error to throw
+     * @throws UnsupportedOperationException if the
+     *         parser is not running when trying to
+     *         execute this method.
+     */
+    public final void error(JsonParseException e) {
+        if (!this.run) throw new UnsupportedOperationException("Cannot set an error on a not running parser");
+        this.isErrored = true;
+        this.storedErr = e;
     }
 
     /**
      * Builds and returns a new
      * {@link JsonParseException} for the
      * running methods.
+     * @param s The built error's message.
      * @return the parser's throw exception
      *         to throw
      */
-    protected final JsonParseException buildError() {
+    protected final JsonParseException buildError(String s) {
         return new JsonParseException(String.format(
-                "Error parsing string to json element: %s at index %d of line %d",
-                this.errMessage, this.lineIndex, this.line));
+                "Error parsing %s to json element: %s at index %d of line %d",
+                this.getParserDataKey(), s, this.lineIndex, this.line
+        ));
     }
 }

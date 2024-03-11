@@ -65,7 +65,7 @@ public abstract class JsonError {
      * an invalid number of elements per line (negative or null)
      * @see ArrayParseOptions
      */
-    public static class IllegalLineElementsNumberException extends Exception{
+    public static class IllegalLineElementsNumberException extends Exception {
         public IllegalLineElementsNumberException(String s) {
             super(s);
         }
@@ -94,6 +94,12 @@ public abstract class JsonError {
         }
         public FileNotFoundException(Exception e) {
             super(e);
+        }
+    }
+
+    public static class NoSuchIdCircularJsonException extends JsonParseException {
+        public NoSuchIdCircularJsonException(String s) {
+            super(s);
         }
     }
 }

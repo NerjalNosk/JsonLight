@@ -63,6 +63,32 @@ public class ObjectState extends AbstractState {
         this.lookForAttributive = true;
     }
 
+    /**
+     * Reads an object iterator
+     * ({@code ','})
+     */
+    private void readIterator() {
+        if (this.requiresIterator) {
+            this.requiresIterator = false;
+            this.lookForKey = true;
+        } else if (this.lookForKey) {
+            this.trailingIterator = true;
+            this.trailingIndex = this.parser.getIndex();
+        } else this.error("unexpected iterator ','");
+    }
+
+    /**
+     * Reads an object key-value
+     * pair separator
+     * ({@code ':'})
+     */
+    private void readAttributive() {
+        if (this.lookForAttributive) {
+            this.lookForAttributive = false;
+            this.lookForValue = true;
+        } else this.error("unexpected key-value attributive ':'");
+    }
+
     @Override
     public void openObject() {
         if (trailingIterator) this.trailingError();
@@ -102,25 +128,23 @@ public class ObjectState extends AbstractState {
     }
 
     @Override
+    public void openId() {
+        if (this.trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new IdState(this.parser, this));
+        else this.unexpectedCharError(this.parser.getActual());
+    }
+
+    @Override
     public void read(char c) {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
         if (Character.isWhitespace(c)) return;
 
         switch (c) {
             case ',':
-                if (this.requiresIterator) {
-                    this.requiresIterator = false;
-                    this.lookForKey = true;
-                } else if (this.lookForKey) {
-                    this.trailingIterator = true;
-                    this.trailingIndex = this.parser.getIndex();
-                } else this.error("unexpected iterator ','");
+                this.readIterator();
                 break;
             case ':':
-                if (this.lookForAttributive) {
-                    this.lookForAttributive = false;
-                    this.lookForValue = true;
-                } else this.error("unexpected key-value attributive ':'");
+                this.readAttributive();
                 break;
             case '"':
             case '\'':
@@ -166,6 +190,9 @@ public class ObjectState extends AbstractState {
             case 'F':
                 if (this.lookForKey) this.readKey();
                 else this.readBool(c);
+                break;
+            case '<':
+                this.openId();
                 break;
             case '}':
                 this.closeObject();

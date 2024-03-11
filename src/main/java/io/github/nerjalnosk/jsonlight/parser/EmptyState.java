@@ -98,6 +98,9 @@ public class EmptyState extends AbstractState {
             case '/':
                 this.openComment();
                 break;
+            case '<':
+                this.openId();
+                break;
             default:
                 this.error(String.format("unexpected character '%c'", c));
         }
@@ -113,7 +116,15 @@ public class EmptyState extends AbstractState {
     @Override
     public void addSubElement(JsonElement element) {
         if (element.isComment()) this.comments.add((JsonComment) element);
-        else if (this.element == null) this.element = element;
+        else if (this.element == null) {
+            this.element = element;
+            if (this.storedId != null) {
+                if (this.parser.feedId(this.storedId, element)) {
+                    this.error("already mapped ID "+this.storedId);
+                }
+                this.storedId = null;
+            }
+        }
         else this.error("multiple root elements found in Json");
     }
 }

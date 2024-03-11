@@ -134,7 +134,7 @@ public class FileParser extends StringParser {
     public void read() throws JsonParseException, NullPointerException {
         this.run = true;
         while (!this.stop) {
-            if (isErrored) throw buildError();
+            if (isErrored) throw this.storedErr;
             readFileToIndex();
             if (stop || reachFileEnd || act == '\uFFFF') break;
             state.read(act);
@@ -199,5 +199,13 @@ public class FileParser extends StringParser {
     @Override
     public char[] getPrecedents(int i) {
         return str.substring(readIndex-i, readIndex).toCharArray();
+    }
+
+    // error
+
+
+    @Override
+    public String getParserDataKey() {
+        return "file";
     }
 }
