@@ -1,5 +1,6 @@
 package io.github.nerjalnosk.jsonlight.mapper;
 
+import io.github.nerjalnosk.jsonlight.JsonError;
 import io.github.nerjalnosk.jsonlight.elements.*;
 import io.github.nerjalnosk.jsonlight.mapper.annotations.JsonIgnore;
 import io.github.nerjalnosk.jsonlight.mapper.annotations.JsonNode;
@@ -21,11 +22,11 @@ public class JsonUnmapper {
      * @param object the instance to serialize
      * @return the JsonElement fitting the specified object
      */
-    public static <T> JsonElement serialize(T object) {
+    public static <T> JsonElement serialize(T object) throws JsonError.JsonMappingException {
         return serialize(object, new HashSet<>());
     }
 
-    private static <T> JsonElement serialize(T object, Set<Integer> stack) {
+    private static <T> JsonElement serialize(T object, Set<Integer> stack) throws JsonError.JsonMappingException {
 
         if (object == null) return new JsonString((String) null);
         Class<?> target = object.getClass();
@@ -52,7 +53,9 @@ public class JsonUnmapper {
         }
         if (target.isArray()) {
             JsonArray array = new JsonArray();
-            Arrays.asList((Object[]) object).forEach(o -> array.add(serialize(o, stack)));
+            for (Object o : (Object[]) object) {
+                array.add(serialize(o, stack));
+            }
             return array;
         }
         if (Collection.class.isAssignableFrom(target)) {
@@ -62,15 +65,17 @@ public class JsonUnmapper {
                 c = c.getSuperclass();
             }
             JsonArray array = new JsonArray();
-            ((Collection<?>)object).forEach(o -> array.add(serialize(o, stack)));
+            for (Object o : (Collection<?>) object) {
+                array.add(serialize(o, stack));
+            }
             return array;
         }
         if (Map.class.isAssignableFrom(target)) {
             JsonObject obj = new JsonObject();
-            ((Map<?,?>)object).forEach((key, value) -> {
-                if (!(key instanceof String)) return;
-                obj.put((String) key, serialize(value, stack));
-            });
+            for (Map.Entry<?,?> entry : ((Map<?,?>)object).entrySet()) {
+                if (!(entry.getKey() instanceof String)) continue;
+                obj.put((String) entry.getKey(), serialize(entry.getValue(), stack));
+            }
             return obj;
         }
         JsonObject obj = new JsonObject();
@@ -91,7 +96,7 @@ public class JsonUnmapper {
                 if (field.get(object) == null && nonNull) throw new JsonMapperFieldRequiredError(field.getName());
                 obj.put(name, serialize(field.get(object), stack));
             } catch (IllegalAccessException | JsonMapperFieldRequiredError e) {
-                throw new RuntimeException(e);
+                throw new JsonError.JsonMappingException(e);
             }
         }
         return obj;

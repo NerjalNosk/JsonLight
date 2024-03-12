@@ -18,7 +18,7 @@ class JsonUnmapperTest {
     }
 
     @Test
-    void unmapEnum() throws JsonError.JsonElementTypeException {
+    void unmapEnum() throws JsonError.JsonElementTypeException, JsonError.JsonMappingException {
         TestEnum e = TestEnum.A;
         JsonElement elem = JsonUnmapper.serialize(e);
 
