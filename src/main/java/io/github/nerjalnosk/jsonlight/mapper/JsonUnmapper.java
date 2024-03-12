@@ -43,14 +43,10 @@ public class JsonUnmapper {
             return new JsonString((String) object);
         if (target.isEnum()) {
             JsonString string = new JsonString((String) null);
-            for (Field field : target.getFields()) {
-                field.setAccessible(true);
-                try {
-                    if (field.get(object) == object) {
-                        string.setValue(field.getName());
-                        break;
-                    }
-                } catch (IllegalAccessException ignored) {}
+            for (Object inst : target.getEnumConstants()) {
+                if (inst == object) {
+                    string.setValue(((Enum<?>)object).name());
+                }
             }
             return string;
         }
