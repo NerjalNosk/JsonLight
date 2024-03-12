@@ -620,7 +620,7 @@ public class JsonObject extends JsonElement {
     /**
      * Returns a set of all children of the object.
      * Comments are here identified by {@link UUID} keys
-     * @return a {@link Map.Entry} set of all children in
+     * @return a {@code Map.Entry} set of all children in
      *         the object.
      */
     public Set<Map.Entry<String,JsonElement>> allEntriesSet() {
