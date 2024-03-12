@@ -9,7 +9,7 @@ import org.junit.platform.commons.logging.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JsonUnmapperTest {
+class JsonUnmapperTest {
     static Logger LOGGER;
 
     @BeforeAll

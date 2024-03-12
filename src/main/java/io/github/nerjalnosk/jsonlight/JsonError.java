@@ -35,6 +35,16 @@ public abstract class JsonError {
         }
     }
 
+    public static class JsonMappingException extends Exception {
+        public JsonMappingException(Throwable t) {
+            super(t);
+        }
+
+        public JsonMappingException(String s, Throwable t) {
+            super(s, t);
+        }
+    }
+
     /**
      * Thrown when trying to get a child {@link JsonElement} from
      * a {@link JsonObject} which doesn't have any for the given key.
