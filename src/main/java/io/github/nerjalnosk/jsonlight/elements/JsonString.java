@@ -23,6 +23,18 @@ import io.github.nerjalnosk.jsonlight.parser.options.StringParseOptions;
  * @author nerjal
  */
 public class JsonString extends JsonElement {
+    public static final JsonString NULL = new JsonString((String) null) {
+        @Override
+        public String getAsString() {
+            return "null";
+        }
+
+        @Override
+        protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
+            return "null";
+        }
+    };
+
     private String value;
     private transient StringParseOptions parseOptions;
 
@@ -97,6 +109,10 @@ public class JsonString extends JsonElement {
     @Override
     public boolean isPrimitive() {
         return true;
+    }
+    @Override
+    public boolean isNull() {
+        return this.value == null;
     }
     @Override
     public String typeToString() {

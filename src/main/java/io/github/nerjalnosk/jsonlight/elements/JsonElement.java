@@ -149,6 +149,13 @@ public abstract class JsonElement implements Serializable {
         return false;
     }
 
+    /**
+     * @return whether the element is a {@code null} Json element
+     */
+    public boolean isNull() {
+        return false;
+    }
+
 
     /**
      * @return the element' type's name
