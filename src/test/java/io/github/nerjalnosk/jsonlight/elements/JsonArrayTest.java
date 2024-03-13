@@ -68,7 +68,7 @@ class JsonArrayTest {
         array.add(new JsonArray());
 
         assertEquals(number, array.get(0));
-        assertEquals(1, array.getNumber(0));
+        assertEquals(1, array.getNumber(0).intValue());
         assertThrows(JsonError.JsonElementTypeException.class, () -> array.getNumber(1));
     }
 

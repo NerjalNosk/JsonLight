@@ -2,6 +2,7 @@ package io.github.nerjalnosk.jsonlight.parser.options;
 
 import io.github.nerjalnosk.jsonlight.elements.JsonNumber;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
@@ -22,8 +23,7 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     private NumberFormat format;
     private boolean floating;
     private int decimals;
-
-    public static final DecimalFormat sciFormat = new DecimalFormat("0.######E0");
+    private boolean big;
 
     /**
      * Constructs a {@link JsonNumber} parsing
@@ -145,6 +145,16 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
         ping();
     }
 
+    public void setBig() {
+        this.big = true;
+        ping();
+    }
+
+    public void setClassic() {
+        this.big = false;
+        ping();
+    }
+
     /**
      * @return Whether the option set is set to parse to a decimal number
      */
@@ -168,6 +178,10 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
         return this.format == NumberFormat.HEXADECIMAL;
     }
 
+    public boolean isBig() {
+        return this.big;
+    }
+
     /**
      * Sets the option set to use the given format upon parsing
      * @param format The format to parse a JsonNumber to
@@ -175,6 +189,21 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
     public void setFormat(NumberFormat format) {
         this.format = format;
         ping();
+    }
+
+    public DecimalFormat getFormat() {
+        String s;
+        if (this.format == NumberFormat.SCIENTIFIC) {
+            s = this.floating ? "0.0E0" : "0E0";
+        } else {
+            s = this.floating ? "0.0" : "0";
+        }
+        DecimalFormat f = new DecimalFormat(s);
+        if (this.floating) {
+            f.setMaximumFractionDigits(this.decimals);
+        }
+        f.setRoundingMode(RoundingMode.HALF_UP);
+        return f;
     }
 
     /**

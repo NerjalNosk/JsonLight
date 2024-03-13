@@ -5,6 +5,8 @@ import io.github.nerjalnosk.jsonlight.JsonError.RecursiveJsonElementException;
 import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -273,6 +275,28 @@ public abstract class JsonElement implements Serializable {
      */
     public double getAsDouble() throws JsonError.JsonElementTypeException {
         throw buildTypeError("Double");
+    }
+
+    /**
+     * Gives off the big int value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The big int value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public BigInteger getAsBigInt() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("BigInt");
+    }
+
+    /**
+     * Gives off the big decimal value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The big decimal value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public BigDecimal getAsBigDecimal() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("BigDecimal");
     }
 
     /**

@@ -3,6 +3,10 @@ package io.github.nerjalnosk.jsonlight.elements;
 import io.github.nerjalnosk.jsonlight.parser.options.NumberParseOptions;
 import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+
 /**
  * <p>A JsonElement allowing instantiation of
  * numbers inside a JSON structure.<br>
@@ -23,22 +27,46 @@ import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
  * @author nerjal
  */
 public class JsonNumber extends JsonElement {
-    private Number value;
+    private BigDecimal value;
     private transient NumberParseOptions parseOptions;
 
     /**
      * A new JsonNumber with a null value (0)
      */
     public JsonNumber() {
-        this(0);
+        this(BigDecimal.ZERO, new NumberParseOptions());
     }
 
     /**
      * A new JsonNumber with the specified value.
-     * @param n the value of the new JsonNumber
+     * @param i the value of the new JsonNumber
      */
-    public JsonNumber(Number n) {
-        this(n, new NumberParseOptions());
+    public JsonNumber(int i) {
+        this(BigDecimal.valueOf(i), new NumberParseOptions());
+    }
+
+    /**
+     * A new JsonNumber with the specified value.
+     * @param f the value of the new JsonNumber
+     */
+    public JsonNumber(float f) {
+        this(BigDecimal.valueOf(f), new NumberParseOptions());
+    }
+
+    /**
+     * A new JsonNumber with the specified value.
+     * @param l the value of the new JsonNumber
+     */
+    public JsonNumber(long l) {
+        this(BigDecimal.valueOf(l), new NumberParseOptions());
+    }
+
+    /**
+     * A new JsonNumber with the specified value.
+     * @param d the value of the new JsonNumber
+     */
+    public JsonNumber(double d) {
+        this(BigDecimal.valueOf(d), new NumberParseOptions());
     }
 
     /**
@@ -49,7 +77,9 @@ public class JsonNumber extends JsonElement {
      *                stringification option
      */
     public JsonNumber (Number n, NumberParseOptions options) {
-        this.value = n;
+        if (n instanceof BigInteger) this.value = new BigDecimal((BigInteger) n);
+        else if (n instanceof BigDecimal) this.value = (BigDecimal) n;
+        else this.value = BigDecimal.valueOf(n.doubleValue());
         this.parseOptions = options;
     }
 
@@ -85,7 +115,7 @@ public class JsonNumber extends JsonElement {
      *         parsed to an integer
      */
     public static JsonNumber fromIntegerString(String s, NumberParseOptions options) {
-        return new JsonNumber((int)Float.parseFloat(s), options);
+        return new JsonNumber(new BigInteger(s), options);
     }
 
     /**
@@ -125,7 +155,7 @@ public class JsonNumber extends JsonElement {
      *         {@code null}
      */
     public static JsonNumber fromFloatString(String s, NumberParseOptions options) {
-        return new JsonNumber(Float.parseFloat(s), options);
+        return new JsonNumber(new BigDecimal(s), options);
     }
 
     /**
@@ -133,7 +163,9 @@ public class JsonNumber extends JsonElement {
      * @param n the number's new value
      */
     public void setValue(Number n) {
-        this.value = n;
+        if (n instanceof BigInteger) this.value = new BigDecimal((BigInteger) n);
+        else if (n instanceof BigDecimal) this.value = (BigDecimal) n;
+        else this.value = BigDecimal.valueOf(n.doubleValue());
     }
 
     /**
@@ -183,6 +215,14 @@ public class JsonNumber extends JsonElement {
     public double getAsDouble() {
         return this.value.doubleValue();
     }
+    @Override
+    public BigInteger getAsBigInt() {
+        return this.value.toBigInteger();
+    }
+    @Override
+    public BigDecimal getAsBigDecimal() {
+        return this.value;
+    }
 
     @Override
     protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
@@ -192,17 +232,33 @@ public class JsonNumber extends JsonElement {
         int i = (int) Math.pow(10,options.getDecimals());
         String s;
         if (options.usesHexadecimal()) {
-            s = options.isFloating() ?
-                    Double.toHexString(((double)((int)(this.value.doubleValue()*i)))/i) :
-                    Integer.toHexString(this.value.intValue());
+            StringBuilder floating = new StringBuilder();
+            BigInteger intCopy = this.value.toBigInteger();
+            if (options.isFloating()) {
+                floating.append(".");
+                BigDecimal frac = this.value.subtract(new BigDecimal(intCopy));
+                int l = Math.max(frac.scale(), options.getDecimals());
+                while (frac.intValue() == 0 && frac.scale() > 0 && l > 0) {
+                    int t = frac.multiply(new BigDecimal(16)).intValue();
+                    floating.append(Integer.toHexString(t));
+                    frac = frac.multiply(new BigDecimal(16)).subtract(new BigDecimal(t));
+                    l--;
+                }
+            }
+            String intPart = intCopy.toString(16);
+            s = intPart + floating;
         }
-        else if (options.usesScientific())
-            s = NumberParseOptions.sciFormat.format(this.value.doubleValue());
-        else if (this.getAsDouble() == this.getAsInt()) {
+        else if (options.usesScientific()) {
+            DecimalFormat f = options.getFormat();
+            f.setMaximumFractionDigits(Math.max(this.value.scale(), options.getDecimals()));
+            s = f.format(this.value.doubleValue());
+        }
+        else if (this.getAsDouble() == this.getAsLong()) {
+            this.value.setScale(1);
             s = options.isInteger() ?
-                    Integer.toString(this.value.intValue()) :
-                    Double.toString(((double)((int)(this.value.doubleValue()*i))/i));
-        } else s = Double.toString(((double)((int)(this.value.doubleValue()*i))/i));
+                    this.value.toPlainString() :
+                    new BigDecimal(this.value.multiply(BigDecimal.valueOf(i)).toBigInteger()).toString();
+        } else s = new BigDecimal(this.value.multiply(BigDecimal.valueOf(i)).toBigInteger()).toString();
         return s;
     }
 }
