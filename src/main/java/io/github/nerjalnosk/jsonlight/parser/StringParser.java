@@ -159,7 +159,12 @@ public class StringParser {
             this.state.read(this.getActual());
             this.index++;
             this.lineIndex++;
-            if (this.index >= this.readStr.length()) this.stop = true;
+            if (this.index >= this.readStr.length()) {
+                while (!this.state.isFinal()) {
+                    this.state.read(Character.MIN_VALUE);
+                }
+                this.stop = true;
+            }
         }
         this.run = false;
     }

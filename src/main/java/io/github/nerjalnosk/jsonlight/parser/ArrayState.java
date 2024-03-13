@@ -130,6 +130,7 @@ public class ArrayState extends AbstractState {
             case '<':
                 this.openId();
                 break;
+            case Character.MIN_VALUE:
             case ']':
                 this.close();
                 break;

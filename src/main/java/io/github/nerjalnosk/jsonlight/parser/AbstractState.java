@@ -40,6 +40,11 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
+    public boolean isFinal() {
+        return false;
+    }
+
+    @Override
     public void openObject() {
     }
 

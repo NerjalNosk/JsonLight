@@ -33,6 +33,14 @@ import io.github.nerjalnosk.jsonlight.elements.JsonElement;
 public interface ParserState {
 
     /**
+     * @return whether the current
+     * state is a final/root parsing
+     * state. Relevant for recursive
+     * state closing at content end.
+     */
+    boolean isFinal();
+
+    /**
      * Switches the affiliated
      * {@link StringParser} to a new
      * Object state, if the current

@@ -38,6 +38,7 @@ public class CommentState extends AbstractState {
             this.parser.increaseLine();
             this.onNewLine = true;
         }
+        if (c == Character.MIN_VALUE) this.close();
 
         if ((c == '\n' || c == '\r') && !this.isBlock) this.close();
         else if (c == '*') {

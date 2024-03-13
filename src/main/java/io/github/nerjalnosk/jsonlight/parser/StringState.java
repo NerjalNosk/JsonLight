@@ -26,7 +26,7 @@ public class StringState extends AbstractState {
     }
 
     @Override
-    public void closeString() {
+    public void close() {
         this.parser.switchState(this.olderState);
         this.olderState.addSubElement(this.getElem());
     }
@@ -34,11 +34,13 @@ public class StringState extends AbstractState {
     @Override
     public void read(char c) {
         if (c == '\n' &! this.preIsBackslash) this.parser.error("unexpected newline");
-        if (c == '\\') {
+        if (c == Character.MIN_VALUE) this.close();
+        else if (c == '\\') {
             if (this.preIsBackslash) this.val.append('\\');
             this.preIsBackslash = !this.preIsBackslash;
-        } else if (c == '"' && !this.preIsBackslash && !this.isSingleQuoteString) this.closeString();
-        else if (c == '\'' && !this.preIsBackslash && this.isSingleQuoteString) this.closeString();
+        }
+        else if (c == '"' && !this.preIsBackslash && !this.isSingleQuoteString) this.close();
+        else if (c == '\'' && !this.preIsBackslash && this.isSingleQuoteString) this.close();
         else if (this.preIsBackslash) {
             switch (c) {
                 case 'b': {
