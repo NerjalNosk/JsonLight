@@ -44,15 +44,7 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
-    public void closeObject() {
-    }
-
-    @Override
     public void openArray() {
-    }
-
-    @Override
-    public void closeArray() {
     }
 
     @Override
@@ -60,23 +52,11 @@ public abstract class AbstractState implements ParserState {
     }
 
     @Override
-    public void closeString() {
-    }
-
-    @Override
     public void openNum() {
     }
 
     @Override
-    public void closeNum() {
-    }
-
-    @Override
     public void openId() {
-    }
-
-    @Override
-    public void closeId() {
     }
 
     protected final void unexpectedIdError() {
@@ -106,11 +86,6 @@ public abstract class AbstractState implements ParserState {
             }
             default: this.unexpectedCharError('/');
         }
-    }
-
-    @Override
-    public void closeComment() {
-
     }
 
     @Override

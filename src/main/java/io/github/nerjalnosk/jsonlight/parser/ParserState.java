@@ -41,28 +41,12 @@ public interface ParserState {
     void openObject();
 
     /**
-     * Closes a current Object state,
-     * and switch back the affiliated
-     * {@link StringParser} to its
-     * precedent state.
-     */
-    void closeObject();
-
-    /**
      * Switches the affiliated
      * {@link StringParser} to a new
      * Array state, if the current
      * state allows it.
      */
     void openArray();
-
-    /**
-     * Closes a current Array state,
-     * and switch back the affiliated
-     * {@link StringParser} to its
-     * precedent state.
-     */
-    void closeArray();
 
     /**
      * Switches the affiliated
@@ -73,28 +57,12 @@ public interface ParserState {
     void openString();
 
     /**
-     * Closes a current String state,
-     * and switch back the affiliated
-     * {@link StringParser} to its
-     * precedent state.
-     */
-    void closeString();
-
-    /**
      * Switches the affiliated
      * {@link StringParser} to a new
      * Number state, if the current
      * state allows it.
      */
     void openNum();
-
-    /**
-     * Closes a current Number state,
-     * and switch back the affiliated
-     * {@link StringParser} to its
-     * precedent state.
-     */
-    void closeNum();
 
     /**
      * Switches the affiliated
@@ -115,14 +83,6 @@ public interface ParserState {
     void feedId(int id);
 
     /**
-     * Closes a current ID state and
-     * switches back the affiliated
-     * {@link StringParser}
-     * to its precedent state.
-     */
-    void closeId();
-
-    /**
      * Switches the affiliated
      * {@link StringParser} to a new
      * Comment state, if the current
@@ -131,12 +91,12 @@ public interface ParserState {
     void openComment();
 
     /**
-     * Closes a current Comment state,
-     * and switch back the affiliated
+     * Closes the current state and
+     * switches back the affiliated
      * {@link StringParser} to its
      * precedent state.
      */
-    void closeComment();
+    void close();
 
     /**
      * Reads a boolean, and adds it

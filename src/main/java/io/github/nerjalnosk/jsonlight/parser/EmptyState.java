@@ -48,6 +48,11 @@ public class EmptyState extends AbstractState {
     }
 
     @Override
+    public void close() {
+        // nothing to do here
+    }
+
+    @Override
     public void read(char c) {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
 
