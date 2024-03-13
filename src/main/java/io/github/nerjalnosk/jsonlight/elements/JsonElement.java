@@ -276,6 +276,28 @@ public abstract class JsonElement implements Serializable {
     }
 
     /**
+     * Gives off the big int value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The big int value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public BigInteger getAsBigInt() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("BigInt");
+    }
+
+    /**
+     * Gives off the big decimal value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The big decimal value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public BigDecimal getAsBigDecimal() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("BigDecimal");
+    }
+
+    /**
      * Gives off the boolean value of the element.<br>
      * It is only valid for {@link JsonBoolean} elements
      * @return The boolean value of the element

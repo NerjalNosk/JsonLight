@@ -44,18 +44,6 @@ public class NumberState extends AbstractState {
         }
     }
 
-    private void foundP() {
-        if (!this.isHex) {
-            this.unexpectedCharError(this.parser.getActual());
-        }
-        this.parser.forward();
-        if (!Character.isDigit(this.parser.getActual())) {
-            this.unexpectedCharError(this.parser.getActual());
-        }
-        this.charCount++;
-        this.closeNum();
-    }
-
     /**
      * Transforms the specified
      * hex number string to a
@@ -189,10 +177,6 @@ public class NumberState extends AbstractState {
             case 'X':
                 this.foundX();
                 break;
-            case 'p':
-            case 'P':
-                this.foundP();
-                break;
             case 'a':
             case 'A':
                 if (this.isHex) break;
@@ -242,7 +226,7 @@ public class NumberState extends AbstractState {
         }
         if (this.foundE) {
             options.setFormat(NumberParseOptions.NumberFormat.SCIENTIFIC);
-            return new JsonNumber(new BigDecimal(s).doubleValue(), options);
+            return new JsonNumber(new BigDecimal(s), options);
         } else if (this.foundDecimal) return JsonNumber.fromFloatString(s, options);
         else return JsonNumber.fromIntegerString(s, options);
     }

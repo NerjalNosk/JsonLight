@@ -57,7 +57,9 @@ class JsonParserTest {
         // options
         ParseSet set1 = new ParseSet();
         ParseSet set2 = new ParseSet();
+        ParseSet set3 = new ParseSet();
         NumberParseOptions numberOptions = new NumberParseOptions(true, NumberParseOptions.NumberFormat.HEXADECIMAL, 2);
+        NumberParseOptions numberOptions2 = new NumberParseOptions(true, NumberParseOptions.NumberFormat.SCIENTIFIC, 2);
         StringParseOptions stringOptions = new StringParseOptions(StringParseOptions.QuoteFormat.SINGLE_QUOTES);
         ArrayParseOptions arrayOptions = new ArrayParseOptions(ArrayParseOptions.ArrayFormat.INLINE);
         ObjectParseOptions objectOptions = new ObjectParseOptions(ObjectParseOptions.ObjectFormat.UNQUOTED_KEYS);
@@ -66,20 +68,28 @@ class JsonParserTest {
         set1.addOptions(JsonString.class, stringOptions);
         set2.addOptions(JsonArray.class, arrayOptions);
         set2.addOptions(JsonObject.class, objectOptions);
+        set3.addOptions(JsonNumber.class, numberOptions2);
 
         assertEquals(numberOptions, set1.getOptions(JsonNumber.class));
+        assertEquals(numberOptions2, set3.getOptions(JsonNumber.class));
         assertEquals(stringOptions, set1.getOptions(JsonString.class));
         assertEquals(arrayOptions, set2.getOptions(JsonArray.class));
         assertEquals(objectOptions, set2.getOptions(JsonObject.class));
         // number
         number.setValue(65+1/16f);
-        //assertEquals("0x3b.1p0", JsonParser.stringify(number,set1)); // Hex my behated
+        //assertEquals("0x3b.1", JsonParser.stringify(number,set1)); // Hex my behated
+
+        number.setValue(6.34e2);
+        assertEquals("6.34E2", JsonParser.stringify(number, set3));
+
         // string
         str.setValue("logcat");
         assertEquals("'logcat'", JsonParser.stringify(str, set1));
+
         // array
         array.add(new JsonString("test"));
         assertEquals("[\"test\"\n]", JsonParser.stringify(array, set2));
+
         // object
         object.add("a", new JsonNumber(1));
         assertEquals("{\n  a: 1\n}", JsonParser.stringify(object, set2));
@@ -123,7 +133,10 @@ class JsonParserTest {
      */
     @Test
     @Order(6)
-    void jsonify() {
+    void jsonify() throws JsonError.JsonParseException, JsonError.JsonElementTypeException {
+        number = JsonParser.jsonify("6e4").getAsJsonNumber();
+
+        assertEquals(6e4, number.getAsInt());
     }
 
     /**
