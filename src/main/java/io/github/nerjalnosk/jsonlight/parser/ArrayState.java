@@ -44,12 +44,6 @@ public class ArrayState extends AbstractState {
     }
 
     @Override
-    public void closeArray() {
-        this.olderState.addSubElement(this.getElem());
-        this.parser.switchState(this.olderState);
-    }
-
-    @Override
     public void openString() {
         boolean singleQuote = this.parser.getActual() == '\'';
         if (trailingIterator) this.trailingError();
@@ -70,6 +64,12 @@ public class ArrayState extends AbstractState {
         else if (this.storedId != null) this.unexpectedIdError();
         else if (this.lookForValue) this.parser.switchState(new IdState(this.parser, this));
         else this.unexpectedCharError(this.parser.getActual());
+    }
+
+    @Override
+    public void close() {
+        this.olderState.addSubElement(this.getElem());
+        this.parser.switchState(this.olderState);
     }
 
     @Override
@@ -130,8 +130,9 @@ public class ArrayState extends AbstractState {
             case '<':
                 this.openId();
                 break;
+            case Character.MIN_VALUE:
             case ']':
-                this.closeArray();
+                this.close();
                 break;
             default:
                 this.unexpectedCharError(c);

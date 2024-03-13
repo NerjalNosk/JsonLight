@@ -27,7 +27,7 @@ public class CommentState extends AbstractState {
     }
 
     @Override
-    public void closeComment() {
+    public void close() {
         this.olderState.addSubElement(this.getElem());
         this.parser.switchState(this.olderState);
     }
@@ -38,13 +38,14 @@ public class CommentState extends AbstractState {
             this.parser.increaseLine();
             this.onNewLine = true;
         }
+        if (c == Character.MIN_VALUE) this.close();
 
-        if ((c == '\n' || c == '\r') && !this.isBlock) this.closeComment();
+        if ((c == '\n' || c == '\r') && !this.isBlock) this.close();
         else if (c == '*') {
             if (this.val.length() == 0) this.isBlock = true;
             else if (this.isBlock && this.parser.getNext() == '/') {
                 this.parser.forward();
-                this.closeComment();
+                this.close();
             } else if (!this.onNewLine) this.val.append(c);
         } else if ((c == ' ' || c == '\t') && this.onNewLine) {
             if (this.parser.getPrecedent() == '*') this.onNewLine = false;

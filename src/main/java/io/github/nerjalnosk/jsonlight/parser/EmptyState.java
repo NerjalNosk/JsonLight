@@ -25,6 +25,11 @@ public class EmptyState extends AbstractState {
     }
 
     @Override
+    public boolean isFinal() {
+        return true;
+    }
+
+    @Override
     public void openObject() {
         if (this.element == null) this.parser.switchState(new ObjectState(this.parser, this));
         else this.unexpectedCharError('{');
@@ -48,10 +53,16 @@ public class EmptyState extends AbstractState {
     }
 
     @Override
+    public void close() {
+        // nothing to do here
+    }
+
+    @Override
     public void read(char c) {
         if (c == '\n' || c == '\r') this.parser.increaseLine();
 
         switch (c) {
+            case Character.MIN_VALUE:
             case ' ':
             case '\n':
             case '\t':

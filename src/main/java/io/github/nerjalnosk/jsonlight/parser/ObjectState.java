@@ -98,7 +98,7 @@ public class ObjectState extends AbstractState {
     }
 
     @Override
-    public void closeObject() {
+    public void close() {
         this.olderState.addSubElement(this.getElem());
         if (this.lookForAttributive || this.lookForValue) this.error("incomplete object node");
         else this.parser.switchState(this.olderState);
@@ -194,8 +194,9 @@ public class ObjectState extends AbstractState {
             case '<':
                 this.openId();
                 break;
+            case Character.MIN_VALUE:
             case '}':
-                this.closeObject();
+                this.close();
                 break;
             default:
                 if (this.lookForKey) this.readKey();

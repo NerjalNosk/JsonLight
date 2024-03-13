@@ -143,7 +143,7 @@ public class NumberState extends AbstractState {
     }
 
     @Override
-    public void closeNum() {
+    public void close() {
         this.parser.forward(-1);
         this.olderState.addSubElement(this.getElem());
         this.parser.switchState(this.olderState);
@@ -205,7 +205,7 @@ public class NumberState extends AbstractState {
                 if (this.charCount != 0 && (this.parser.getPrecedent() == 'e' || this.parser.getPrecedent() == 'E'))
                     break;
             default:
-                this.closeNum();
+                this.close();
                 return;
         }
         this.charCount++;

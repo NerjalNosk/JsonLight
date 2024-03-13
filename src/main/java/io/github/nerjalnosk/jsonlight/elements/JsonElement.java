@@ -5,6 +5,8 @@ import io.github.nerjalnosk.jsonlight.JsonError.RecursiveJsonElementException;
 import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -144,6 +146,13 @@ public abstract class JsonElement implements Serializable {
      * @return whether the element is a {@link JsonComment}
      */
     public boolean isComment() {
+        return false;
+    }
+
+    /**
+     * @return whether the element is a {@code null} Json element
+     */
+    public boolean isNull() {
         return false;
     }
 

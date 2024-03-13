@@ -41,7 +41,7 @@ public class IdState extends AbstractState {
     }
 
     @Override
-    public void closeId() {
+    public void close() {
         if (this.isRef == null || this.since == null) {
             this.unexpectedCharError(this.parser.getActual());
             return;
@@ -87,7 +87,7 @@ public class IdState extends AbstractState {
                 this.readNum();
                 break;
             case '>':
-                this.closeId();
+                this.close();
                 break;
             default:
                 this.unexpectedCharError(c);

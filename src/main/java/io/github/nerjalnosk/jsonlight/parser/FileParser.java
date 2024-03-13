@@ -136,7 +136,12 @@ public class FileParser extends StringParser {
         while (!this.stop) {
             if (isErrored) throw this.storedErr;
             readFileToIndex();
-            if (stop || reachFileEnd || act == '\uFFFF') break;
+            if (stop || reachFileEnd || act == '\uFFFF') {
+                while (!this.state.isFinal()) {
+                    this.state.read(Character.MIN_VALUE);
+                }
+                break;
+            }
             state.read(act);
             stateLength++;
             readIndex++;
