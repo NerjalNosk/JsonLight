@@ -171,3 +171,14 @@ dependencies {
     implementation "com.github.NerjalNosk:JsonLight:1.4.0"
 }
 ```
+
+## History
+
+| Version | Date          | Name                       | Changes                                                                                  |
+|---------|---------------|----------------------------|------------------------------------------------------------------------------------------|
+| 1.4.0   | 10 Aug. 2022  | Witcheries and Stringeries | Json stringification rework, added parsing options and defaults, and more parsing tools  |
+| 1.4.1   | 18 Sept. 2023 | TechniLexicalities         | Codebase repo fixes, jdoc and build improvements, parsing logging utilities              |
+| 2.0     | 18 Sept. 2023 | Maven Conquest             | Classes refactoring, published to Maven Central                                          |
+| 2.1     | 25 Sept. 2023 | Number Parse               | Fixed number parsing (from/to hexadecimal, from scientific notation)                     |
+| 3.0     | 11 Mar. 2024  | Json Circles               | Added circular structure parsing, both to and from, using ID markers                     |
+| 3.1     | 13 Mar. 2024  | Numbers Galore             | Added Number support for Big integers and decimals, as well as more exact value tracking |
