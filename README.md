@@ -2,12 +2,10 @@
 
 ## Description
 
-This is a minimalist and lightweight Java Json5 library<br>
-Classes and methods names are freely inspired from the Google Gson library
-
-This library aims to fully support Json5, which up to this day isn't
-done by Gson. Hence, should this lib allow you to make use of comments
-and such in your projects.
+This is a lightweight Java Json5+ library, providing full [Json5](https://json5.org)
+support, along-side many features inspired from other formats such as
+[HOCON](https://github.com/lightbend/config/blob/main/HOCON.md).
+Read more about these additions in the [Json Extension](#json-extension) part.
 
 ### Example
 
@@ -44,9 +42,13 @@ public abstract class Main {
 
 ## Json extension
 
+As of 3.0, JsonLight includes a Json5 extension, as Json6 of sorts, which adds multiple features to regular Json5.
+
+These features mostly aim to make life easier for all users.
+
 ### Circular structures
 
-Since version 3.0, JsonLight includes a JSON5 extension, a Json6 of sorts, which supports circular structures.
+Introduced in version 3.0, it adds support for circular structures parsing, both to and from textual sources.
 Indeed, it allows to reference an element inside itself, to avoid infinite text transformation
 loops.
 
@@ -81,6 +83,54 @@ further stringification.
 __Note__ : IDs will most likely change upon each automated parsing/stringification, as they are
 not kept in the processed elements. This also include not being able to recognise an element by
 its ID at runtime.
+
+### Open trailing
+
+Introduced in version 3.1, it adds support for non-closed data structures at the end of a parsed source.
+
+It is only supported at the very end of a parsed element to avoid getting messed up
+data which would end up lost because of something as genuine as a typo,
+but still provides a safeguard for potential data loss if a text is cut short or
+a file cannot be read until its very end.
+
+This is of course applied recursively over all non-closed container element upon parsing.
+
+There are however exceptions to what can or cannot be closed in such ways:
+* Arrays can be validated despite not having a closing character `]`.
+* Strings can be validated despite not having a closing character (quotations).
+* Object keys cannot be validated if they do not have a closing character but are opened with one (quotation).
+* Objects cannot be validated if they have a trailing key with no linked value.
+* Objects can be validated if they have no closing character `}`, and the precedent rules are not broken.
+* Object references or ID declaration cannot be validated if they do not have a closing character `>`.
+* Block comments can be validated if they do not have a closing sequence `*/.`
+
+#### Examples
+
+```json5
+[
+  [
+    [
+      [
+        3,
+        4,
+        5,
+        /**
+         * This is a non-closed block comment haha
+```
+The above structure would be parsed as a valid array
+containing a single array containing a single array containing a single array,
+which at last contains the numbers 3, 4 and 5, as well as a block comment.
+
+However, the following would be considered as invalid, as the inner array is never closed, while the `key` object still gets its own closure.
+```json5
+{
+  "key": {
+    "array": [
+      3,
+      4,
+      5,
+  }
+```
 
 ## Import
 
