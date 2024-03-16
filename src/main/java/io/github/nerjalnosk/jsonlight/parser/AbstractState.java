@@ -1,5 +1,6 @@
 package io.github.nerjalnosk.jsonlight.parser;
 
+import io.github.nerjalnosk.jsonlight.JsonError;
 import io.github.nerjalnosk.jsonlight.elements.JsonBoolean;
 import io.github.nerjalnosk.jsonlight.elements.JsonElement;
 import io.github.nerjalnosk.jsonlight.elements.JsonString;
@@ -23,6 +24,10 @@ public abstract class AbstractState implements ParserState {
 
     protected final void unexpectedCharError(char c) {
         this.error(String.format("unexpected character '%c'", c));
+    }
+
+    protected final void disabledError(String s) {
+        this.parser.error(new JsonError.DisabledFeatureException("Disabled JSON parsing feature "+s+", enable it or modify your source"));
     }
 
     /**
