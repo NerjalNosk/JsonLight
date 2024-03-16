@@ -15,6 +15,7 @@ import io.github.nerjalnosk.jsonlight.parser.options.ObjectParseOptions;
  * @author nerjal
  */
 public class ObjectState extends AbstractState {
+    private boolean foundLineBreak = false;
     private boolean lookForKey = true;
     private boolean lookForAttributive = false;
     private boolean lookForValue = false;
@@ -63,6 +64,15 @@ public class ObjectState extends AbstractState {
         this.lookForAttributive = true;
     }
 
+    private boolean readLineBreak() {
+        this.parser.increaseLine();
+        if (this.parser.options.lineIter && this.requiresIterator) {
+            this.foundLineBreak = true;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Reads an object iterator
      * ({@code ','})
@@ -74,7 +84,7 @@ public class ObjectState extends AbstractState {
         } else if (this.lookForKey) {
             this.trailingIterator = true;
             this.trailingIndex = this.parser.getIndex();
-        } else this.error("unexpected iterator ','");
+        } else this.error("unexpected iterator");
     }
 
     /**
@@ -89,19 +99,25 @@ public class ObjectState extends AbstractState {
         } else this.error("unexpected key-value attributive ':'");
     }
 
-    @Override
-    public void openObject() {
-        if (trailingIterator) this.trailingError();
-        else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
-        else if (this.lookForKey) this.error("unexpected object key type");
-        else this.unexpectedCharError('{');
+    private boolean canAcceptKey() {
+        return this.lookForKey || this.foundLineBreak;
     }
 
     @Override
     public void close() {
-        this.olderState.addSubElement(this.getElem());
         if (this.lookForAttributive || this.lookForValue) this.error("incomplete object node");
-        else this.parser.switchState(this.olderState);
+        else {
+            this.olderState.addSubElement(this.getElem());
+            this.parser.switchState(this.olderState);
+        }
+    }
+
+    @Override
+    public void openObject() {
+        if (trailingIterator) this.trailingError();
+        else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser,this));
+        else if (this.canAcceptKey()) this.error("unexpected object key type");
+        else this.unexpectedCharError('{');
     }
 
     @Override
@@ -115,7 +131,7 @@ public class ObjectState extends AbstractState {
     public void openString() {
         boolean singleQuote = this.parser.getActual() == '\'';
         if (trailingIterator) this.trailingError();
-        else if (this.lookForKey || this.lookForValue)
+        else if (this.canAcceptKey() || this.lookForValue)
             this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.error("unexpected string initializer '\"'");
     }
@@ -136,7 +152,9 @@ public class ObjectState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n' || c == '\r') this.parser.increaseLine();
+        if ((c == '\n' || c == '\r') && this.readLineBreak()) {
+            return;
+        }
         if (Character.isWhitespace(c)) return;
 
         switch (c) {
@@ -161,7 +179,7 @@ public class ObjectState extends AbstractState {
                 break;
             case 'n':
             case 'N':
-                if (this.lookForKey) this.readKey();
+                if (this.canAcceptKey()) this.readKey();
                 else this.readNull(c);
                 break;
             case '.':
@@ -181,14 +199,14 @@ public class ObjectState extends AbstractState {
                 break;
             case 'i':
             case 'I':
-                if (this.lookForKey) this.readKey();
+                if (this.canAcceptKey()) this.readKey();
                 else this.openNum();
                 break;
             case 't':
             case 'T':
             case 'f':
             case 'F':
-                if (this.lookForKey) this.readKey();
+                if (this.canAcceptKey()) this.readKey();
                 else this.readBool(c);
                 break;
             case '<':
@@ -216,6 +234,7 @@ public class ObjectState extends AbstractState {
             if (element.isString()) {
                 this.key = ((JsonString) element).getAsString();
                 this.lookForKey = false;
+                this.foundLineBreak = false;
                 this.lookForAttributive = true;
                 this.requiresIterator = false;
             } else this.error("unexpected object key type found while parsing");
