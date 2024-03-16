@@ -103,7 +103,7 @@ public class StringParser {
      */
     public void setParseString(String s) {
         this.readStr = s;
-        this.state = new EmptyState(this, null);
+        this.state = new EmptyState(this);
         this.index = 0;
         this.line = 1;
         this.run = false;

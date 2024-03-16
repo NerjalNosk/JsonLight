@@ -35,7 +35,7 @@ public class FileParser extends StringParser {
 
     public FileParser(File f) throws FileNotFoundException {
         reader = new FileReader(f);
-        super.state = new EmptyState(this,null);
+        super.state = new EmptyState(this);
     }
 
     public FileParser(File f, ParserOptions options) throws FileNotFoundException {
@@ -46,7 +46,7 @@ public class FileParser extends StringParser {
 
     public FileParser(InputStreamReader stream) {
         reader = stream;
-        super.state = new EmptyState(this,null);
+        super.state = new EmptyState(this);
     }
 
     public FileParser(InputStreamReader stream, ParserOptions options) {

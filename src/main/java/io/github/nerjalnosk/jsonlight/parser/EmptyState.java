@@ -20,8 +20,8 @@ public class EmptyState extends AbstractState {
     private JsonElement element = null;
     private final List<JsonComment> comments = new ArrayList<>();
 
-    public EmptyState(StringParser stringParser, ParserState olderState) {
-        super(stringParser, olderState);
+    public EmptyState(StringParser stringParser) {
+        super(stringParser, null);
     }
 
     @Override
