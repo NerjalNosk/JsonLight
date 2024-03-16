@@ -34,6 +34,7 @@ public class StringParser {
     protected boolean run = false;
     protected boolean stop = false;
     protected boolean isErrored = false;
+    protected final ParserOptions options;
     protected JsonParseException storedErr = null;
     private Consumer<String> logReceiver = System.err::println;
     private final Map<Integer, JsonElement> idMap = new HashMap<>();
@@ -43,7 +44,9 @@ public class StringParser {
      * Use {@link #setParseString(String)}
      * to set the string to be parsed.
      */
-    public StringParser() {}
+    public StringParser() {
+        this.options = new ParserOptions.Builder().json5().classic().build();
+    }
 
     /**
      * Instantiates a parser with the
@@ -53,7 +56,18 @@ public class StringParser {
      */
     public StringParser(String s) {
         this.readStr = s;
-        this.state = new EmptyState(this,null);
+        this.state = new EmptyState(this);
+        this.options = new ParserOptions.Builder().json5().classic().build();
+    }
+
+    public StringParser(ParserOptions options) {
+        this.options = options;
+    }
+
+    public StringParser(String s, ParserOptions options) {
+        this.readStr = s;
+        this.state = new EmptyState(this);
+        this.options = options;
     }
 
     protected final void log(Object o) {
