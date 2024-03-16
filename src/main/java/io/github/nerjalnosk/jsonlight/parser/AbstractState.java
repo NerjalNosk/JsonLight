@@ -84,6 +84,10 @@ public abstract class AbstractState implements ParserState {
 
     @Override
     public final void openComment() {
+        if (!this.parser.options.json5) {
+            this.disabledError("comments (json5)");
+            return;
+        }
         this.parser.forward(1);
         switch (this.parser.getActual()) {
             case '/': {
