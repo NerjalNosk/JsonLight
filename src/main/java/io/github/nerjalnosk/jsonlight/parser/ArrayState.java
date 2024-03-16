@@ -14,6 +14,7 @@ import io.github.nerjalnosk.jsonlight.elements.JsonElement;
  * @author nerjal
  */
 public class ArrayState extends AbstractState {
+    private boolean foundLineBreak = false;
     private boolean lookForValue = true;
     private boolean requiresIterator = false;
     private boolean trailingIterator = false;
@@ -29,17 +30,40 @@ public class ArrayState extends AbstractState {
         this.error("empty array iteration");
     }
 
+    private void readIterator() {
+        if (this.requiresIterator) {
+            this.requiresIterator = false;
+            this.lookForValue = true;
+        } else if (this.lookForValue) {
+            this.trailingIterator = true;
+            this.trailingIndex = this.parser.getIndex();
+        } else this.unexpectedCharError(this.parser.getActual());
+    }
+
+    private boolean readLineBreak() {
+        this.parser.increaseLine();
+        if (this.parser.options.lineIter && this.requiresIterator) {
+            this.foundLineBreak = true;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canAcceptValue() {
+        return this.lookForValue || this.foundLineBreak;
+    }
+
     @Override
     public void openObject() {
         if (trailingIterator) this.trailingError();
-        else if (this.lookForValue) this.parser.switchState(new ObjectState(this.parser, this));
+        else if (this.canAcceptValue()) this.parser.switchState(new ObjectState(this.parser, this));
         else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
     public void openArray() {
         if (trailingIterator) this.trailingError();
-        else if (this.lookForValue) this.parser.switchState(new ArrayState(this.parser, this));
+        else if (this.canAcceptValue()) this.parser.switchState(new ArrayState(this.parser, this));
         else this.unexpectedCharError(this.parser.getActual());
     }
 
@@ -47,14 +71,14 @@ public class ArrayState extends AbstractState {
     public void openString() {
         boolean singleQuote = this.parser.getActual() == '\'';
         if (trailingIterator) this.trailingError();
-        else if (this.lookForValue) this.parser.switchState(new StringState(this.parser, this, singleQuote));
+        else if (this.canAcceptValue()) this.parser.switchState(new StringState(this.parser, this, singleQuote));
         else this.unexpectedCharError(this.parser.getActual());
     }
 
     @Override
     public void openNum() {
         if (trailingIterator) this.trailingError();
-        else if (this.lookForValue) this.parser.switchState(new NumberState(this.parser, this));
+        else if (this.canAcceptValue()) this.parser.switchState(new NumberState(this.parser, this));
         else this.unexpectedCharError(this.parser.getActual());
     }
 
@@ -62,7 +86,7 @@ public class ArrayState extends AbstractState {
     public void openId() {
         if (trailingIterator) this.trailingError();
         else if (this.storedId != null) this.unexpectedIdError();
-        else if (this.lookForValue) this.parser.switchState(new IdState(this.parser, this));
+        else if (this.canAcceptValue()) this.parser.switchState(new IdState(this.parser, this));
         else this.unexpectedCharError(this.parser.getActual());
     }
 
@@ -74,18 +98,14 @@ public class ArrayState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n' || c == '\r') this.parser.increaseLine();
+        if ((c == '\n' || c == '\r') && this.readLineBreak()) {
+            return;
+        }
         if (Character.isWhitespace(c)) return;
 
         switch (c) {
             case ',':
-                if (this.requiresIterator) {
-                    this.requiresIterator = false;
-                    this.lookForValue = true;
-                } else if (this.lookForValue) {
-                    this.trailingIterator = true;
-                    this.trailingIndex = this.parser.getIndex();
-                } else this.error("unexpected iterator ','");
+                this.readIterator();
                 break;
             case '"':
             case '\'':
@@ -148,6 +168,7 @@ public class ArrayState extends AbstractState {
     public void addSubElement(JsonElement element) {
         this.array.add(element);
         this.lookForValue = false;
+        this.foundLineBreak = false;
         this.requiresIterator = true;
         if (this.storedId != null && !element.isComment()) {
             if (this.parser.feedId(this.storedId, element)) {
