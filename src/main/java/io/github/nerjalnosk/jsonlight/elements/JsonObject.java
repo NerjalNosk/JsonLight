@@ -5,7 +5,6 @@ import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 import io.github.nerjalnosk.jsonlight.JsonError;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -560,10 +559,9 @@ public class JsonObject extends JsonElement {
             builder.append(this.stringifiedId()).append(" ");
         }
         builder.append("{");
-        AtomicInteger count = new AtomicInteger();
-        AtomicInteger index = new AtomicInteger();
-        AtomicInteger lastComma = new AtomicInteger();
-        AtomicBoolean endOnComment = new AtomicBoolean(false);
+        int index = 0;
+        int lastComma = 0;
+        boolean endOnComment = false;
         List<JsonNode> l = options.isOrdered() ? orderList : new ArrayList<>();
         if (!options.isOrdered()) {
             this.map.forEach((k, v) -> l.add(new JsonNode(k, v, this)));
@@ -571,9 +569,8 @@ public class JsonObject extends JsonElement {
         for (JsonNode node : l) {
             String k = node.key;
             JsonElement e = node.value;
-            count.getAndIncrement();
-            index.getAndIncrement();
-            endOnComment.set(e.isComment());
+            index++;
+            endOnComment = e.isComment();
             builder.append('\n').append(indentation).append(indentIncrement);
             if (!e.isComment()) {
                 char c = options.keyQuoteChar();
@@ -581,12 +578,12 @@ public class JsonObject extends JsonElement {
                 builder.append(String.format(s, k, c));
             }
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
-            if (index.get() < size() && !e.isComment()) {
-                lastComma.set(builder.length());
+            if (index < size() && !e.isComment()) {
+                lastComma = builder.length();
                 builder.append(", ");
             }
         }
-        if (endOnComment.get() && lastComma.get() != 0) builder.deleteCharAt(lastComma.get());
+        if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
         builder.append('\n').append(indentation);
         builder.append('}');
         stack.unstack(this.hashCode());
