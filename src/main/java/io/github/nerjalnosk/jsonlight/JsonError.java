@@ -71,6 +71,22 @@ public abstract class JsonError {
     }
 
     /**
+     * Thrown when trying to parse a feature that has been
+     * disabled via the current
+     * {@link io.github.nerjalnosk.jsonlight.parser.ParserOptions}
+     * @see StringParser
+     */
+    public static class DisabledFeatureException extends JsonParseException {
+        public DisabledFeatureException(String s) {
+            super(s);
+        }
+
+        public DisabledFeatureException(Exception e) {
+            super(e);
+        }
+    }
+
+    /**
      * Thrown when setting a {@link JsonArray} to stringify with
      * an invalid number of elements per line (negative or null)
      * @see ArrayParseOptions
@@ -98,7 +114,7 @@ public abstract class JsonError {
      * a {@link JsonElement}
      * @see FileParser
      */
-    public static class FileNotFoundException extends JsonParseException{
+    public static class FileNotFoundException extends JsonParseException {
         public FileNotFoundException(String s) {
             super(s);
         }
