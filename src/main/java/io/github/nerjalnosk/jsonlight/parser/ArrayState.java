@@ -151,6 +151,10 @@ public class ArrayState extends AbstractState {
                 this.openId();
                 break;
             case Character.MIN_VALUE:
+                if (!this.parser.options.autoClose) {
+                    this.disabledError("autoclosing");
+                    break;
+                }
             case ']':
                 this.close();
                 break;

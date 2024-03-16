@@ -22,6 +22,9 @@ public class StringState extends AbstractState {
 
     public StringState(StringParser stringParser, ParserState olderState, boolean isSingleQuote) {
         super(stringParser, olderState);
+        if (isSingleQuote) {
+            this.disabledError("single-quoted strings (Json5)");
+        }
         this.isSingleQuoteString = isSingleQuote;
     }
 
@@ -33,8 +36,17 @@ public class StringState extends AbstractState {
 
     @Override
     public void read(char c) {
-        if (c == '\n' &! this.preIsBackslash) this.parser.error("unexpected newline");
-        if (c == Character.MIN_VALUE) this.close();
+        if (c == '\n') {
+            if (!this.parser.options.json5) this.disabledError("multiline strings (Json5)");
+            else if (!this.preIsBackslash) this.parser.error("unexpected newLine");
+        }
+        if (c == Character.MIN_VALUE) {
+            if (!this.parser.options.autoClose) {
+                this.disabledError("autoclosing");
+                return;
+            }
+            this.close();
+        }
         else if (c == '\\') {
             if (this.preIsBackslash) this.val.append('\\');
             this.preIsBackslash = !this.preIsBackslash;
