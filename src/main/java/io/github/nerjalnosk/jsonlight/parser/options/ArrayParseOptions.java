@@ -29,6 +29,60 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
     private long numPerLine;
     private ArrayFormat format;
     private boolean circular;
+    private boolean lineBreak;
+
+    public static ArrayParseOptions extended() {
+        return new ArrayParseOptions(ArrayFormat.ONE_PER_LINE, 1, true, true);
+    }
+
+    /**
+     * Instantiates new array stringification
+     * options with the specified format,
+     * number of elements per line (only used
+     * with
+     * {@link ArrayFormat#MULTIPLE_PER_LINE})
+     * and circularisation.
+     * @param format the stringification
+     *               format to use
+     * @param numPerLine the number of
+     *                   element per line if
+     *                   multiple
+     * @param doCircular whether arrays using
+     *                   these options should
+     *                   resolve circularity
+     * @param lineBreak whether arrays using
+     *                  these options should
+     *                  use line breaks as
+     *                  iteration separator
+     *                  when possible.
+     */
+    public ArrayParseOptions(ArrayFormat format, int numPerLine, boolean doCircular, boolean lineBreak) {
+        this.format = format;
+        if (numPerLine < 0)
+            throw new IllegalArgumentException(
+                    "Unsupported negative number for array stringification options");
+        this.numPerLine = numPerLine;
+        this.circular = doCircular;
+        this.lineBreak = lineBreak;
+        ping();
+    }
+
+    /**
+     * Instantiates new array stringification
+     * options with the specified circularisation
+     * and line break iteration.
+     * @param doCircular whether arrays using
+     *                   these options should
+     *                   resolve circularity
+     * @param lineBreak whether arrays using
+     *                  these options should
+     *                  use line breaks as
+     *                  iteration separator
+     *                  when possible.
+     */
+    public ArrayParseOptions(boolean doCircular, boolean lineBreak) {
+        this(ArrayFormat.ONE_PER_LINE, 0, doCircular, lineBreak);
+    }
 
     /**
      * Instantiates new array stringification
@@ -47,13 +101,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      *                   resolve circularity
      */
     public ArrayParseOptions(ArrayFormat format, int numPerLine, boolean doCircular) {
-        this.format = format;
-        if (numPerLine < 0)
-            throw new IllegalArgumentException(
-                    "Unhandled negative number for array stringification options");
-        this.numPerLine = numPerLine;
-        this.circular = doCircular;
-        ping();
+        this(format, numPerLine, doCircular, false);
     }
 
     /**
@@ -196,6 +244,33 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      */
     public boolean resolveCircular() {
         return this.circular;
+    }
+
+    /**
+     * Sets whether arrays using
+     * these options should use line
+     * breaks as iteration separator
+     * when possible according
+     * to their format option.
+     * @param b the new line break
+     *          setting value.
+     */
+    public void useLineBreak(boolean b) {
+        this.lineBreak = b;
+        ping();
+    }
+
+    /**
+     * Returns whether arrays should
+     * use line breaks as iteration
+     * separator when possible.
+     * @return Whether arrays should
+     *         use line breaks as
+     *         iteration separator
+     *         when possible.
+     */
+    public boolean useLineBreakAsIterator() {
+        return this.lineBreak;
     }
 
     /**
