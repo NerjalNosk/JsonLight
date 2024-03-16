@@ -126,7 +126,13 @@ public class EmptyState extends AbstractState {
 
     @Override
     public void addSubElement(JsonElement element) {
-        if (element.isComment()) this.comments.add((JsonComment) element);
+        if (element.isComment()) {
+            if (!this.parser.options.rootComment) {
+                this.disabledError("root comments");
+                return;
+            }
+            this.comments.add((JsonComment) element);
+        }
         else if (this.element == null) {
             this.element = element;
             if (this.storedId != null) {
