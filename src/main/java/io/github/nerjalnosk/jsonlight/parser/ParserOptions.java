@@ -47,6 +47,11 @@ public class ParserOptions {
      * and objects)
      */
     public final boolean lineIter;
+    /**
+     * Whether to accept root comment outside a container
+     * element and pass them on the recognised root
+     * comment.
+     */
     public final boolean rootComment;
 
     private ParserOptions(boolean json5, boolean circular, boolean autoClose, boolean lineIter, boolean rootComment) {
@@ -169,7 +174,7 @@ public class ParserOptions {
         }
 
         /**
-         * Sets toe options to be built not
+         * Sets the options to be built not
          * to support circular structures.
          * @return this
          */
@@ -178,22 +183,48 @@ public class ParserOptions {
             return this;
         }
 
+        /**
+         * Sets the options to be built to
+         * support auto closing at source
+         * end.
+         * @return this
+         */
         Builder autoClose() {
             this.close = true;
             return this;
         }
 
+        /**
+         * Sets the options to be built not
+         * to support auto closing at
+         * source end.
+         * @return this
+         */
         Builder noAutoClose() {
             this.close = false;
             return this;
         }
 
+        /**
+         * Sets the options to be built to
+         * support using line breaks as
+         * iteration splitters if no comma
+         * is found.
+         * @return this
+         */
         Builder lineIter() {
             this.line = true;
             return this;
         }
 
+        /**
+         * Sets the options to be built not
+         * to support using line breaks as
+         * iteration splitters.
+         * @return this
+         */
         Builder noLineIter() {
+            this.line = false;
             return this;
         }
     }
