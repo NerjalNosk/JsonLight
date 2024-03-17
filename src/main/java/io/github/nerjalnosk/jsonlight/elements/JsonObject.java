@@ -561,7 +561,11 @@ public class JsonObject extends JsonElement {
         builder.append("{");
         int index = 0;
         int lastComma = 0;
+        int size = this.size();
         boolean endOnComment = false;
+        boolean lineBreakIter = options.useLineBreakAsIterator();
+        boolean nextLineBreak = size > 0;
+        boolean inlineSingleValue = options.noLineBreakSingle();
         List<JsonNode> l = options.isOrdered() ? orderList : new ArrayList<>();
         if (!options.isOrdered()) {
             this.map.forEach((k, v) -> l.add(new JsonNode(k, v, this)));
@@ -571,20 +575,29 @@ public class JsonObject extends JsonElement {
             JsonElement e = node.value;
             index++;
             endOnComment = e.isComment();
-            builder.append('\n').append(indentation).append(indentIncrement);
+            if (inlineSingleValue && size == 1 && !e.isComment()) {
+                builder.append(' ');
+            } else if (nextLineBreak) {
+                builder.append('\n').append(indentation).append(indentIncrement);
+            }
             if (!e.isComment()) {
                 char c = options.keyQuoteChar();
                 String s = c == 0 ? "%1$s: " : "%2$c%1$s%2$c: ";
                 builder.append(String.format(s, k, c));
             }
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
-            if (index < size() && !e.isComment()) {
+            nextLineBreak = !e.isComment();
+            if (index < size() && !e.isComment() && !lineBreakIter) {
                 lastComma = builder.length();
                 builder.append(", ");
             }
         }
         if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
-        builder.append('\n').append(indentation);
+        if (size == 1 && inlineSingleValue && !endOnComment) {
+            builder.append(' ');
+        } else {
+            builder.append('\n').append(indentation);
+        }
         builder.append('}');
         stack.unstack(this.hashCode());
         return builder.toString();

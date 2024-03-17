@@ -532,27 +532,31 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         int count = 0;
         int index = 0;
         int lastComma = 0;
-        boolean endOnComment = false;
         long maxLine = options.getNumPerLine();
+        boolean endOnComment = false;
+        boolean lineBreakIter = options.useLineBreakAsIterator();
+        boolean nextLineBreak = !options.isAllInOneLine() && this.size() > 0;
         for (JsonElement e : this.list) {
-            if ((!options.isAllInOneLine() && (count >= maxLine || index == 0)) || e.isComment() ||
-                    (index > 0 && list.get(index-1).isComment())) {
+            if (nextLineBreak) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
+            } else if (index > 0) {
+                builder.append(' ');
             }
             if (count == maxLine || e.isComment()) count = 0;
             index++;
             endOnComment = e.isComment();
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
+            nextLineBreak = (!options.isAllInOneLine() && count >= maxLine) || e.isComment();
             if (!e.isComment()) {
                 count++;
-                if (index < size()){
+                if (index < size() && !(lineBreakIter && !options.isAllInOneLine())){
                     lastComma = builder.length();
-                    builder.append(", ");
+                    builder.append(",");
                 }
             }
         }
-        if (endOnComment && lastComma != 0) builder.deleteCharAt(lastComma);
+        if (endOnComment && lastComma != 0 && !lineBreakIter) builder.deleteCharAt(lastComma);
         if (!parseOptions.isAllInOneLine()) builder.append('\n').append(indentation);
         builder.append(']');
         stack.unstack(this.hashCode());
