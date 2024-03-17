@@ -1,6 +1,7 @@
 package io.github.nerjalnosk.jsonlight.elements;
 
 import io.github.nerjalnosk.jsonlight.JsonError;
+import io.github.nerjalnosk.jsonlight.parser.options.ArrayParseOptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,10 +56,6 @@ class JsonArrayTest {
 
         assertEquals(jsonArray, array.get(0));
         assertEquals(array, array.get(1));
-    }
-
-    @Test
-    void setParseOptions() {
     }
 
     @Test
@@ -227,5 +224,15 @@ class JsonArrayTest {
 
         assertEquals(1, array.size());
         assertEquals(arr[1], array.get(0));
+    }
+
+    @Test
+    void stringify$singleLine() throws JsonError.RecursiveJsonElementException {
+        for (int i = 0; i < 5; ++i) {
+            JsonNumber n = new JsonNumber(i);
+            array.add(n);
+        }
+        ArrayParseOptions options = new ArrayParseOptions(ArrayParseOptions.ArrayFormat.INLINE, 0, false, true);
+        assertEquals("[0, 1, 2, 3, 4]", array.stringify());
     }
 }
