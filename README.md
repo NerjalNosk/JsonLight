@@ -135,7 +135,7 @@ However, the following would be considered as invalid, as the inner array is nev
 ## Import
 
 Now in Maven Central! Latest available version: 
-[2.1](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/2.1)
+[3.1](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/3.1)
 
 ### With Maven
 
