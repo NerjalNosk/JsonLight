@@ -233,6 +233,7 @@ class JsonArrayTest {
             array.add(n);
         }
         ArrayParseOptions options = new ArrayParseOptions(ArrayParseOptions.ArrayFormat.INLINE, 0, false, true);
-        assertEquals("[0, 1, 2, 3, 4]", array.stringify());
+        array.setParseOptions(options);
+        assertEquals("[ 0, 1, 2, 3, 4 ]", array.stringify());
     }
 }

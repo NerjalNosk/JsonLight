@@ -88,7 +88,7 @@ class JsonParserTest {
 
         // array
         array.add(new JsonString("test"));
-        assertEquals("[\"test\"\n]", JsonParser.stringify(array, set2));
+        assertEquals("[ \"test\" ]", JsonParser.stringify(array, set2));
 
         // object
         object.add("a", new JsonNumber(1));

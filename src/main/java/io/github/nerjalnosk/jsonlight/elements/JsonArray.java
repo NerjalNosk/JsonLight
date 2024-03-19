@@ -526,30 +526,33 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
         }
         StringBuilder builder = new StringBuilder();
         if (this.getId().isPresent() && options.resolveCircular()) {
-            builder.append(this.stringifiedId()).append(" ");
+            builder.append(this.stringifiedId()).append(' ');
         }
-        builder.append("[");
+        builder.append('[');
         int count = 0;
         int index = 0;
         int lastComma = 0;
         long maxLine = options.getNumPerLine();
         boolean endOnComment = false;
         boolean lineBreakIter = options.useLineBreakAsIterator();
-        boolean nextLineBreak = !options.isAllInOneLine() && this.size() > 0;
+        boolean nextLineBreak = !options.isAllInOneLine();
         for (JsonElement e : this.list) {
             if (nextLineBreak) {
                 builder.append('\n');
                 builder.append(indentation).append(indentIncrement);
-            } else if (index > 0) {
+            } else {
                 builder.append(' ');
             }
-            if (count == maxLine || e.isComment()) count = 0;
-            index++;
-            endOnComment = e.isComment();
             builder.append(e.stringify(parseSet, String.format("%s%s",indentation,indentIncrement),indentIncrement, stack));
-            nextLineBreak = (!options.isAllInOneLine() && count >= maxLine) || e.isComment();
-            if (!e.isComment()) {
+            index++;
+            if (e.isComment()) {
+                endOnComment = true;
+                nextLineBreak = true;
+                count = 0;
+            } else {
                 count++;
+                nextLineBreak = count >= maxLine;
+                if (count >= maxLine) count = 0;
                 if (index < size() && !(lineBreakIter && !options.isAllInOneLine())){
                     lastComma = builder.length();
                     builder.append(",");
@@ -557,7 +560,8 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
             }
         }
         if (endOnComment && lastComma != 0 && !lineBreakIter) builder.deleteCharAt(lastComma);
-        if (!parseOptions.isAllInOneLine()) builder.append('\n').append(indentation);
+        if (nextLineBreak) builder.append('\n').append(indentation);
+        else builder.append(' ');
         builder.append(']');
         stack.unstack(this.hashCode());
         return builder.toString();
