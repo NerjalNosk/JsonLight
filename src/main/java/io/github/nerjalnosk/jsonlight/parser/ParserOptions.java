@@ -53,13 +53,27 @@ public class ParserOptions {
      * comment.
      */
     public final boolean rootComment;
+    /**
+     * Whether to allow parsing unicode escaped
+     * codes as a single character.
+     * <p>
+     * E.g. {@code \\u2722} -> `{@code \u2722}`
+     * <p>
+     * Warning: unless specified differently,
+     * parsed strings will remember the escaped
+     * character as to be parsed back as an
+     * escaped code, and will apply it to all
+     * instances of this character.
+     */
+    public final boolean parseUnicode;
 
-    private ParserOptions(boolean json5, boolean circular, boolean autoClose, boolean lineIter, boolean rootComment) {
+    private ParserOptions(boolean json5, boolean circular, boolean autoClose, boolean lineIter, boolean rootComment, boolean parseUnicode) {
         this.json5 = json5;
         this.circular = circular;
         this.autoClose = autoClose;
         this.lineIter = lineIter;
         this.rootComment = rootComment;
+        this.parseUnicode = parseUnicode;
     }
 
     /**
@@ -71,6 +85,7 @@ public class ParserOptions {
         boolean close;
         boolean line;
         boolean rootC;
+        boolean uni;
 
         /**
          * Default builder instance, for generic
@@ -87,7 +102,7 @@ public class ParserOptions {
          * @return the configured parser options.
          */
         ParserOptions build() {
-            return new ParserOptions(this.j5, this.circ, this.close, this.line, this.rootC);
+            return new ParserOptions(this.j5, this.circ, this.close, this.line, this.rootC, uni);
         }
 
         /**
@@ -122,6 +137,7 @@ public class ParserOptions {
          * Sets the options to be built to
          * support the Json5 syntax.
          * @return this
+         * @see ParserOptions#json5
          */
         Builder json5() {
             this.j5 = true;
@@ -133,6 +149,7 @@ public class ParserOptions {
          * not support the json5 syntax,
          * but only the json4.
          * @return this
+         * @see ParserOptions#json5
          */
         Builder json4() {
             this.j5 = false;
@@ -146,6 +163,7 @@ public class ParserOptions {
          * Might come raise issues if the
          * root element cannot store comments.
          * @return this
+         * @see ParserOptions#rootComment
          */
         Builder rootComment() {
             this.rootC = true;
@@ -157,6 +175,7 @@ public class ParserOptions {
          * to support root comments outside
          * the root element.
          * @return this
+         * @see ParserOptions#rootComment
          */
         Builder noRootComment() {
             this.rootC = false;
@@ -167,6 +186,7 @@ public class ParserOptions {
          * Sets the options to be built to
          * support circular structures.
          * @return this
+         * @see ParserOptions#circular
          */
         Builder circular() {
             this.circ = true;
@@ -177,6 +197,7 @@ public class ParserOptions {
          * Sets the options to be built not
          * to support circular structures.
          * @return this
+         * @see ParserOptions#circular
          */
         Builder noCircular() {
             this.circ = false;
@@ -188,6 +209,7 @@ public class ParserOptions {
          * support auto closing at source
          * end.
          * @return this
+         * @see ParserOptions#autoClose
          */
         Builder autoClose() {
             this.close = true;
@@ -199,6 +221,7 @@ public class ParserOptions {
          * to support auto closing at
          * source end.
          * @return this
+         * @see ParserOptions#autoClose
          */
         Builder noAutoClose() {
             this.close = false;
@@ -211,6 +234,7 @@ public class ParserOptions {
          * iteration splitters if no comma
          * is found.
          * @return this
+         * @see ParserOptions#lineIter
          */
         Builder lineIter() {
             this.line = true;
@@ -222,9 +246,36 @@ public class ParserOptions {
          * to support using line breaks as
          * iteration splitters.
          * @return this
+         * @see ParserOptions#lineIter
          */
         Builder noLineIter() {
             this.line = false;
+            return this;
+        }
+
+        /**
+         * Sets the options to be built to
+         * support auto parsing escaped
+         * unicode codes as unicode
+         * characters.
+         * @return this
+         * @see ParserOptions#parseUnicode
+         */
+        Builder unicodeParse() {
+            this.uni = true;
+            return this;
+        }
+
+        /**
+         * Sets the options to be built not
+         * to support auto parsing
+         * escaped unicode codes as
+         * unicode characters.
+         * @return this
+         * @see ParserOptions#parseUnicode
+         */
+        Builder noUnicodeParse() {
+            this.uni = false;
             return this;
         }
     }

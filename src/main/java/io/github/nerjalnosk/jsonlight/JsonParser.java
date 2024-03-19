@@ -102,8 +102,8 @@ public abstract class JsonParser {
      */
     public static String stringify(JsonElement json, ParseSet parseSet, int space, int tabulation, char tabChar)
             throws RecursiveJsonElementException {
-        String tab = string_repeat(String.format("%c",tabChar),tabulation);
-        String indentation = string_repeat(tab,space);
+        String tab = stringRepeat(String.format("%c",tabChar),tabulation);
+        String indentation = stringRepeat(tab,space);
         return json.stringify(parseSet, indentation, tab);
     }
 
@@ -134,9 +134,33 @@ public abstract class JsonParser {
     }
 
     /**
+     * Returns whether the specified character is a
+     * valid hexadecimal character.
+     * @param c The character to determine whether
+     *          it is a valid hexadecimal character.
+     * @return Whether the specified character is a
+     *         valid hexadecimal character.
+     */
+    public static boolean isHex(char c) {
+        return c > 47 // not below '0'
+                && c < 102 // not above 'f'
+                && (c < 58 // below ':' -> digit
+                || (c > 64 && c < 71) // above '@' and below 'G' -> uppercase A-F
+                || c > 96 // above '`' -> lowercase a-f
+        );
+    }
+
+    public static int hexValue(char c) {
+        if (c > 47 && c < 58) return c - 48;
+        if (c > 64 && c < 71) return c - 55;
+        if (c > 96 && c < 102) return c - 87;
+        return -1;
+    }
+
+    /**
      * JDK 11+ String#repeat(int):String backport
      */
-    private static String string_repeat(String s, int i) {
+    private static String stringRepeat(String s, int i) {
         if (i < 0) throw new IllegalArgumentException("count is negative "+i);
         if (i == 1) return s;
         int len = s.length();
