@@ -46,6 +46,32 @@ As of 3.0, JsonLight includes a Json5 extension, as Json6 of sorts, which adds m
 
 These features mostly aim to make life easier for all users.
 
+Additionally, version 3.2 adds new means to control which of these features are enabled upon parsing text to Json.
+That way, you can use full options just as well as restricting it all the way down to Json4.
+
+```java
+import io.github.nerjalnosk.jsonlight.elements.JsonElement;
+import io.github.nerjalnosk.jsonlight.parser.ParserOptions;
+import io.github.nerjalnosk.jsonlight.parser.StringParser;
+
+class MyClass {
+    private final var json4 = new StringParser(new ParserOptions.Builder().json4().build());
+    private final var json5 = new StringParser(new ParserOptions.Builder().json5().build());
+    private final var full = new StringParser(new ParserOptions.Builder().extended().build());
+
+    JsonElement[] parse(String s) {
+        json4.setParseString(s);
+        json5.setParseString(s);
+        full.setParseString(s);
+        return new JsonElement[] {
+                json4.parse(),
+                json5.parse(),
+                full.parse()
+        };
+    }
+}
+```
+
 ### Circular structures
 
 Introduced in version 3.0, it adds support for circular structures parsing, both to and from textual sources.
@@ -132,10 +158,32 @@ However, the following would be considered as invalid, as the inner array is nev
   }
 ```
 
+### Line break iteration
+
+Since version 3.2, JsonLight also supports using line break as iteration markers, allowing to neglect commas.
+However, they do not strictly replace commas, so commas can still be used alongside line breaks.
+
+#### Example
+
+```json5
+{
+  root: {
+    key1: 1
+    key2: 2
+  }
+  other_root: [
+    1
+    2
+    3
+    4
+  ]
+}
+```
+
 ## Import
 
 Now in Maven Central! Latest available version: 
-[3.1](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/3.1)
+[3.2](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/3.2)
 
 ### With Maven
 
@@ -151,7 +199,7 @@ Now in Maven Central! Latest available version:
     <version>...</version>
     
     <properties>
-        <jsonLight.version>2.1</jsonLight.version>
+        <jsonLight.version>3.2</jsonLight.version>
     </properties>
 
     <dependencies>
@@ -224,11 +272,12 @@ dependencies {
 
 ## History
 
-| Version | Date          | Name                       | Changes                                                                                  |
-|---------|---------------|----------------------------|------------------------------------------------------------------------------------------|
-| 1.4.0   | 10 Aug. 2022  | Witcheries and Stringeries | Json stringification rework, added parsing options and defaults, and more parsing tools  |
-| 1.4.1   | 18 Sept. 2023 | TechniLexicalities         | Codebase repo fixes, jdoc and build improvements, parsing logging utilities              |
-| 2.0     | 18 Sept. 2023 | Maven Conquest             | Classes refactoring, published to Maven Central                                          |
-| 2.1     | 25 Sept. 2023 | Number Parse               | Fixed number parsing (from/to hexadecimal, from scientific notation)                     |
-| 3.0     | 11 Mar. 2024  | Json Circles               | Added circular structure parsing, both to and from, using ID markers                     |
-| 3.1     | 13 Mar. 2024  | Numbers Galore             | Added Number support for Big integers and decimals, as well as more exact value tracking |
+| Version | Date          | Name                       | Changes                                                                                            |
+|---------|---------------|----------------------------|----------------------------------------------------------------------------------------------------|
+| 1.4.0   | 10 Aug. 2022  | Witcheries and Stringeries | Json stringification rework, added parsing options and defaults, and more parsing tools            |
+| 1.4.1   | 18 Sept. 2023 | TechniLexicalities         | Codebase repo fixes, jdoc and build improvements, parsing logging utilities                        |
+| 2.0     | 18 Sept. 2023 | Maven Conquest             | Classes refactoring, published to Maven Central                                                    |
+| 2.1     | 25 Sept. 2023 | Number Parse               | Fixed number parsing (from/to hexadecimal, from scientific notation)                               |
+| 3.0     | 11 Mar. 2024  | Json Circles               | Added circular structure parsing, both to and from, using ID markers                               |
+| 3.1     | 13 Mar. 2024  | Numbers Galore             | Added Number support for Big integers and decimals, as well as more exact value tracking           |
+| 3.2     | 19 Mar. 2024  | Parse lives matter         | Added parsing methods customization tools, and possibility to use line breaks as iteration markers |
