@@ -33,6 +33,17 @@ public class JsonString extends JsonElement {
         protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
             return "null";
         }
+
+        @Override
+        public void setValue(String s) {}
+
+        @Override
+        public void setParseOptions(StringParseOptions options) {}
+
+        @Override
+        public JsonString clone() {
+            return this;
+        }
     };
 
     private String value;
