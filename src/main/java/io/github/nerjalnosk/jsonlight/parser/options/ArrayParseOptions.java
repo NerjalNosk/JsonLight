@@ -56,7 +56,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      *                  iteration separator
      *                  when possible.
      */
-    public ArrayParseOptions(ArrayFormat format, int numPerLine, boolean doCircular, boolean lineBreak) {
+    public ArrayParseOptions(ArrayFormat format, long numPerLine, boolean doCircular, boolean lineBreak) {
         this.format = format;
         if (numPerLine < 0)
             throw new IllegalArgumentException(
@@ -100,7 +100,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      *                   these options should
      *                   resolve circularity
      */
-    public ArrayParseOptions(ArrayFormat format, int numPerLine, boolean doCircular) {
+    public ArrayParseOptions(ArrayFormat format, long numPerLine, boolean doCircular) {
         this(format, numPerLine, doCircular, false);
     }
 
@@ -121,7 +121,7 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
      * @throws IllegalArgumentException if
      *         numPerLine is negative
      */
-    public ArrayParseOptions(ArrayFormat format, int numPerLine) {
+    public ArrayParseOptions(ArrayFormat format, long numPerLine) {
         this(format, numPerLine, false);
     }
 
@@ -152,6 +152,11 @@ public class ArrayParseOptions extends AbstractParseOptions<JsonArray> {
     public ArrayParseOptions() {
         this.format = ArrayFormat.ONE_PER_LINE;
         this.numPerLine = 0;
+    }
+
+    @Override
+    public ArrayParseOptions clone() {
+        return new ArrayParseOptions(this.format, this.numPerLine, this.circular, this.lineBreak);
     }
 
     /**

@@ -104,4 +104,13 @@ public class JsonBoolean extends JsonElement {
         else if (options.usesAllUppercase()) return this.value ? "TRUE" : "FALSE";
         else return this.value ? "True" : "False";
     }
+
+    @Override
+    public JsonBoolean clone() {
+        JsonBoolean copy = new JsonBoolean(this.value);
+        if (this.parseOptions.isChanged()) {
+            copy.setParseOptions(this.parseOptions.clone());
+        }
+        return copy;
+    }
 }

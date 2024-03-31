@@ -261,4 +261,10 @@ public class JsonNumber extends JsonElement {
         } else s = new BigDecimal(this.value.multiply(BigDecimal.valueOf(i)).toBigInteger()).toString();
         return s;
     }
+
+    @Override
+    public JsonNumber clone() {
+        NumberParseOptions options = this.parseOptions.isChanged() ? this.parseOptions.clone() : new NumberParseOptions();
+        return new JsonNumber(this.value, options);
+    }
 }

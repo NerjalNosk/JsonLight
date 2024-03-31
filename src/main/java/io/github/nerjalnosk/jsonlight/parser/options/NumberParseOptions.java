@@ -96,6 +96,11 @@ public class NumberParseOptions extends AbstractParseOptions<JsonNumber> {
         this.decimals = 6;
     }
 
+    @Override
+    public NumberParseOptions clone() {
+        return new NumberParseOptions(this.floating, this.format, this.decimals);
+    }
+
     /**
      * Gives whether the option set is set to parse to an integer or not.
      * @return the Integer/Float setting of the option set

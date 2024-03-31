@@ -135,4 +135,13 @@ public class JsonString extends JsonElement {
         char c = options.usesDoubleQuotes() ? '"' : '\'';
         return this.value != null ? String.format("%c%s%c",c,this.value,c) : "null";
     }
+
+    @Override
+    public JsonString clone() {
+        JsonString copy = new JsonString(this.value);
+        if (this.parseOptions.isChanged()) {
+            copy.setParseOptions(this.parseOptions.clone());
+        }
+        return copy;
+    }
 }

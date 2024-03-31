@@ -182,4 +182,13 @@ public final class JsonComment extends JsonElement {
         b.append("*/");
         return b.toString();
     }
+
+    @Override
+    public JsonComment clone() {
+        JsonComment copy = new JsonComment(this.value, this.isBlock);
+        if (this.parseOptions.isChanged()) {
+            copy.setParseOptions(this.parseOptions.clone());
+        }
+        return copy;
+    }
 }

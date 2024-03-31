@@ -752,4 +752,14 @@ public class JsonObject extends JsonElement {
             return Objects.hash(key,backObject);
         }
     }
+
+    @Override
+    public JsonObject clone() {
+        JsonObject copy = new JsonObject();
+        copy.recursivePushAll(this);
+        if (this.parseOptions.isChanged()) {
+            copy.setParseOptions(this.parseOptions.clone());
+        }
+        return copy;
+    }
 }

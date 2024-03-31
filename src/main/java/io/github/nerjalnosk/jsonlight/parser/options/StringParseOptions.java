@@ -50,6 +50,11 @@ public class StringParseOptions extends AbstractParseOptions<JsonString> {
         this.format = QuoteFormat.DOUBLE_QUOTES;
     }
 
+    @Override
+    public StringParseOptions clone() {
+        return new StringParseOptions(this.format);
+    }
+
     /**
      * Returns whether the options
      * are set to stringify string

@@ -94,6 +94,11 @@ public class CommentParseOptions extends AbstractParseOptions<JsonComment> {
         this.type = type;
     }
 
+    @Override
+    public CommentParseOptions clone() {
+        return new CommentParseOptions(this.indent, this.newlineAsterisk, this.type);
+    }
+
     /**
      * Sets the use of indentation for
      * block comments to the specified

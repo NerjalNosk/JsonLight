@@ -721,4 +721,15 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
                 throw new ConcurrentModificationException();
         }
     }
+
+    @Override
+    public JsonArray clone() {
+        JsonArray copy = new JsonArray();
+        this.forAll(e -> copy.add(e.clone()));
+        copy.modCount = 0;
+        if (this.parseOptions.isChanged()) {
+            copy.setParseOptions(this.parseOptions.clone());
+        }
+        return copy;
+    }
 }

@@ -48,6 +48,11 @@ public class BooleanParseOptions extends AbstractParseOptions<JsonBoolean> {
         this.format = BooleanFormat.ALL_LOWERCASE;
     }
 
+    @Override
+    public BooleanParseOptions clone() {
+        return new BooleanParseOptions(this.format);
+    }
+
     /**
      * Sets a new format for the
      * stringification options

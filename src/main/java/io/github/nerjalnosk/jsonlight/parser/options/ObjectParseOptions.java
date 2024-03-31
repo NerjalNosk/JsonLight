@@ -147,6 +147,11 @@ public class ObjectParseOptions extends AbstractParseOptions<JsonObject> {
         ping();
     }
 
+    @Override
+    public ObjectParseOptions clone() {
+        return new ObjectParseOptions(this.format, this.ordered, this.circular, this.lineBreak, this.inLineSingle);
+    }
+
     /**
      * Sets the keys stringification format
      * for the options

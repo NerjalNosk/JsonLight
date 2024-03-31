@@ -30,4 +30,6 @@ public abstract class AbstractParseOptions <T extends JsonElement> {
     public final boolean isChanged() {
         return ping;
     }
+
+    public abstract AbstractParseOptions<T> clone();
 }

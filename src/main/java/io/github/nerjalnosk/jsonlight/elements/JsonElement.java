@@ -660,4 +660,6 @@ public abstract class JsonElement implements Serializable {
         Objects.requireNonNull(stack);
         return stack;
     }
+
+    public abstract JsonElement clone();
 }
