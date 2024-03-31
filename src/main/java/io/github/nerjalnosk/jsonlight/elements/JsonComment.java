@@ -89,7 +89,6 @@ public final class JsonComment extends JsonElement {
         this.value = s;
         if (s != null && s.split("\n").length > 1) {
             this.isBlock = true;
-            this.parseOptions = CommentParseOptions.blockCommentParseOptions(parseOptions.usesIndent(), parseOptions.doesNewlineAsterisk());
             this.lockBlock = true;
         } else this.lockBlock = false;
     }
@@ -108,8 +107,6 @@ public final class JsonComment extends JsonElement {
         if (!block && this.lockBlock)
             throw new UnsupportedOperationException("Multi-line comment cannot be set as non-block");
         isBlock = block;
-        this.parseOptions = new CommentParseOptions(
-                parseOptions.usesIndent(), parseOptions.doesNewlineAsterisk(),block? CommentParseOptions.CommentType.BLOCK : CommentParseOptions.CommentType.LINE);
     }
 
     /**
@@ -130,6 +127,15 @@ public final class JsonComment extends JsonElement {
      */
     public CommentParseOptions getParseOptions() {
         return parseOptions;
+    }
+
+    /**
+     * Sets the comment's stringification options
+     * @param parseOptions the comment's new
+     *                     stringification options
+     */
+    public void setParseOptions(CommentParseOptions parseOptions) {
+        this.parseOptions = parseOptions;
     }
 
     /**
@@ -169,7 +175,7 @@ public final class JsonComment extends JsonElement {
         CommentParseOptions setOptions = (CommentParseOptions) parseSet.getOptions(this.getClass());
         CommentParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
-        if (!this.isBlock) return "//"+this.value;
+        if (!this.isBlock) return "// "+this.value;
         StringBuilder b = new StringBuilder("/*");
         for (String s : this.getSplitValue()) {
             if (s.isEmpty()) continue;

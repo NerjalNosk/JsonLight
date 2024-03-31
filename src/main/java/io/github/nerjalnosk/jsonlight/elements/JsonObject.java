@@ -450,8 +450,10 @@ public class JsonObject extends JsonElement {
                 i.getAndAdd(((JsonObject)map.get(key)).recursivePush((JsonObject) value));
             else {
                 i.getAndIncrement();
-                if (value.isComment())
+                if (value.isComment()) {
                     this.add(key, value);
+                    this.commentSet.add((JsonComment) value);
+                }
                 else this.put(key, value);
             }
         });
