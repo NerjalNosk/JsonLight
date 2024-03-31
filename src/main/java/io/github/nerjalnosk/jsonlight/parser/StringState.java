@@ -5,6 +5,9 @@ import io.github.nerjalnosk.jsonlight.elements.JsonElement;
 import io.github.nerjalnosk.jsonlight.elements.JsonString;
 import io.github.nerjalnosk.jsonlight.parser.options.StringParseOptions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The {@link StringParser} JSON
  * string parsing state class.<br>
@@ -20,6 +23,7 @@ public class StringState extends AbstractState {
     private boolean preIsBackslash = false;
     private final boolean isSingleQuoteString;
     private final StringBuilder val = new StringBuilder();
+    private final Map<String, Integer> unicoded = new HashMap<>();
 
     public StringState(StringParser stringParser, ParserState olderState, boolean isSingleQuote) {
         super(stringParser, olderState);
@@ -79,7 +83,9 @@ public class StringState extends AbstractState {
             code += v;
             i++;
         }
-        this.val.append(Character.toChars(code));
+        char[] c = Character.toChars(code);
+        this.unicoded.putIfAbsent(String.valueOf(c), code);
+        this.val.append(c);
     }
 
     @Override
@@ -142,6 +148,7 @@ public class StringState extends AbstractState {
     @Override
     public JsonElement getElem() {
         return new JsonString(val.toString(),
-                new StringParseOptions(isSingleQuoteString ? StringParseOptions.QuoteFormat.SINGLE_QUOTES : StringParseOptions.QuoteFormat.DOUBLE_QUOTES));
+                new StringParseOptions(isSingleQuoteString ? StringParseOptions.QuoteFormat.SINGLE_QUOTES : StringParseOptions.QuoteFormat.DOUBLE_QUOTES)
+                        .withUnicoded(this.unicoded));
     }
 }

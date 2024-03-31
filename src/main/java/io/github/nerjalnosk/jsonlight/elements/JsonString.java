@@ -140,11 +140,29 @@ public class JsonString extends JsonElement {
 
     @Override
     protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
+        if (this.value == null) return "null";
         StringParseOptions setOptions = (StringParseOptions) parseSet.getOptions(this.getClass());
         StringParseOptions options = parseOptions.isChanged() ? parseOptions :
                 setOptions == null ? parseOptions : setOptions;
         char c = options.usesDoubleQuotes() ? '"' : '\'';
-        return this.value != null ? String.format("%c%s%c",c,this.value,c) : "null";
+        if (this.parseOptions.hasUnicodedEncoded()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(c);
+            int i = 0;
+            while (i < this.value.length()) {
+                String sub = this.value.substring(i, i+2);
+                if (this.parseOptions.isCharUnicoded(sub)) {
+                    builder.append("\\u").append(this.parseOptions.unicodedCode(sub));
+                    i++;
+                } else {
+                    builder.append(sub.charAt(0));
+                }
+                i++;
+            }
+            builder.append(c);
+            return builder.toString();
+        }
+        return  String.format("%c%s%c",c,this.value,c);
     }
 
     @Override

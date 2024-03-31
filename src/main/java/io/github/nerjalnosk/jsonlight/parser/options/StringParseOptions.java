@@ -2,6 +2,9 @@ package io.github.nerjalnosk.jsonlight.parser.options;
 
 import io.github.nerjalnosk.jsonlight.elements.JsonString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>Stringification options for
  * {@link JsonString} elements.
@@ -25,6 +28,7 @@ import io.github.nerjalnosk.jsonlight.elements.JsonString;
  */
 public class StringParseOptions extends AbstractParseOptions<JsonString> {
     private QuoteFormat format;
+    private final Map<String, Integer> unicodedCodes = new HashMap<>();
 
     /**
      * Instantiates new string
@@ -52,7 +56,7 @@ public class StringParseOptions extends AbstractParseOptions<JsonString> {
 
     @Override
     public StringParseOptions clone() {
-        return new StringParseOptions(this.format);
+        return new StringParseOptions(this.format).withUnicoded(this.unicodedCodes);
     }
 
     /**
@@ -99,6 +103,38 @@ public class StringParseOptions extends AbstractParseOptions<JsonString> {
     public void setUseDoubleQuotes() {
         this.format = QuoteFormat.DOUBLE_QUOTES;
         ping();
+    }
+
+    /**
+     * Sets the stringification options to also
+     * included the provided map of unicode
+     * codepoints per char combination.
+     * @param unicodedCodes the map of char
+     *                      combination - codepoint
+     *                      to add to the options
+     * @return this
+     */
+    public StringParseOptions withUnicoded(Map<String, Integer> unicodedCodes) {
+        unicodedCodes.forEach(this.unicodedCodes::putIfAbsent);
+        if (!unicodedCodes.isEmpty()) ping();
+        return this;
+    }
+
+    public boolean isCharUnicoded(String s) {
+        return this.unicodedCodes.containsKey(s);
+    }
+
+    public int unicodedCode(String s) {
+        return this.unicodedCodes.getOrDefault(s, -1);
+    }
+
+    public void addUnicodedCode(String s, int i) {
+        if (i < 0) return;
+        if (this.unicodedCodes.putIfAbsent(s, i) != null) ping();
+    }
+
+    public boolean hasUnicodedEncoded() {
+        return !this.unicodedCodes.isEmpty();
     }
 
     /**
