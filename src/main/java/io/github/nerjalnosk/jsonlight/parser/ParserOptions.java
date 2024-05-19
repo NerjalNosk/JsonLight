@@ -101,7 +101,7 @@ public class ParserOptions {
          * Builds the configured parser options.
          * @return the configured parser options.
          */
-        ParserOptions build() {
+        public ParserOptions build() {
             return new ParserOptions(this.j5, this.circ, this.close, this.line, this.rootC, uni);
         }
 
@@ -112,7 +112,7 @@ public class ParserOptions {
          * and line break iterable split.
          * @return this
          */
-        Builder classic() {
+        public Builder classic() {
             this.circ = false;
             this.close = false;
             this.line = false;
@@ -126,7 +126,7 @@ public class ParserOptions {
          * and line break iterable split.
          * @return this
          */
-        Builder extended() {
+        public Builder extended() {
             this.circ = true;
             this.close = true;
             this.line = true;
@@ -139,7 +139,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#json5
          */
-        Builder json5() {
+        public Builder json5() {
             this.j5 = true;
             return this;
         }
@@ -151,7 +151,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#json5
          */
-        Builder json4() {
+        public Builder json4() {
             this.j5 = false;
             return this;
         }
@@ -165,7 +165,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#rootComment
          */
-        Builder rootComment() {
+        public Builder rootComment() {
             this.rootC = true;
             return this;
         }
@@ -177,7 +177,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#rootComment
          */
-        Builder noRootComment() {
+        public Builder noRootComment() {
             this.rootC = false;
             return this;
         }
@@ -188,7 +188,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#circular
          */
-        Builder circular() {
+        public Builder circular() {
             this.circ = true;
             return this;
         }
@@ -199,7 +199,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#circular
          */
-        Builder noCircular() {
+        public Builder noCircular() {
             this.circ = false;
             return this;
         }
@@ -211,7 +211,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#autoClose
          */
-        Builder autoClose() {
+        public Builder autoClose() {
             this.close = true;
             return this;
         }
@@ -223,7 +223,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#autoClose
          */
-        Builder noAutoClose() {
+        public Builder noAutoClose() {
             this.close = false;
             return this;
         }
@@ -236,7 +236,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#lineIter
          */
-        Builder lineIter() {
+        public Builder lineIter() {
             this.line = true;
             return this;
         }
@@ -248,7 +248,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#lineIter
          */
-        Builder noLineIter() {
+        public Builder noLineIter() {
             this.line = false;
             return this;
         }
@@ -261,7 +261,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#parseUnicode
          */
-        Builder unicodeParse() {
+        public Builder unicodeParse() {
             this.uni = true;
             return this;
         }
@@ -274,7 +274,7 @@ public class ParserOptions {
          * @return this
          * @see ParserOptions#parseUnicode
          */
-        Builder noUnicodeParse() {
+        public Builder noUnicodeParse() {
             this.uni = false;
             return this;
         }
