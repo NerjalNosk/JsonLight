@@ -241,6 +241,28 @@ public abstract class JsonElement implements Serializable {
     }
 
     /**
+     * Gives off the byte value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The byte value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public byte getAsByte() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("Byte");
+    }
+
+    /**
+     * Gives off the short value of the element.<br>
+     * It is only valid for {@link JsonNumber} elements
+     * @return The short value of the element
+     * @throws JsonError.JsonElementTypeException if the element doesn't
+     *         have a numeral value
+     */
+    public short getAsShort() throws JsonError.JsonElementTypeException {
+        throw buildTypeError("Short");
+    }
+
+    /**
      * Gives off the integer value of the element.<br>
      * It is only valid for {@link JsonNumber} elements
      * @return The integer value of the element

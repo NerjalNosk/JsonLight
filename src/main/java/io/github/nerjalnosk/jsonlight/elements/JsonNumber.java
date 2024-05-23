@@ -199,6 +199,16 @@ public class JsonNumber extends JsonElement {
     public Number getAsNumber() {
         return this.value;
     }
+
+    @Override
+    public byte getAsByte() {
+        return this.value.byteValue();
+    }
+
+    @Override
+    public short getAsShort() {
+        return this.value.shortValue();
+    }
     @Override
     public int getAsInt() {
         return this.value.intValue();
