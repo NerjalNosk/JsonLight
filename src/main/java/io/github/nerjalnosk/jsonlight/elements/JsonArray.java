@@ -5,6 +5,8 @@ import io.github.nerjalnosk.jsonlight.JsonError.RecursiveJsonElementException;
 import io.github.nerjalnosk.jsonlight.parser.options.ArrayParseOptions;
 import io.github.nerjalnosk.jsonlight.parser.options.ParseSet;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -499,14 +501,121 @@ public class JsonArray extends JsonElement implements Iterable<JsonElement> {
     public boolean isJsonArray() {
         return true;
     }
+
+    @Override
+    public boolean isBoolean() {
+        return this.size() > 0 && this.get(0).isBoolean();
+    }
+
+    @Override
+    public boolean isNumber() {
+        return this.size() > 0 && this.get(0).isNumber();
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return this.size() > 0 && this.get(0).isPrimitive();
+    }
+
+    @Override
+    public boolean isString() {
+        return this.size() > 0 && this.get(0).isString();
+    }
+
     @Override
     public String typeToString() {
         return "Array";
     }
+
+    @Override
+    public boolean getAsBoolean() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isBoolean()) return this.getBoolean(0);
+        return super.getAsBoolean();
+    }
+
+    @Override
+    public byte getAsByte() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsByte();
+        return super.getAsByte();
+    }
+
+    @Override
+    public short getAsShort() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsShort();
+        return super.getAsShort();
+    }
+
+    @Override
+    public int getAsInt() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsInt();
+        return super.getAsInt();
+    }
+
+    @Override
+    public long getAsLong() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsLong();
+        return super.getAsLong();
+    }
+
+    @Override
+    public float getAsFloat() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsFloat();
+        return super.getAsFloat();
+    }
+
+    @Override
+    public double getAsDouble() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsDouble();
+        return super.getAsDouble();
+    }
+
+    @Override
+    public BigInteger getAsBigInt() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsBigInt();
+        return super.getAsBigInt();
+    }
+
+    @Override
+    public BigDecimal getAsBigDecimal() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsBigDecimal();
+        return super.getAsBigDecimal();
+    }
+
+    @Override
+    public Number getAsNumber() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsNumber();
+        return super.getAsNumber();
+    }
+
+    @Override
+    public JsonNumber getAsJsonNumber() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isNumber()) return this.get(0).getAsJsonNumber();
+        return super.getAsJsonNumber();
+    }
+
+    @Override
+    public String getAsString() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isString()) return this.get(0).getAsString();
+        return super.getAsString();
+    }
+
+    @Override
+    public JsonString getAsJsonString() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isString()) return this.get(0).getAsJsonString();
+        return super.getAsJsonString();
+    }
+
     @Override
     public JsonArray getAsJsonArray() {
         return this;
     }
+
+    @Override
+    public JsonObject getAsJsonObject() throws JsonError.JsonElementTypeException {
+        if (this.size() > 0 && this.get(0).isJsonObject()) return this.getObject(0);
+        return super.getAsJsonObject();
+    }
+
     @Override
     protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack)
             throws RecursiveJsonElementException {
