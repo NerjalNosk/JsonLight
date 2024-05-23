@@ -27,12 +27,13 @@ import java.util.function.UnaryOperator;
  * </p>
  * @author nerjal
  */
-public class JsonObject extends JsonElement {
+public class JsonObject extends JsonElement implements Iterable<JsonObject.JsonNode> {
     private final Map<String,JsonElement> map;
     private final transient Set<JsonNode> nodeSet;
     private final Set<JsonComment> commentSet;
     private final transient List<JsonNode> orderList;
     private transient ObjectParseOptions parseOptions;
+    protected transient int modCount = 0;
 
     /**
      * An empty JsonObject with default stringification options
@@ -198,6 +199,7 @@ public class JsonObject extends JsonElement {
         this.nodeSet.add(node);
         this.orderList.add(node);
         for (JsonComment comment : element.getRootComments()) this.add(null, comment);
+        this.modCount++;
         return true;
     }
 
@@ -249,6 +251,7 @@ public class JsonObject extends JsonElement {
         JsonElement e = map.remove(newKey);
         this.orderList.removeIf(node -> (node.key.equals(newKey) && node.value == e));
         this.map.put(newKey, this.map.remove(key));
+        this.modCount++;
         return e;
     }
 
@@ -258,8 +261,13 @@ public class JsonObject extends JsonElement {
      * Use {@link #add} to add comments
      * @param key the key to add or edit an entry for
      * @param element the value to associate to the key
+     * @throws UnsupportedOperationException if the given
+     *         element is a comment
      */
     public void put(String key, JsonElement element) {
+        if (element.isComment()) {
+            throw new UnsupportedOperationException("use #add method to add comments");
+        }
         boolean b = this.map.containsKey(key);
         JsonNode node = new JsonNode(key, element, this);
         this.map.put(key, element);
@@ -268,6 +276,7 @@ public class JsonObject extends JsonElement {
         if (!b) this.orderList.add(node);
         for (JsonComment comment : element.getRootComments()) this.add(null, comment);
         element.clearRootComment();
+        this.modCount++;
     }
 
     /**
@@ -286,8 +295,11 @@ public class JsonObject extends JsonElement {
      * @param value the value to put in the place of the old one
      * @throws NullPointerException if the JsonObject has been
      *         modified between iterations
+     * @throws UnsupportedOperationException if the given element
+     *         is a comment.
      */
     private void nodeSetValue(String key, JsonElement value) throws NullPointerException {
+        if (value.isComment()) throw new UnsupportedOperationException("Cannot use nodeSetValue with comments");
         if (!this.contains(key)) throw new NullPointerException("No such entry in the object");
         this.map.put(key, value);
     }
@@ -312,6 +324,7 @@ public class JsonObject extends JsonElement {
             });
             else this.nodeSet.remove(new JsonNode(key,j, this));
             this.orderList.removeIf(node -> node.key.equals(key));
+            this.modCount++;
             return j;
         } catch (NullPointerException e) {
             throw new JsonError.ChildNotFoundException("");
@@ -331,6 +344,7 @@ public class JsonObject extends JsonElement {
             if (j.isComment()) this.commentSet.removeIf(e -> e.hashCode() == j.hashCode());
             else this.nodeSet.remove(new JsonNode(key, j, this));
             this.orderList.removeIf(node -> node.key.equals(key) && node.value == j);
+            this.modCount++;
         }
         return b;
     }
@@ -355,6 +369,7 @@ public class JsonObject extends JsonElement {
                 if (e.isComment())
                     commentSet.remove(e);
                 orderList.removeIf(node -> node.key.equals(key));
+                this.modCount++;
             } catch (JsonError.ChildNotFoundException ignored) {
                 // ignored
             }
@@ -374,6 +389,7 @@ public class JsonObject extends JsonElement {
         this.nodeSet.clear();
         this.commentSet.clear();
         this.orderList.clear();
+        this.modCount++;
     }
 
     /**
@@ -388,6 +404,7 @@ public class JsonObject extends JsonElement {
         object.forEach((key, value) -> {
             i.incrementAndGet();
             this.put(key, value);
+            this.modCount++;
         });
         return i.get();
     }
@@ -410,6 +427,7 @@ public class JsonObject extends JsonElement {
                 i.incrementAndGet();
                 this.put(key, value);
             }
+            this.modCount++;
         });
         return i.get();
     }
@@ -452,10 +470,10 @@ public class JsonObject extends JsonElement {
                 i.getAndIncrement();
                 if (value.isComment()) {
                     this.add(key, value);
-                    this.commentSet.add((JsonComment) value);
                 }
                 else this.put(key, value);
             }
+            this.modCount++;
         });
         return i.get();
     }
@@ -679,6 +697,61 @@ public class JsonObject extends JsonElement {
     public void forAllComments(Consumer<JsonComment> action) {
         Objects.requireNonNull(action);
         this.commentSet.forEach(action);
+    }
+
+    //TODO Jdoc
+    @Override
+    public Iterator<JsonNode> iterator() {
+        return new SimpleJObjectIterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super JsonNode> action) {
+        Iterable.super.forEach(action);
+    }
+
+    public class SimpleJObjectIterator implements Iterator<JsonNode> {
+        /**
+         * The modCount value that the iterator believes
+         * that the backing Map should have. If this
+         * expectation is violated, the iterator has
+         * detected concurrent modification.
+         */
+        int expectedModCount = modCount;
+        String lastKey = null;
+        Iterator<JsonNode> backSet = entrySet().iterator();
+
+        @Override
+        public boolean hasNext() {
+            checkForComodification();
+            return this.backSet.hasNext();
+        }
+
+        @Override
+        public JsonNode next() {
+            checkForComodification();
+            JsonNode node = this.backSet.next();
+            this.lastKey = node.key;
+            return node;
+        }
+
+        @Override
+        public void remove() {
+            if (this.lastKey == null) {
+                throw new UnsupportedOperationException();
+            }
+            checkForComodification();
+            try {
+                JsonObject.this.remove(lastKey);
+            } catch (JsonError.ChildNotFoundException e) {
+                throw new ConcurrentModificationException(e);
+            }
+        }
+
+        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }
     }
 
     /**
