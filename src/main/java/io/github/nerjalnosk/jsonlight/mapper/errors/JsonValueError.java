@@ -7,8 +7,8 @@ import io.github.nerjalnosk.jsonlight.mapper.JsonMapper;
  * {@link JsonMapper} error for Enum handling.
  * Thrown when no constant matches the specified name.
  */
-public class JsonValueError extends Exception {
+public class JsonValueError extends JsonMapperError {
     public JsonValueError(JsonString string, Class<?> target) {
-        super("JSON " + string.getAsString() + "is not a " + target.getName() + " value;");
+        super("Not a name of enum " + target.getName(), string);
     }
 }
