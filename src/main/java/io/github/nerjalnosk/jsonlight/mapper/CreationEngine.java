@@ -1,16 +1,24 @@
 package io.github.nerjalnosk.jsonlight.mapper;
 
 import io.github.nerjalnosk.jsonlight.elements.*;
+import io.github.nerjalnosk.jsonlight.mapper.annotations.JsonInstanceProvider;
+import io.github.nerjalnosk.jsonlight.mapper.errors.JsonMapperError;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 final class CreationEngine {
     private CreationEngine() {}
+
+    private static CreationException impossibleBuildError(Class<?> c, Exception e) {
+        return new CreationException("Cannot build an instance of "+c,e);
+    }
+
+    private static CreationException noBuilderError(Class<?> c, Class<?> c2, String s, Exception e) {
+        return new CreationException("Couldn't find a matching builder " + s + " for " + c + " in " + c2, e);
+    }
 
     public static <U, T extends List<U>> T createList(Class<T> listClass, JsonArray values) throws CreationException {
         List<?> list = null;
@@ -68,6 +76,125 @@ final class CreationEngine {
             oMap.put(node.getKey(), getEncapsulated(node.getValue()));
         }
         return mapClass.cast(map);
+    }
+
+    public static <T> T createInstance(Class<T> targetClass, JsonElement element) throws CreationException, JsonMapperError {
+        T instance;
+        if (targetClass.isAnnotationPresent(JsonInstanceProvider.class)) {
+            JsonInstanceProvider provider = targetClass.getAnnotation(JsonInstanceProvider.class);
+            Class<?> clazz = provider.clazz();
+            if (clazz == null) {
+                clazz = targetClass;
+            }
+            String name = provider.builder().trim();
+            if (provider.autoMapping()) {
+                if (!name.isEmpty()) {
+                    instance = instantiateWith(targetClass, clazz, name, provider.nullableArgs());
+                } else {
+                    instance = instantiate(targetClass, clazz, provider.nullableArgs());
+                }
+                // TODO:1 auto map out from Json
+            } else if (name.isEmpty()) {
+                instance = build(targetClass, clazz, element, provider.nullableArgs());
+            } else {
+                instance = buildWith(targetClass, clazz, element, name, provider.nullableArgs());
+            }
+        } else {
+            instance = instantiate(targetClass, targetClass, new Class[]{});
+            // TODO:1 auto map out from JSON
+        }
+        return instance;
+    }
+
+    private static <T> T instantiate(Class<T> targetClass, Class<?> builderClass, Class<?>[] nArgs) throws CreationException {
+        if (builderClass != targetClass && !targetClass.isAssignableFrom(builderClass)) {
+            throw new CreationException("Cannot instantiate " + targetClass + " from a " + builderClass + " constructor");
+        }
+        try {
+            Object[] args = Arrays.copyOf(new Object[]{}, nArgs.length);
+            return targetClass.cast(builderClass.getDeclaredConstructor(nArgs).newInstance(args));
+        } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
+            throw impossibleBuildError(targetClass, e);
+        }
+    }
+
+    private static <T> T instantiateWith(Class<T> targetClass, Class<?> builderClass, String builderName, Class<?>[] nArgs) throws CreationException {
+        //
+        if (builderClass != targetClass && !targetClass.isAssignableFrom(builderClass)) {
+            throw new CreationException("Cannot instantiate " + targetClass + " from a " + builderClass + " constructor");
+        }
+        try {
+            Method m = builderClass.getDeclaredMethod(builderName, nArgs);
+            if ((!m.getReturnType().isAssignableFrom(targetClass)) || !Modifier.isStatic(m.getModifiers())) {
+                throw noBuilderError(targetClass, builderClass, builderName, null);
+            }
+            Object[] args = Arrays.copyOf(new Object[]{}, nArgs.length);
+            return targetClass.cast(m.invoke(null, args));
+        } catch (NoSuchMethodException e) {
+            throw noBuilderError(targetClass, builderClass, builderName, e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw impossibleBuildError(targetClass, e);
+        }
+    }
+
+    private static <T> T build(Class<T> targetClass, Class<?> builderClass, JsonElement element, Class<?>[] nArgs) throws CreationException {
+        if (builderClass != targetClass && !targetClass.isAssignableFrom(builderClass)) {
+            throw new CreationException("Cannot instantiate " + targetClass + " from a " + builderClass + " constructor");
+        }
+        try {
+            Object[] args = Arrays.copyOf(new Object[]{element}, nArgs.length+1);
+            Class<?>[] cArgs = Arrays.copyOf(new Class<?>[]{element.getClass()}, nArgs.length+1);
+            System.arraycopy(nArgs, 0, cArgs, 1, nArgs.length);
+            return targetClass.cast(builderClass.getDeclaredConstructor(cArgs).newInstance(args));
+        } catch (NoSuchMethodException ignored) {
+            // ignored in case element parameter is located at the end
+        } catch (InvocationTargetException|InstantiationException|IllegalAccessException e) {
+            throw impossibleBuildError(targetClass, e);
+        }
+        try {
+            Object[] args = Arrays.copyOf(new Object[]{}, nArgs.length+1);
+            args[nArgs.length] = element;
+            Class<?>[] cArgs = Arrays.copyOf(nArgs, nArgs.length+1);
+            cArgs[nArgs.length] = element.getClass();
+            return targetClass.cast(builderClass.getDeclaredConstructor(cArgs).newInstance(args));
+        } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
+            throw impossibleBuildError(targetClass, e);
+        }
+    }
+
+    private static <T> T buildWith(Class<T> targetClass, Class<?> builderClass, JsonElement element,
+                                   String builderName, Class<?>[] nArgs) throws CreationException {
+        Method method = null;
+        Object[] args = null;
+        try {
+            args = Arrays.copyOf(new Object[]{element}, nArgs.length+1);
+            Class<?>[] cArgs = Arrays.copyOf(new Class<?>[]{element.getClass()}, nArgs.length+1);
+            System.arraycopy(nArgs, 0, cArgs, 1, nArgs.length);
+            Method m = builderClass.getDeclaredMethod(builderName, cArgs);
+            if (m.getReturnType().isAssignableFrom(targetClass) && Modifier.isStatic(m.getModifiers())) method = m;
+        } catch (NoSuchMethodException e) {
+            // ignored in case element parameter is located at the end
+        }
+        if (method == null) {
+            try {
+                args = Arrays.copyOf(new Object[]{}, nArgs.length + 1);
+                args[nArgs.length] = element;
+                Class<?>[] cArgs = Arrays.copyOf(nArgs, nArgs.length + 1);
+                cArgs[nArgs.length] = element.getClass();
+                Method m = builderClass.getDeclaredMethod(builderName, cArgs);
+                if (m.getReturnType().isAssignableFrom(targetClass) && Modifier.isStatic(m.getModifiers())) method = m;
+            } catch (NoSuchMethodException e) {
+                throw noBuilderError(targetClass, builderClass, builderName, e);
+            }
+        }
+        if (method == null) {
+            throw noBuilderError(targetClass, builderClass, builderName, null);
+        }
+        try {
+            return targetClass.cast(method.invoke(null, args));
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw impossibleBuildError(targetClass, e);
+        }
     }
 
     static Object getEncapsulated(JsonElement element) throws CreationException {
