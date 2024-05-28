@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface JsonIgnore {
+    boolean fromJson() default true;
+    boolean toJson() default true;
 }

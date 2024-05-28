@@ -266,7 +266,7 @@ public class JsonMapper {
                     name = elem.value();
                 }
 
-                if (element.isString() && element.typeToString().equals("null") & !required)
+                if (element.isString() && element == JsonString.NULL && !required)
                     return null;
 
                 try {
@@ -282,7 +282,7 @@ public class JsonMapper {
                                 if (field.get(instance) == null)
                                     throw new JsonValueError((JsonString) element, target);
                             } else
-                                throw new JsonMapperFieldRequiredError(name);
+                                throw new JsonMapperFieldRequiredError(name, null);
                         }
                         continue;
                     }

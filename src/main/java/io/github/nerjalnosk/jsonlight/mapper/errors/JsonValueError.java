@@ -11,4 +11,8 @@ public class JsonValueError extends JsonMapperError {
     public JsonValueError(JsonString string, Class<?> target) {
         super("Not a name of enum " + target.getName(), string);
     }
+
+    public JsonValueError(String name, Class<?> target) {
+        super("No value in enum "+target+" for default "+name, null);
+    }
 }

@@ -197,6 +197,63 @@ final class CreationEngine {
         }
     }
 
+    private static <T> void fieldMap(Class<T> targetClass, T instance, JsonElement element)
+            throws JsonMapperError, JsonError.JsonElementTypeException, JsonError.JsonMappingException {
+        if (!element.isJsonObject()) {
+            throw new JsonMapperTypeError("Cannot parse object from " + element.typeToString(), element);
+        }
+        JsonObject object = element.getAsJsonObject();
+        Set<Field> postInit = new HashSet<>();
+
+        for (Field field : getAllFields(new LinkedList<>(), targetClass)) {
+            if (field.isAnnotationPresent(JsonIgnore.class) && field.getAnnotation(JsonIgnore.class).fromJson()) {
+                continue;
+            }
+
+            boolean a = field.isAccessible();
+            field.setAccessible(true);
+
+            boolean req = field.isAnnotationPresent(JsonRequired.class);
+            boolean ign = field.isAnnotationPresent(JsonIgnoreExceptions.class);
+            String name = field.getName();
+            if (field.isAnnotationPresent(JsonNode.class)) {
+                JsonNode elem = field.getAnnotation(JsonNode.class);
+                req |= elem.required();
+                ign |= elem.ignoreExceptions();
+                name = elem.value();
+            }
+
+            try {
+                if (!object.contains(name)) {
+                    if (req) {
+                        // enum default
+                        if (field.getType().isEnum() && field.isAnnotationPresent(JsonEnumDefault.class)) {
+                            JsonEnumDefault enumDefault = field.getAnnotation(JsonEnumDefault.class);
+                            for (Object o : field.getType().getEnumConstants()) {
+                                if (((Enum<?>) o).name().equalsIgnoreCase(enumDefault.value())) {
+                                    field.set(instance, o);
+                                    break;
+                                }
+                            }
+                            if (field.get(instance) == null) {
+                                throw new JsonValueError(name, field.getType());
+                            }
+                        }
+                        // default provider
+                        throw new JsonMapperFieldRequiredError(name, object);
+                    }
+                    continue;
+                }
+                // JsonInstanceProvider
+                // default parse
+            } catch (IllegalAccessException e) {
+                throw new JsonError.JsonMappingException(e);
+            } finally {
+                field.setAccessible(a);
+            }
+        }
+    }
+
     static Object getEncapsulated(JsonElement element) throws CreationException {
         if (element == JsonString.NULL) {
             return null;
@@ -219,6 +276,22 @@ final class CreationEngine {
         }
         JsonObject object = (JsonObject) element;
         return createMap(Map.class, object);
+    }
+
+    /**
+     * Gets all class fields including superclass fields unless {@link JsonSkipSuperclass} is present
+     * @param fields - list of fields
+     * @param type - class type
+     * @return expanded list of fields
+     */
+    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null && !type.isAnnotationPresent(JsonSkipSuperclass.class)) {
+            getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
     }
 
     public static class CreationException extends Exception {

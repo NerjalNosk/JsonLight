@@ -93,7 +93,7 @@ public class JsonUnmapper {
             }
 
             try {
-                if (field.get(object) == null && nonNull) throw new JsonMapperFieldRequiredError(field.getName());
+                if (field.get(object) == null && nonNull) throw new JsonMapperFieldRequiredError(field.getName(), null);
                 obj.put(name, serialize(field.get(object), stack));
             } catch (IllegalAccessException | JsonMapperFieldRequiredError e) {
                 throw new JsonError.JsonMappingException(e);
