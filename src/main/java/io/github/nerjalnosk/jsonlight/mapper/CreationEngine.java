@@ -315,6 +315,10 @@ final class CreationEngine {
             }
         }
         // postInit
+        for (Field field : postInit) {
+            if (!field.isAnnotationPresent(JsonDefaultProvider.class)) continue;
+            resolveDefaultProvider(field, field.getAnnotation(JsonDefaultProvider.class), instance, element);
+        }
     }
 
     private static <T> void resolveDefaultProvider(Field f, JsonDefaultProvider defaultProvider, T instance, JsonElement element) throws CreationException {
