@@ -7,7 +7,6 @@ import io.github.nerjalnosk.jsonlight.elements.JsonObject;
 import io.github.nerjalnosk.jsonlight.elements.JsonString;
 import io.github.nerjalnosk.jsonlight.mapper.annotations.*;
 import io.github.nerjalnosk.jsonlight.mapper.errors.*;
-import io.github.nerjalnosk.jsonlight.mapper.annotations.*;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -82,10 +81,10 @@ public class JsonMapper {
         return map(element, target, new HashSet<>());
     }
 
-    private static <T> T map(JsonElement element, Class<T> target, Map<Integer, T> map)
-            throws JsonCastingError, JsonElementTypeException, CreationEngine.CreationException, JsonMapperError {
+    static <T> T map(JsonElement element, Class<T> target, Map<Integer, ?> map)
+            throws JsonCastingError, JsonElementTypeException, JsonMapperError, JsonMappingException, CreationException {
         int hash = element.hashCode();
-        if (map.containsKey(hash)) return map.get(hash);
+        if (map.containsKey(hash)) return target.cast(map.get(hash));
 
         // == primitives ==
         // numbers
@@ -140,7 +139,7 @@ public class JsonMapper {
             if (!element.isJsonObject()) throw new JsonCastingError(element, target);
             return target.cast(CreationEngine.createMap((Class<? extends Map<String,?>>) target, (JsonObject) element));
         }
-        return classMap(target, element);
+        return CreationEngine.createInstance(target, element, map);
     }
 
     @SuppressWarnings("unchecked")

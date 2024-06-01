@@ -1,15 +1,13 @@
 package io.github.nerjalnosk.jsonlight.mapper.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Flag a field be referenced by another name in the JSON.
  * Optionally specify if mapper should halt if field not present (see {@link JsonRequired})
  * @author CodedSakura
  */
+@Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonNode {
@@ -27,4 +25,12 @@ public @interface JsonNode {
      * Whether cast/value exceptions occurring during mapping should be ignored
      */
     boolean ignoreExceptions() default false;
+
+    /**
+     * Defines the field's mapping order
+     * (i.e. mapping priority, starting from 0 going up)
+     * All negative value will be ignored.
+     * @see JsonFieldOrder
+     */
+    int order() default -1;
 }

@@ -1,9 +1,11 @@
 package io.github.nerjalnosk.jsonlight.mapper;
 
+import io.github.nerjalnosk.jsonlight.JsonError;
 import io.github.nerjalnosk.jsonlight.elements.*;
-import io.github.nerjalnosk.jsonlight.mapper.annotations.JsonInstanceProvider;
-import io.github.nerjalnosk.jsonlight.mapper.errors.JsonMapperError;
+import io.github.nerjalnosk.jsonlight.mapper.annotations.*;
+import io.github.nerjalnosk.jsonlight.mapper.errors.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,10 +19,15 @@ final class CreationEngine {
     }
 
     private static CreationException noBuilderError(Class<?> c, Class<?> c2, String s, Exception e) {
-        return new CreationException("Couldn't find a matching builder " + s + " for " + c + " in " + c2, e);
+        return noBuilderError(c, c2, s, e, false);
     }
 
-    public static <U, T extends List<U>> T createList(Class<T> listClass, JsonArray values) throws CreationException {
+    private static CreationException noBuilderError(Class<?> c, Class<?> c2, String s, Exception e, boolean field) {
+        return new CreationException("Couldn't find a matching builder " + s + " for " + (field ? "field " : "") + c + " in " + c2, e);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <U, T extends List<U>> T createList(Class<T> listClass, JsonArray values) throws CreationException {
         List<?> list = null;
         if (listClass == List.class) {
             list = new ArrayList<>();
@@ -49,7 +56,8 @@ final class CreationEngine {
         return listClass.cast(list);
     }
 
-    public static <U, T extends Map<String, U>> T createMap(Class<T> mapClass, JsonObject object) throws CreationException {
+    @SuppressWarnings("unchecked")
+    static <U, T extends Map<String, U>> T createMap(Class<T> mapClass, JsonObject object) throws CreationException {
         Map<String, ?> map = null;
         if (mapClass == Map.class) {
             map = new HashMap<>();
@@ -78,30 +86,38 @@ final class CreationEngine {
         return mapClass.cast(map);
     }
 
-    public static <T> T createInstance(Class<T> targetClass, JsonElement element) throws CreationException, JsonMapperError {
+    static <T> T createInstance(Class<T> targetClass, JsonElement element, Map<Integer, ?> map)
+            throws CreationException, JsonMapperError, JsonError.JsonElementTypeException, JsonError.JsonMappingException {
         T instance;
         if (targetClass.isAnnotationPresent(JsonInstanceProvider.class)) {
             JsonInstanceProvider provider = targetClass.getAnnotation(JsonInstanceProvider.class);
-            Class<?> clazz = provider.clazz();
-            if (clazz == null) {
-                clazz = targetClass;
-            }
-            String name = provider.builder().trim();
-            if (provider.autoMapping()) {
-                if (!name.isEmpty()) {
-                    instance = instantiateWith(targetClass, clazz, name, provider.nullableArgs());
-                } else {
-                    instance = instantiate(targetClass, clazz, provider.nullableArgs());
-                }
-                // TODO:1 auto map out from Json
-            } else if (name.isEmpty()) {
-                instance = build(targetClass, clazz, element, provider.nullableArgs());
-            } else {
-                instance = buildWith(targetClass, clazz, element, name, provider.nullableArgs());
-            }
+            instance = computeProvider(targetClass, provider, element, map);
         } else {
             instance = instantiate(targetClass, targetClass, new Class[]{});
-            // TODO:1 auto map out from JSON
+            fieldMap(targetClass, instance, element, map);
+        }
+        return instance;
+    }
+
+    private static <T> T computeProvider(Class<T> targetClass, JsonInstanceProvider provider, JsonElement element, Map<Integer, ?> map)
+            throws CreationException, JsonError.JsonElementTypeException, JsonError.JsonMappingException, JsonMapperError {
+        Class<?> clazz = provider.clazz();
+        if (clazz == JsonInstanceProvider.class) {
+            clazz = targetClass;
+        }
+        String name = provider.builder().trim();
+        T instance;
+        if (provider.autoMapping()) {
+            if (name.isEmpty()) {
+                instance = instantiate(targetClass, clazz, provider.nullableArgs());
+            } else {
+                instance = instantiateWith(targetClass, clazz, name, provider.nullableArgs());
+            }
+            fieldMap(targetClass, instance, element, map);
+        } else if (name.isEmpty()) {
+            instance = build(targetClass, clazz, element, provider.nullableArgs());
+        } else {
+            instance = buildWith(targetClass, clazz, element, name, provider.nullableArgs());
         }
         return instance;
     }
@@ -197,15 +213,37 @@ final class CreationEngine {
         }
     }
 
-    private static <T> void fieldMap(Class<T> targetClass, T instance, JsonElement element)
-            throws JsonMapperError, JsonError.JsonElementTypeException, JsonError.JsonMappingException {
+    private static int fieldPriority(Field f) {
+        if (f.isAnnotationPresent(JsonFieldOrder.class)) {
+            JsonFieldOrder fieldOrder = f.getAnnotation(JsonFieldOrder.class);
+            if (fieldOrder.value() >= 0) return fieldOrder.value();
+        }
+        if (f.isAnnotationPresent(JsonNode.class)) {
+            JsonNode node = f.getAnnotation(JsonNode.class);
+            if (node.order() >= 0) return node.order();
+        }
+        return 0;
+    }
+
+    private static int fieldComparator(Field f1, Field f2) {
+        int i1 = fieldPriority(f1);
+        int i2 = fieldPriority(f2);
+        if (i1 == i2) return f1.getName().compareTo(f2.getName());
+        return -Integer.compare(i1, i2);
+    }
+
+    private static <T> void fieldMap(Class<T> targetClass, T instance, JsonElement element, Map<Integer, ?> map)
+            throws JsonMapperError, JsonError.JsonElementTypeException, JsonError.JsonMappingException, CreationException {
         if (!element.isJsonObject()) {
             throw new JsonMapperTypeError("Cannot parse object from " + element.typeToString(), element);
         }
         JsonObject object = element.getAsJsonObject();
-        Set<Field> postInit = new HashSet<>();
+        List<Field> postInit = new ArrayList<>();
 
-        for (Field field : getAllFields(new LinkedList<>(), targetClass)) {
+        List<Field> fields = getAllFields(new LinkedList<>(), targetClass);
+        fields.sort(CreationEngine::fieldComparator);
+
+        for (Field field : fields) {
             if (field.isAnnotationPresent(JsonIgnore.class) && field.getAnnotation(JsonIgnore.class).fromJson()) {
                 continue;
             }
@@ -214,43 +252,91 @@ final class CreationEngine {
             field.setAccessible(true);
 
             boolean req = field.isAnnotationPresent(JsonRequired.class);
-            boolean ign = field.isAnnotationPresent(JsonIgnoreExceptions.class);
+            boolean ignoreAll = field.isAnnotationPresent(JsonIgnoreExceptions.class);
             String name = field.getName();
             if (field.isAnnotationPresent(JsonNode.class)) {
                 JsonNode elem = field.getAnnotation(JsonNode.class);
                 req |= elem.required();
-                ign |= elem.ignoreExceptions();
+                ignoreAll |= elem.ignoreExceptions();
                 name = elem.value();
             }
+
+            Class<?> type = field.getType();
 
             try {
                 if (!object.contains(name)) {
                     if (req) {
                         // enum default
-                        if (field.getType().isEnum() && field.isAnnotationPresent(JsonEnumDefault.class)) {
+                        if (type.isEnum() && field.isAnnotationPresent(JsonEnumDefault.class)) {
                             JsonEnumDefault enumDefault = field.getAnnotation(JsonEnumDefault.class);
-                            for (Object o : field.getType().getEnumConstants()) {
+                            for (Object o : type.getEnumConstants()) {
                                 if (((Enum<?>) o).name().equalsIgnoreCase(enumDefault.value())) {
                                     field.set(instance, o);
                                     break;
                                 }
                             }
                             if (field.get(instance) == null) {
-                                throw new JsonValueError(name, field.getType());
+                                throw new JsonValueError(name, type);
                             }
+                            continue;
                         }
                         // default provider
+                        if (field.isAnnotationPresent(JsonDefaultProvider.class)) {
+                            JsonDefaultProvider defaultProvider = field.getAnnotation(JsonDefaultProvider.class);
+                            if (defaultProvider.postInit()) {
+                                postInit.add(field);
+                            } else {
+                                resolveDefaultProvider(field, defaultProvider, instance, element);
+                            }
+                            continue;
+                        }
                         throw new JsonMapperFieldRequiredError(name, object);
                     }
                     continue;
                 }
+                JsonElement sub = object.get(name);
                 // JsonInstanceProvider
+                if (field.isAnnotationPresent(JsonInstanceProvider.class)) {
+                    JsonInstanceProvider instanceProvider = field.getAnnotation(JsonInstanceProvider.class);
+                    field.set(instance, computeProvider(type, instanceProvider, sub, map));
+                    continue;
+                }
                 // default parse
-            } catch (IllegalAccessException e) {
-                throw new JsonError.JsonMappingException(e);
+                field.set(instance, JsonMapper.map(sub, type, map));
+            } catch (IllegalAccessException|JsonError.ChildNotFoundException e) {
+                //TODO ignore specific errors errors
+                if (!ignoreAll) throw new JsonError.JsonMappingException(e);
+            } catch (IllegalArgumentException e) {
+                throw new JsonMapperTypeError(e, element);
+            } catch (JsonCastingError e) {
+                throw new RuntimeException(e);
             } finally {
                 field.setAccessible(a);
             }
+        }
+        // postInit
+    }
+
+    private static <T> void resolveDefaultProvider(Field f, JsonDefaultProvider defaultProvider, T instance, JsonElement element) throws CreationException {
+        Class<?> clazz = defaultProvider.clazz();
+        if (clazz == JsonDefaultProvider.class) {
+            clazz = instance.getClass();
+        }
+        String name = defaultProvider.value().trim();
+        Method m = null;
+        boolean b = true;
+        try {
+            m = clazz.getDeclaredMethod(name, element.getClass());
+            b = m.isAccessible();
+            m.setAccessible(true);
+            boolean useInstance = clazz == instance.getClass() && Modifier.isStatic(m.getModifiers());
+            f.set(instance, m.invoke(useInstance ? instance : null, element));
+        } catch (NoSuchMethodException e) {
+            throw noBuilderError(instance.getClass(), clazz, name, e, true);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw impossibleBuildError(instance.getClass(), e);
+        } finally {
+            if (m != null) m.setAccessible(b);
         }
     }
 
@@ -292,14 +378,5 @@ final class CreationEngine {
         }
 
         return fields;
-    }
-
-    public static class CreationException extends Exception {
-        public CreationException(String s) {
-            super(s);
-        }
-        public CreationException(String s, Exception e) {
-            super(s, e);
-        }
     }
 }
