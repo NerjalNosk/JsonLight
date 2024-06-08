@@ -81,7 +81,7 @@ public class JsonMapper {
 
     static <T> T map(JsonElement element, Class<T> target, Map<Integer, ?> map)
             throws JsonCastingError, JsonElementTypeException, JsonMapperError, JsonMappingException, CreationException {
-        int hash = element.hashCode();
+        Integer hash = System.identityHashCode(element);
         if (map.containsKey(hash)) return target.cast(map.get(hash));
 
         // == primitives ==
