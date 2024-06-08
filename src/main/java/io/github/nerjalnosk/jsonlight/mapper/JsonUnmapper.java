@@ -23,12 +23,15 @@ public class JsonUnmapper {
      * @return the JsonElement fitting the specified object
      */
     public static <T> JsonElement serialize(T object) throws JsonError.JsonMappingException {
-        return serialize(object, new HashSet<>());
+        return serialize(object, new LinkedHashMap<>());
     }
 
-    private static <T> JsonElement serialize(T object, Set<Integer> stack) throws JsonError.JsonMappingException {
-
+    private static <T> JsonElement serialize(T object, Map<Integer, JsonElement> stack) throws JsonError.JsonMappingException {
         if (object == null) return new JsonString((String) null);
+
+        int i = System.identityHashCode(object); // avoid conflicting hashes
+        if (stack.containsKey(i)) return stack.get(i);
+
         Class<?> target = object.getClass();
         if (target == Integer.class)
             return new JsonNumber((Integer)object);
@@ -49,22 +52,24 @@ public class JsonUnmapper {
                     string.setValue(((Enum<?>)object).name());
                 }
             }
+            stack.put(i, string);
             return string;
         }
         if (target.isArray()) {
             JsonArray array = new JsonArray();
+            stack.put(i, array); // stack early to avoid recursive lock
             for (Object o : (Object[]) object) {
                 array.add(serialize(o, stack));
             }
             return array;
         }
+        if (JsonElement.class.isAssignableFrom(target)) {
+            stack.put(i, (JsonElement) object);
+            return (JsonElement) object;
+        }
         if (Collection.class.isAssignableFrom(target)) {
-            Class<?> c = target.getSuperclass();
-            while (c != null) {
-                if (c == JsonElement.class) return (JsonElement) object;
-                c = c.getSuperclass();
-            }
             JsonArray array = new JsonArray();
+            stack.put(i, array); // stack early to avoid recursive lock
             for (Object o : (Collection<?>) object) {
                 array.add(serialize(o, stack));
             }
@@ -72,13 +77,15 @@ public class JsonUnmapper {
         }
         if (Map.class.isAssignableFrom(target)) {
             JsonObject obj = new JsonObject();
+            stack.put(i, obj); // stack early to avoid recursive lock
             for (Map.Entry<?,?> entry : ((Map<?,?>)object).entrySet()) {
                 if (!(entry.getKey() instanceof String)) continue;
-                obj.put((String) entry.getKey(), serialize(entry.getValue(), stack));
+                obj.put(entry.getKey().toString(), serialize(entry.getValue(), stack));
             }
             return obj;
         }
         JsonObject obj = new JsonObject();
+        stack.put(i, obj); // stack early to avoid recursive lock
         for (Field field : JsonMapper.getAllFields(new LinkedList<>(), target)) {
             if (field.isAnnotationPresent(JsonIgnore.class)) continue;
 
