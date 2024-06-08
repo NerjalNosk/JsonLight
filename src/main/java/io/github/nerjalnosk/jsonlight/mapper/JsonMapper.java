@@ -19,35 +19,6 @@ import static io.github.nerjalnosk.jsonlight.JsonError.*;
  */
 public class JsonMapper {
     /**
-     * Checks if a {@link Class} is a primitive (yes I know it's not full)
-     * @param clazz - input {@link Class}
-     * @return whether clazz is a primitive or not
-     */
-    private static boolean isPrimitive(Class<?> clazz) {
-        return clazz == int.class ||
-                clazz == long.class ||
-                clazz == float.class ||
-                clazz == double.class ||
-                clazz == boolean.class;
-    }
-
-    /**
-     * Converts an {@link ArrayList} to an array
-     * @param arrayList - input {@link ArrayList}
-     * @param target - target type array, i.e. int[] for ArrayList<Integer>
-     * @return converted arrayList
-     */
-    private static <E> E arrayListToArray(ArrayList<?> arrayList, Class<E> target) {
-        if (!target.isArray()) return null;
-        Class<?> subType = target.getComponentType();
-        E out = target.cast(Array.newInstance(subType, arrayList.size()));
-        for (int i = 0; i < arrayList.size(); i++) {
-            Array.set(out, i, arrayList.get(i));
-        }
-        return out;
-    }
-
-    /**
      * Gets all class fields including superclass fields unless {@link JsonSkipSuperclass} is present
      * @param fields - list of fields
      * @param type - class type
