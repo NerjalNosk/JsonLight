@@ -27,9 +27,9 @@ final class CreationEngine {
     }
 
     @SuppressWarnings("unchecked")
-    static <U, T extends List<U>> T createList(Class<T> listClass, JsonArray values) throws CreationException {
+    static <T> T createList(Class<T> listClass, JsonArray values) throws CreationException {
         List<?> list = null;
-        if (listClass == List.class) {
+        if (listClass.equals(List.class)) {
             list = new ArrayList<>();
         } else if (listClass.isInterface()) {
             throw new UnsupportedOperationException("complex interface instantiation not implemented yet");
@@ -37,13 +37,13 @@ final class CreationEngine {
             throw new UnsupportedOperationException("abstract class instantiation not implemented yet");
         } else {
             try {
-                list = listClass.getConstructor().newInstance();
+                list = (List<?>) listClass.getConstructor().newInstance();
             } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
                 // ignored
             }
             if (list == null) {
                 try {
-                    list = listClass.getConstructor(int.class).newInstance(values.size());
+                    list = (List<?>) listClass.getConstructor(int.class).newInstance(values.size());
                 } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
                     throw new CreationException("Couldn't find an appropriate constructor for class "+listClass, e);
                 }
@@ -57,9 +57,9 @@ final class CreationEngine {
     }
 
     @SuppressWarnings("unchecked")
-    static <U, T extends Map<String, U>> T createMap(Class<T> mapClass, JsonObject object) throws CreationException {
+    static <T> T createMap(Class<T> mapClass, JsonObject object) throws CreationException {
         Map<String, ?> map = null;
-        if (mapClass == Map.class) {
+        if (mapClass.equals(Map.class)) {
             map = new HashMap<>();
         } else if (mapClass.isInterface()) {
             throw new UnsupportedOperationException("complex interface instantiation not implemented yet");
@@ -67,13 +67,13 @@ final class CreationEngine {
             throw new UnsupportedOperationException(("abstract class instantiation not implemented yet"));
         } else {
             try {
-                map = mapClass.getConstructor().newInstance();
+                map = (Map<String, ?>) mapClass.getConstructor().newInstance();
             } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
                 // ignored
             }
             if (map == null) {
                 try {
-                    map = mapClass.getConstructor(int.class).newInstance(object.entrySet().size());
+                    map = (Map<String, ?>) mapClass.getConstructor(int.class).newInstance(object.entrySet().size());
                 } catch (NoSuchMethodException|InvocationTargetException|InstantiationException|IllegalAccessException e) {
                     throw new CreationException("Couldn't find an appropriate constructor for class "+mapClass, e);
                 }

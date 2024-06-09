@@ -101,12 +101,12 @@ public class JsonMapper {
         // list
         else if (target.isAssignableFrom(List.class)) {
             if (!element.isJsonArray()) throw new JsonCastingError(element, target);
-            return target.cast(CreationEngine.createList((Class<? extends List<?>>) target, (JsonArray) element));
+            return target.cast(CreationEngine.createList(target, (JsonArray) element));
         }
         // map
         else if (target.isAssignableFrom(Map.class)) {
             if (!element.isJsonObject()) throw new JsonCastingError(element, target);
-            return target.cast(CreationEngine.createMap((Class<? extends Map<String,?>>) target, (JsonObject) element));
+            return target.cast(CreationEngine.createMap(target, (JsonObject) element));
         }
         return CreationEngine.createInstance(target, element, map);
     }
