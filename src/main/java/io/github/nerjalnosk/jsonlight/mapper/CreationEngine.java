@@ -253,6 +253,9 @@ final class CreationEngine {
 
             boolean req = field.isAnnotationPresent(JsonRequired.class);
             boolean ignoreAll = field.isAnnotationPresent(JsonIgnoreExceptions.class);
+            boolean ignoreCast = field.isAnnotationPresent(JsonIgnoreExceptions.IgnoreCastingError.class);
+            boolean ignoreNoChild = field.isAnnotationPresent(JsonIgnoreExceptions.IgnoreNoChildException.class);
+            boolean ignoreNoAccess = field.isAnnotationPresent(JsonIgnoreExceptions.IgnoreNoAccess.class);
             String name = field.getName();
             if (field.isAnnotationPresent(JsonNode.class)) {
                 JsonNode elem = field.getAnnotation(JsonNode.class);
@@ -303,13 +306,14 @@ final class CreationEngine {
                 }
                 // default parse
                 field.set(instance, JsonMapper.map(sub, type, map));
-            } catch (IllegalAccessException|JsonError.ChildNotFoundException e) {
-                //TODO ignore specific errors errors
-                if (!ignoreAll) throw new JsonError.JsonMappingException(e);
+            } catch (IllegalAccessException e) {
+                if (!(ignoreAll || ignoreNoAccess)) throw new JsonError.JsonMappingException(e);
+            } catch (JsonError.ChildNotFoundException e) {
+                if (!(ignoreAll || ignoreNoChild)) throw new JsonError.JsonMappingException(e);
+            } catch (JsonCastingError e) {
+                if (!(ignoreAll || ignoreCast)) throw new JsonError.JsonMappingException(e);
             } catch (IllegalArgumentException e) {
                 throw new JsonMapperTypeError(e, element);
-            } catch (JsonCastingError e) {
-                throw new RuntimeException(e);
             } finally {
                 field.setAccessible(a);
             }
