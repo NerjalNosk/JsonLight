@@ -282,3 +282,4 @@ dependencies {
 | 3.1     | 13 Mar. 2024  | Numbers Galore             | Added Number support for Big integers and decimals, as well as more exact value tracking             |
 | 3.2     | 19 Mar. 2024  | Parse lives matter         | Added parsing methods customization tools, and possibility to use line breaks as iteration markers   |
 | 3.3     | 4 Apr. 2024   | Unified cloning            | Completes support for unicode parsing and recoding, improves comments handling, adds cloning methods |
+| 4.0     | 9 Jun. 2024   | Remapped unmapped mapping  | Reworked the Mapper core, added new functionalities regarding errors and providers. Updated unmapper |
