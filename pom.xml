@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.nerjalnosk</groupId>
     <artifactId>JsonLight</artifactId>
-    <version>3.3</version>
+    <version>4.0</version>
     <packaging>jar</packaging>
 
     <name>JsonLight</name>
@@ -43,6 +43,7 @@
             <url>https://codedsakura.dev</url>
             <roles>
                 <role>developer</role>
+                <role>Mapper initial creator</role>
             </roles>
         </contributor>
     </contributors>
