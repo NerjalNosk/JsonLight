@@ -105,7 +105,7 @@ public class JsonUnmapper {
         JsonObject obj = new JsonObject(new ObjectParseOptions(true));
         stack.put(i, obj); // stack early to avoid recursive lock
         for (Field field : JsonMapper.getAllFields(new LinkedList<>(), target)) {
-            if (field.isAnnotationPresent(JsonIgnore.class)) continue;
+            if (field.isAnnotationPresent(JsonIgnore.class) && field.getAnnotation(JsonIgnore.class).toJson()) continue;
 
             boolean b = field.isAccessible();
             field.setAccessible(true);
