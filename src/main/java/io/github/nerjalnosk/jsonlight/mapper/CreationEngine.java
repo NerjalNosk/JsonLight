@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 final class CreationEngine {
     private CreationEngine() {}
@@ -238,7 +239,7 @@ final class CreationEngine {
             throw new JsonMapperTypeError("Cannot parse object from " + element.typeToString(), element);
         }
         JsonObject object = element.getAsJsonObject();
-        List<Field> postInit = new ArrayList<>();
+        Map<Integer, List<Field>> postInitMap = new HashMap<>();
 
         List<Field> fields = getAllFields(new LinkedList<>(), targetClass);
         fields.sort(CreationEngine::fieldComparator);
@@ -287,7 +288,7 @@ final class CreationEngine {
                         if (field.isAnnotationPresent(JsonDefaultProvider.class)) {
                             JsonDefaultProvider defaultProvider = field.getAnnotation(JsonDefaultProvider.class);
                             if (defaultProvider.postInit()) {
-                                postInit.add(field);
+                                postInitMap.computeIfAbsent(defaultProvider.priority(), i -> new ArrayList<>()).add(field);
                             } else {
                                 resolveDefaultProvider(field, defaultProvider, instance, element);
                             }
@@ -319,9 +320,12 @@ final class CreationEngine {
             }
         }
         // postInit
-        for (Field field : postInit) {
-            if (!field.isAnnotationPresent(JsonDefaultProvider.class)) continue;
-            resolveDefaultProvider(field, field.getAnnotation(JsonDefaultProvider.class), instance, element);
+        for (int i : postInitMap.keySet().stream().sorted().collect(Collectors.toList())) {
+            List<Field> l = postInitMap.get(i);
+            for (Field field : l) {
+                if (!field.isAnnotationPresent(JsonDefaultProvider.class)) continue;
+                resolveDefaultProvider(field, field.getAnnotation(JsonDefaultProvider.class), instance, element);
+            }
         }
     }
 
