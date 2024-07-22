@@ -326,11 +326,30 @@ final class CreationEngine {
     }
 
     private static <T> void resolveDefaultProvider(Field f, JsonDefaultProvider defaultProvider, T instance, JsonElement element) throws CreationException {
-        Class<?> clazz = defaultProvider.clazz();
-        if (clazz == JsonDefaultProvider.class) {
+        try {
+            f.set(instance, resolveDefaultProvider(DefaultProvider.ofAnnotation(defaultProvider), instance, element));
+        } catch (IllegalAccessException e) {
+            throw impossibleBuildError(instance.getClass(), e);
+        }
+    }
+
+    /**
+     * Tries to resolve the provider specification of a {@link DefaultProvider}
+     * @param provider The provider to resolve
+     * @param instance The class instance for which to resolve the provider.
+     *                 Relevant for non-static method resolving.
+     * @param element The JsonElement to be used with the provider.
+     * @return The resolved provider result.
+     * @param <T> The result type of the provider. Supposedly a field value type.
+     * @param <U> The type of the instance.
+     * @throws CreationException If the provider couldn't be resolved.
+     */
+    public static <T, U> T resolveDefaultProvider(DefaultProvider provider, U instance, JsonElement element) throws CreationException {
+        Class<?> clazz = provider.clazz;
+        if (clazz == DefaultProvider.class) {
             clazz = instance.getClass();
         }
-        String name = defaultProvider.value().trim();
+        String name = provider.value.trim();
         Method m = null;
         boolean b = true;
         try {
@@ -338,11 +357,13 @@ final class CreationEngine {
             b = m.isAccessible();
             m.setAccessible(true);
             boolean useInstance = clazz == instance.getClass() && Modifier.isStatic(m.getModifiers());
-            f.set(instance, m.invoke(useInstance ? instance : null, element));
+            return (T) (m.invoke(useInstance ? instance : null, element));
         } catch (NoSuchMethodException e) {
             throw noBuilderError(instance.getClass(), clazz, name, e, true);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw impossibleBuildError(instance.getClass(), e);
+        } catch (ClassCastException e) {
+            throw new CreationException("Impossible cast", e);
         } finally {
             if (m != null) m.setAccessible(b);
         }
@@ -386,5 +407,41 @@ final class CreationEngine {
         }
 
         return fields;
+    }
+
+    /**
+     * Specification of a default entity provider entry, to be used
+     * with {@link #resolveDefaultProvider(DefaultProvider, Object, JsonElement)}
+     */
+    public final static class DefaultProvider {
+        public final int priority;
+        public final String value;
+        public final Class<?> clazz;
+
+        private DefaultProvider(int i, String s, Class<?> c) {
+            this.priority = i;
+            this.value = s;
+            this.clazz = c;
+        }
+
+        public static DefaultProvider ofMethod(Method m) {
+            return ofMethod(m, 1);
+        }
+
+        public static DefaultProvider ofMethod(Method m, int i) {
+            return new DefaultProvider(i, m.getName(), m.getDeclaringClass());
+        }
+
+        public static DefaultProvider ofValue(String s) {
+            return ofValue(s, 1);
+        }
+
+        public static DefaultProvider ofValue(String s, int i) {
+            return new DefaultProvider(i, s, DefaultProvider.class);
+        }
+
+        public static DefaultProvider ofAnnotation(JsonDefaultProvider annotation) {
+            return new DefaultProvider(annotation.priority(), annotation.value(), annotation.clazz());
+        }
     }
 }
