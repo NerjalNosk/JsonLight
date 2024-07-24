@@ -348,7 +348,8 @@ final class CreationEngine {
      * @param <U> The type of the instance.
      * @throws CreationException If the provider couldn't be resolved.
      */
-    public static <T, U> T resolveDefaultProvider(DefaultProvider provider, U instance, JsonElement element) throws CreationException {
+    @SuppressWarnings("unchecked")
+    static <T, U> T resolveDefaultProvider(DefaultProvider provider, U instance, JsonElement element) throws CreationException {
         Class<?> clazz = provider.clazz;
         if (clazz == DefaultProvider.class) {
             clazz = instance.getClass();
@@ -413,39 +414,4 @@ final class CreationEngine {
         return fields;
     }
 
-    /**
-     * Specification of a default entity provider entry, to be used
-     * with {@link #resolveDefaultProvider(DefaultProvider, Object, JsonElement)}
-     */
-    public final static class DefaultProvider {
-        public final int priority;
-        public final String value;
-        public final Class<?> clazz;
-
-        private DefaultProvider(int i, String s, Class<?> c) {
-            this.priority = i;
-            this.value = s;
-            this.clazz = c;
-        }
-
-        public static DefaultProvider ofMethod(Method m) {
-            return ofMethod(m, 1);
-        }
-
-        public static DefaultProvider ofMethod(Method m, int i) {
-            return new DefaultProvider(i, m.getName(), m.getDeclaringClass());
-        }
-
-        public static DefaultProvider ofValue(String s) {
-            return ofValue(s, 1);
-        }
-
-        public static DefaultProvider ofValue(String s, int i) {
-            return new DefaultProvider(i, s, DefaultProvider.class);
-        }
-
-        public static DefaultProvider ofAnnotation(JsonDefaultProvider annotation) {
-            return new DefaultProvider(annotation.priority(), annotation.value(), annotation.clazz());
-        }
-    }
 }
