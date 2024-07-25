@@ -23,6 +23,10 @@ public abstract class JsonElement implements Serializable {
     private JsonComment[] comments = new JsonComment[]{};
     private Long id;
 
+    public static JsonElement nullInstance() {
+        return JsonString.NULL;
+    }
+
     protected JsonElement() {}
 
     protected JsonElement(long id) {
