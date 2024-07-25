@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 /**
  * Specification of a default entity provider entry, to be used
- * with {@link #resolveDefaultProvider(DefaultProvider, Object, JsonElement)}
+ * with {@link CreationAccessor#resolveDefaultProvider(DefaultProvider, Object, JsonElement)}
  */
 public final class DefaultProvider {
     public final int priority;
