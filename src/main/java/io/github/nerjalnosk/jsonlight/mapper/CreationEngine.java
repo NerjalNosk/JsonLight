@@ -27,6 +27,14 @@ final class CreationEngine {
         return new CreationException("Couldn't find a matching builder " + s + " for " + (field ? "field " : "") + c + " in " + c2, e);
     }
 
+        private static CreationException notAnEnumClassError(Class<?> c) {
+        return new CreationException("Couldn't extract enum values from class "+c+" as it is not an enum class");
+    }
+
+    private static CreationException noEnumValueError(Class<?> c, String s) {
+        return new CreationException("Couldn't find an enum value for '"+s+"' in class "+c);
+    }
+
     @SuppressWarnings("unchecked")
     static <T> T createList(Class<T> listClass, JsonArray values) throws CreationException {
         List<?> list = null;
@@ -327,6 +335,37 @@ final class CreationEngine {
                 resolveDefaultProvider(field, field.getAnnotation(JsonDefaultProvider.class), instance, element);
             }
         }
+    }
+
+    static <T> T resolveEnumByName(String v, Class<T> c) throws CreationException {
+        if (!c.isEnum()) throw notAnEnumClassError(c);
+        int match = 0;
+        T option = null;
+        for (Object o : c.getEnumConstants()) {
+            String s = ((Enum<?>)o).name();
+            if (s.equals(v)) return c.cast(o);
+            if (s.equalsIgnoreCase(v)) {
+                int m = 0;
+                for (int i = 0; i < s.length(); i++) {
+                    if (s.charAt(i) == v.charAt(i)) m++;
+                }
+                if (m > match) {
+                    match = m;
+                    option = c.cast(o);
+                }
+            }
+        }
+        if (option == null) {
+            throw noEnumValueError(c, v);
+        }
+        return option;
+    }
+
+    static <T> T resolveEnumByNumber(int i, Class<T> c) throws CreationException {
+        if (!c.isEnum()) throw notAnEnumClassError(c);
+        T[] t = c.getEnumConstants();
+        if (t.length <= i) throw noEnumValueError(c, "index "+i);
+        return t[i];
     }
 
     private static <T> void resolveDefaultProvider(Field f, JsonDefaultProvider defaultProvider, T instance, JsonElement element) throws CreationException {
