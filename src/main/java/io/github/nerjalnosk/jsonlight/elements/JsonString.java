@@ -137,6 +137,9 @@ public class JsonString extends JsonElement {
     public String getAsString() {
         return this.value;
     }
+    public String getValue() {
+        return this.value;
+    }
 
     @Override
     protected String stringify(ParseSet parseSet, String indentation, String indentIncrement, ExplorationStack stack) {
