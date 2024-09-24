@@ -58,24 +58,33 @@ public class JsonMapper {
         // == primitives ==
         // numbers
         boolean num = element.isNumber();
-        if (target == Byte.class || target == byte.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsByte());
-        } else if (target == Short.class || target == short.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsShort());
-        } else if (target == Integer.class || target == int.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsInt());
-        } else if (target == Long.class || target == long.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsLong());
-        } else if (target == Float.class || target == float.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsFloat());
-        } else if (target == Double.class || target == double.class) {
-            if (!num) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsDouble());
+        if (target.isPrimitive()) {
+            if (target == Void.class) throw new UnsupportedOperationException("Unsupported mapping to void");
+            if (target == Byte.class || target == byte.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Byte.valueOf(element.getAsByte());
+            } else if (target == Short.class || target == short.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Short.valueOf(element.getAsShort());
+            } else if (target == Integer.class || target == int.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Integer.valueOf(element.getAsInt());
+            } else if (target == Long.class || target == long.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Long.valueOf(element.getAsLong());
+            } else if (target == Float.class || target == float.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Float.valueOf(element.getAsFloat());
+            } else if (target == Double.class || target == double.class) {
+                if (!num) throw new JsonCastingError(element, target);
+                //noinspection unchecked
+                return (T) Double.valueOf(element.getAsDouble());
+            }
         } else if (target == BigInteger.class) {
             if (!num) throw new JsonCastingError(element, target);
             return target.cast(element.getAsBigInt());
@@ -86,7 +95,8 @@ public class JsonMapper {
         // bool
         else if (target == Boolean.class || target == boolean.class) {
             if (!element.isBoolean()) throw new JsonCastingError(element, target);
-            return target.cast(element.getAsBoolean());
+            //noinspection unchecked
+            return (T) Boolean.valueOf(element.getAsBoolean());
         }
         // string
         else if (target == String.class) {
