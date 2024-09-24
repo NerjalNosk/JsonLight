@@ -183,7 +183,7 @@ However, they do not strictly replace commas, so commas can still be used alongs
 ## Import
 
 Now in Maven Central! Latest available version: 
-[3.2](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/3.2)
+[4.0](https://mvnrepository.com/artifact/io.github.nerjalnosk/JsonLight/4.0)
 
 ### With Maven
 
@@ -283,3 +283,4 @@ dependencies {
 | 3.2     | 19 Mar. 2024  | Parse lives matter         | Added parsing methods customization tools, and possibility to use line breaks as iteration markers   |
 | 3.3     | 4 Apr. 2024   | Unified cloning            | Completes support for unicode parsing and recoding, improves comments handling, adds cloning methods |
 | 4.0     | 9 Jun. 2024   | Remapped unmapped mapping  | Reworked the Mapper core, added new functionalities regarding errors and providers. Updated unmapper |
+| 4.1     | 24 Sept. 2024 | Stone-Age mapping          | Fixed primitive mapping casting, minor patches                                                       |
